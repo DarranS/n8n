@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n
+  namespace: n8n
+  labels:
+    service: n8n
+  annotations: {}
+spec:
+  ports:
+  - name: "5678"
+    port: 80
+    protocol: TCP
+    targetPort: 5678
+  selector:
+    service: n8n
+  type: ClusterIP # Use LoadBalancer if you want external access
