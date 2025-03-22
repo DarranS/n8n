@@ -1,0 +1,1 @@
+Deployment of N8n to Azure AKS. Based on Docs and added HTTPS
