@@ -467,7 +467,7 @@ def generate_markdown_report(
 
 def main(write_to_file: bool = False):
     """Process JSON data and generate reports."""
-    input_file = './/SampleData//Disney.json'
+    input_file = '..//SampleData//Disney.json'
     esg_output_file = 'esg_data.csv'
     esg_qualitative_output_file = 'esg_qualitative_data.csv'
     critical_output_file = 'critical_issues.csv'

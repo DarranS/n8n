@@ -1,0 +1,8 @@
+ESG_CONTROVERSIES_VALUE,Date,Penalty,PercentagePenalty,Severity,SourceReach,Environmental,Social,Governance
+-0.5,2021-12-21,0.00,0.3,less severe,influential,false,true,false
+-0.5,2024-01-10,0.02,4.0,less severe,influential,false,true,true
+-0.5,2023-01-10,0.28,60.6,severe,high influence,false,true,false
+-0.5,2023-01-05,0.00,0.0,less severe,low influence,false,true,true
+-0.5,2024-02-07,0.05,11.3,less severe,high influence,false,true,false
+-0.5,2024-02-06,0.10,22.5,less severe,high influence,false,true,false
+-0.5,2024-10-14,0.01,1.4,less severe,influential,true,true,true

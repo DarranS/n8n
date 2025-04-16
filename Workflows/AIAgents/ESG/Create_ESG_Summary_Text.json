@@ -41,11 +41,12 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        1040,
+        1260,
         0
       ],
       "id": "9fabdd85-87cf-4ba9-bafc-307a02fd149f",
-      "name": "Respond to Webhook"
+      "name": "Respond to Webhook",
+      "alwaysOutputData": false
     },
     {
       "parameters": {
@@ -340,6 +341,20 @@
       ],
       "id": "46017566-8dd2-4a19-be4d-a5ee6495a0de",
       "name": "Use RAG AI to get summary"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "# Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor item in _input.all():\n  item.json.output = item.json.output.replace('\\n', '\\r')\nreturn _input.all()"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1080,
+        0
+      ],
+      "id": "9844d8b5-038b-4800-9bd1-03f10219b9f5",
+      "name": "Clean /n"
     }
   ],
   "pinData": {},
@@ -370,7 +385,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook",
+            "node": "Clean /n",
             "type": "main",
             "index": 0
           }
@@ -410,6 +425,17 @@
       "main": [
         [
           {
+            "node": "Clean /n",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean /n": {
+      "main": [
+        [
+          {
             "node": "Respond to Webhook",
             "type": "main",
             "index": 0
@@ -423,7 +449,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "9cee1d49-1220-4a03-95a5-239744d69779",
+  "versionId": "fcc04687-3d43-4ff9-b329-fe4fd135e16b",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0851186287984defd085dfa37fa9b8d6478c9a514d3d7e58c0f9581e228bdb0e"
