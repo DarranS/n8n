@@ -1,0 +1,120 @@
+{
+  "name": "ESG Summary Basic Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a summary of approximately 300 words on the ESG data provide.\n1. Overall ESG Performance\nState the overall ESG Rating.\nExplain that the score reflects performance across environmental, social, and governance (ESG) pillars, including adjustments for controversies and Sustainable Development Goal (SDG) impacts.\n\n2. Pillar Breakdown\nDescribe the performance of each ESG pillar:\nEnvironmental: Mention the score and any key strengths or weaknesses (e.g., emissions, energy use, resource efficiency).\nSocial: Discuss relevant scores and highlight workforce practices, diversity, and customer impact.\nGovernance: Highlight board practices, independence, compensation policies, and ESG integration.\n\n3. Top Positive KPIs (based on influence)\nList key performance indicators including the Pillar they belong to that significantly contributed to a higher ESG score. Include both quantitative and qualitative aspects where available. \n4. Top Negative KPIs (based on influence)\nList the KPIs indicators including the Pillar they belong to that most negatively impacted the ESG score. \n\n5. Major Controversy Adjustments\nSummarize how controversies affected the ESG score:\nIndicate which pillars (E, S, G) were impacted and describe the nature of the issues (e.g., labor disputes, governance scandals, environmental fines).\n\nInclude the magnitude of adjustments if provided.\n\n6. SDG Impacts\nExplain the company's alignment (positive or negative) with the United Nations Sustainable Development Goals (SDGs). Mention:\nPositive contributions and Negative impacts include the underlying details\n\n7. Tone and Format\nUse a clear, structured, and objective tone.\nOrganize the summary using headings, bullet points, and short paragraphs.\nProvide a balanced view: highlight both strengths and areas for improvement.\n\nThis ESG summary provides a snapshot of  {{ $json.CompanyName }}ESG Rating: {{ $json.ESGRating }}Stars, sustainability profile, highlighting key strengths, challenges, and opportunities for improvement across environmental, social, and governance dimensions.",
+        "options": {
+          "systemMessage": "={{ $json.ESGData }}"
+        }
+      },
+      "id": "ed578193-bd19-48a6-83f0-5666aedc5016",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "544f9d20-429e-4c6a-8e57-099615466274",
+      "name": "OpenAI Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        480,
+        220
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "UtgJomhtLaADCLkT",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "ESGData",
+              "type": "any"
+            },
+            {
+              "name": "CompanyName"
+            },
+            {
+              "name": "ESGRating",
+              "type": "number"
+            },
+            {
+              "name": "ESGID"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e62fef3b-d25b-468b-983f-b71bb5416d3c",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "3c0786c5-a186-40de-9f09-c73e1b6e5c0f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0851186287984defd085dfa37fa9b8d6478c9a514d3d7e58c0f9581e228bdb0e"
+  },
+  "id": "XO85d53Mvx0dR4AG",
+  "tags": [
+    {
+      "createdAt": "2025-04-09T12:43:49.518Z",
+      "updatedAt": "2025-04-09T12:43:49.518Z",
+      "id": "vZizpKqP9soHC75L",
+      "name": "AI Agents"
+    }
+  ]
+}

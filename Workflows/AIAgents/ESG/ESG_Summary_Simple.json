@@ -1,0 +1,191 @@
+{
+  "name": "ESG Summary Simple",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.Prompt }}",
+        "options": {
+          "systemMessage": "={{ $json.Data }}"
+        }
+      },
+      "id": "704cbfb8-d81d-41a8-9011-5e901d1355b9",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1020,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 👋 Welcome to n8n!\nThis example shows how to build an AI Agent that interacts with your \ncalendar.\n\n### 1. Connect your accounts\n- Claim your `free` 0 OpenAI calls in the `OpenAI model` node \n- Connect your Google account in the `Google Calendar` node credentials section\n\n### 2. Ready to test it?\nClick Chat below and start asking questions! For example you can try `What meetings do I have today?`",
+        "height": 389,
+        "width": 319,
+        "color": 6
+      },
+      "id": "74dadb7f-c334-47a0-b899-f25cc547123b",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "077f2141-3edf-4cf9-85f5-af8b4ae38b34",
+      "name": "OpenAI Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        340
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "UtgJomhtLaADCLkT",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### Want to learn more?\nWant to learn more about AI and how to apply it best in n8n? Have a look at our [new tutorial series on YouTube](https://www.youtube.com/watch?v=yzvLfHb0nqE&lc).",
+        "height": 100,
+        "width": 317,
+        "color": 6
+      },
+      "id": "8f743861-402a-49b2-a878-5be74aff9770",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "6c9da00d-6ed5-4df0-95f9-875e84342fce",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f46f6008-7b9e-4663-aaa1-76ab7e63bcd4",
+      "name": "Webhook",
+      "webhookId": "6c9da00d-6ed5-4df0-95f9-875e84342fce"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ee801198-e769-4dbf-b096-69daaae8a85e",
+              "name": "Prompt",
+              "value": "={{ $json.body.prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "111f11cd-10ff-41d8-a1f0-36f6ee7b7844",
+              "name": "Data",
+              "value": "={{ $json.body.data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        0
+      ],
+      "id": "89f01cca-8b09-47b3-8279-2af3ad14ce89",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1380,
+        140
+      ],
+      "id": "2e51b8ee-8fc7-4117-84b5-3827e0e1fbbb",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "e66e1bc2-6189-41a6-8650-88b860453032",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0851186287984defd085dfa37fa9b8d6478c9a514d3d7e58c0f9581e228bdb0e"
+  },
+  "id": "VKKMpn7GC3d9Ea65",
+  "tags": []
+}
