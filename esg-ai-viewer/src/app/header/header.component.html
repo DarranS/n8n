@@ -1,0 +1,11 @@
+<header class="header">
+  <div class="header-content">
+    <a routerLink="/" class="logo">
+      <h1>{{ title }}</h1>
+    </a>
+    <nav class="nav">
+      <a routerLink="/" [class.active]="isActive('/', true)">Home</a>
+      <a routerLink="/about" [class.active]="isActive('/about')">About</a>
+    </nav>
+  </div>
+</header> 

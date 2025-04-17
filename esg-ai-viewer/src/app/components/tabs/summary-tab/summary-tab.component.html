@@ -1,0 +1,27 @@
+<div class="summary-tab-container">
+  <div class="summary-header">
+    <h2>ESG Summary</h2>
+    <button class="refresh-button" (click)="refreshSummary()" [disabled]="loading">
+      Refresh
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading summary...</p>
+  </div>
+
+  <div *ngIf="error" class="error-container">
+    <p>{{ error }}</p>
+    <button (click)="refreshSummary()">Try Again</button>
+  </div>
+
+  <div *ngIf="!loading && !error && summaryContent" class="summary-content">
+    <!-- TODO: Replace with ngx-markdown when available -->
+    <pre class="markdown-content">{{ summaryContent }}</pre>
+  </div>
+
+  <div *ngIf="!loading && !error && !summaryContent" class="empty-state">
+    <p>No summary data available.</p>
+  </div>
+</div>

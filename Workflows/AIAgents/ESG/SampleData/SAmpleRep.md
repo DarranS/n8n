@@ -179,3 +179,5 @@
 | I3 | EU PAB Exclusion |  | false |
 | I4 | LGT Focus Sustainability Exclusion |  | false |
 | I5 | Pork Related |  | 0.40% |
+"
+}

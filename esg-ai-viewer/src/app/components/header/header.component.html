@@ -1,0 +1,47 @@
+<div class="header-container">
+  <mat-toolbar color="primary" class="header-toolbar top-toolbar">
+    <div class="header-content">
+      <nav class="navigation">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+        <a routerLink="/about" routerLinkActive="active">About</a>
+      </nav>
+      <a routerLink="/" class="logo">
+        <h1>ESG AI Viewer</h1>
+      </a>
+    </div>
+  </mat-toolbar>
+  
+  <div class="company-selection-bar">
+    <div class="selection-container">
+      <div class="company-selector">
+        <mat-form-field appearance="outline">
+          <mat-label>Select Company</mat-label>
+          <input
+            type="text"
+            matInput
+            [formControl]="companyControl"
+            [matAutocomplete]="auto"
+            placeholder="Search companies..."
+          >
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-option
+              *ngFor="let company of filteredCompanies | async"
+              [value]="company"
+              (onSelectionChange)="onCompanySelected(company)"
+            >
+              {{company.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="clearSelection()"
+        class="clear-button"
+      >
+        Clear
+      </button>
+    </div>
+  </div>
+</div> 

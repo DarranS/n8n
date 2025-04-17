@@ -1,0 +1,15 @@
+.main-content {
+  padding: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 64px); // Subtract header height
+  display: flex;
+  flex-direction: column;
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .main-content {
+    padding: 0;
+  }
+}

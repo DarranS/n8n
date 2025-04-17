@@ -1,0 +1,88 @@
+/* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* Global Styles */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+body {
+  background-color: #fafafa;
+  color: #333;
+}
+
+/* Custom Material Overrides */
+.mat-mdc-tab-group {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.mat-mdc-tab-body-wrapper {
+  flex-grow: 1;
+  display: flex;
+}
+
+.mat-mdc-tab-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.mat-mdc-tab-body-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-form-field-infix {
+  width: auto !important;
+}
+
+.mat-mdc-option {
+  font-size: 14px !important;
+}
+
+.mat-typography h1 {
+  margin: 0 0 16px;
+}
+
+/* Global utility classes */
+.text-center {
+  text-align: center;
+}
+
+.mt-4 {
+  margin-top: 2rem;
+}
+
+.mb-4 {
+  margin-bottom: 2rem;
+}
+
+.p-4 {
+  padding: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .p-4 {
+    padding: 1rem;
+  }
+}
+
+/* Make material form fields look better */
+.mat-mdc-form-field-subscript-wrapper {
+  height: 0 !important;
+}
+
+.mdc-text-field--outlined {
+  --mdc-outlined-text-field-container-height: 48px !important;
+}

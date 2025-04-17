@@ -1,0 +1,10 @@
+I need to specify a small Web application called "ESG AI Viewer". The application should consist of a header section allowing the user to select a company using a drop combo. They should be able to enter text to reduce the list. Once selected an API will be called to retrieve Json detailing the Companies ESG details and show the Raw Tab. Below the header the user will see 4 tabs. 
+
+1. Raw. This will display the Json as received from the API
+2. Report. Once selected The following API will called https://n8n.sheltononline.com/webhook/ESG/Company/Summary/Report passing in the Raw Json in the body.
+3. Summary. Once selected The following API will called https://n8n.sheltononline.com/webhook/ESG/Company/Summary/Description passing in the Raw Json in the body.
+4. Chat. This tab will show an AI Chatbot interface referencing the N8N Chat at https://n8n.sheltononline.com/workflow/8Pkpdy3klGJe8CSm
+
+In the header we should also have a clear button that resets the application. The look and feel of the application should be consistent of www.lgt.com
+
+Can you please create me a specification for the application

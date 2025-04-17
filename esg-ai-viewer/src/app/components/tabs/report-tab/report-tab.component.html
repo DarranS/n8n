@@ -1,0 +1,27 @@
+<div class="report-tab-container">
+  <div class="report-header">
+    <h2>ESG Report</h2>
+    <button class="refresh-button" (click)="refreshReport()" [disabled]="loading">
+      Refresh
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading report...</p>
+  </div>
+
+  <div *ngIf="error" class="error-container">
+    <p>{{ error }}</p>
+    <button (click)="refreshReport()">Try Again</button>
+  </div>
+
+  <div *ngIf="!loading && !error && reportContent" class="report-content">
+    <!-- TODO: Replace with ngx-markdown when available -->
+    <pre class="markdown-content">{{ reportContent }}</pre>
+  </div>
+
+  <div *ngIf="!loading && !error && !reportContent" class="empty-state">
+    <p>No report data available.</p>
+  </div>
+</div>
