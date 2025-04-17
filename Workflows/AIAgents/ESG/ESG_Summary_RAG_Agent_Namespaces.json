@@ -1,5 +1,5 @@
 {
-  "name": "ESG Summary RAG Agent",
+  "name": "ESG Summary RAG Agent Namespaces",
   "nodes": [
     {
       "parameters": {
@@ -9,7 +9,7 @@
           "systemMessage": "=Use the Tool ESGDataStore to source ESG data for the summary from the Vestor Store. DO NOT use any other source "
         }
       },
-      "id": "78147bc3-ed58-4f2e-9ee9-7f6c74b49675",
+      "id": "df1f3800-2389-45b4-aacd-d68d76a6f961",
       "name": "AI Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -25,7 +25,7 @@
         "width": 319,
         "color": 6
       },
-      "id": "c75328f6-9eba-4180-a40c-36879ff829e8",
+      "id": "e88f986d-d830-4f52-a260-ed85bb970ee9",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -39,7 +39,7 @@
         "model": "gpt-4-turbo",
         "options": {}
       },
-      "id": "7aae7afa-cf99-4b31-8629-51564b10c330",
+      "id": "772a5ef9-3fa5-4f5a-9617-5284c1694d43",
       "name": "OpenAI Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
@@ -64,7 +64,7 @@
         1540,
         840
       ],
-      "id": "badd53e7-b196-4a97-bc07-5a2f8ab88cda",
+      "id": "6bde7abd-4999-4893-bbf8-c8281aae994c",
       "name": "Embeddings OpenAI",
       "credentials": {
         "openAiApi": {
@@ -103,7 +103,7 @@
         2120,
         300
       ],
-      "id": "521008fa-6e2a-462c-8d39-b90796dd872d",
+      "id": "7a928c23-32e9-40f1-8766-8a73c7c0660f",
       "name": "Pinecone Vector Store",
       "credentials": {
         "pineconeApi": {
@@ -133,7 +133,7 @@
         1480,
         200
       ],
-      "id": "8b856962-6917-4780-b492-9ab5c21c9561",
+      "id": "5ee60d3d-030c-4dc4-af62-01bbfed70fff",
       "name": "Default Data Loader"
     },
     {
@@ -149,7 +149,7 @@
         1620,
         400
       ],
-      "id": "6858e89b-980d-44f3-b5ec-3a676c82936e",
+      "id": "44af5d66-c76b-4076-a932-e227f9dee654",
       "name": "Recursive Character Text Splitter"
     },
     {
@@ -172,7 +172,7 @@
         1336,
         0
       ],
-      "id": "293c4bb8-36d2-49f4-8faf-b4a68df7426f",
+      "id": "d50246e3-c1c1-4cbf-a047-7597306495bd",
       "name": "Pinecone Save Data",
       "credentials": {
         "pineconeApi": {
@@ -196,7 +196,7 @@
         1680,
         0
       ],
-      "id": "39ec6c2c-0d39-41d4-9121-252a715f3b18",
+      "id": "2ad9e676-68d5-4975-b29b-d77077c74da7",
       "name": "Aggregate"
     },
     {
@@ -230,7 +230,7 @@
         220,
         -20
       ],
-      "id": "b09f92a5-ef3b-4750-ac91-4333a23456c3",
+      "id": "c7c3fdd6-a6c1-4d87-a51b-12885dab4a3b",
       "name": "When Executed by Another Workflow"
     },
     {
@@ -245,7 +245,7 @@
         440,
         -20
       ],
-      "id": "bc8d2c4d-5e6b-4bf0-b886-e77eeb450b45",
+      "id": "3c47e407-eee3-4d98-aad6-44f3505a424c",
       "name": "Convert to File"
     }
   ],
@@ -378,12 +378,12 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "f0677bb8-736b-4225-b1ce-2aac83c0fde5",
+  "versionId": "0e01c528-cc49-4907-9ac0-052f3a83f64a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0851186287984defd085dfa37fa9b8d6478c9a514d3d7e58c0f9581e228bdb0e"
   },
-  "id": "CB6zzj4HyUPPJE2o",
+  "id": "yNENncqdJOqsTQQY",
   "tags": [
     {
       "createdAt": "2025-04-09T12:43:49.518Z",

@@ -1,0 +1,214 @@
+{
+  "name": "ESG Summary Chat",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Use the Tool ESGDataStore to source ESG data for the summary from the Vestor Store. DO NOT use any other source "
+        }
+      },
+      "id": "608c9574-30c4-4674-a608-379dfe24eddc",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2060,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 👋 ESG Summary Agent Using RAG\nAs the ESG data is bigger than a single prompt allows this example uses Pinecone to store the data as a document then reference this to all the LLM to generate the result\n",
+        "height": 389,
+        "width": 319,
+        "color": 6
+      },
+      "id": "08923118-06bc-48c7-af33-e9605d90e945",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4-turbo",
+        "options": {}
+      },
+      "id": "0b201dfd-5b8f-4f8c-b3a8-0ac75e961988",
+      "name": "OpenAI Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        2060,
+        160
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "UtgJomhtLaADCLkT",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1540,
+        840
+      ],
+      "id": "c5b34f95-cb9d-47ca-8962-c83f67280a22",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "UtgJomhtLaADCLkT",
+          "name": "OpenAi account"
+        }
+      },
+      "notes": "Embedding AI"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "ESGDataStore",
+        "toolDescription": "USE THIS TOOL to retrieve to retreive the relevant ESG data from the Vector Store\n",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "esgkb",
+          "mode": "list",
+          "cachedResultName": "esgkb"
+        },
+        "topK": 20,
+        "options": {
+          "pineconeNamespace": "Glencore PLC"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        2280,
+        300
+      ],
+      "id": "cdced07b-fb18-407f-be59-872c1068780d",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "PaFv5UXAHFe9s8wV",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f503dbb2-7c58-408a-be54-68c860a73c26",
+      "name": "When chat message received",
+      "webhookId": "047eecfa-1a30-4d08-a9fa-ab0271c4409a"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2160,
+        220
+      ],
+      "id": "b2ec2d80-b218-41ce-81ad-2c1fc9cae043",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "1ba3dc42-a2dd-40e0-ba6a-479a95f1d627",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0851186287984defd085dfa37fa9b8d6478c9a514d3d7e58c0f9581e228bdb0e"
+  },
+  "id": "8Pkpdy3klGJe8CSm",
+  "tags": [
+    {
+      "createdAt": "2025-04-09T12:43:49.518Z",
+      "updatedAt": "2025-04-09T12:43:49.518Z",
+      "id": "vZizpKqP9soHC75L",
+      "name": "AI Agents"
+    }
+  ]
+}

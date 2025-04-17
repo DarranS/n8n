@@ -20,7 +20,7 @@
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "c9dbff9b-f650-4876-aae0-cbbfaec2165a",
+        "path": "ESG/Company/Summary/Description",
         "responseMode": "responseNode",
         "options": {}
       },
@@ -41,62 +41,12 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        1260,
+        1480,
         0
       ],
       "id": "9fabdd85-87cf-4ba9-bafc-307a02fd149f",
       "name": "Respond to Webhook",
       "alwaysOutputData": false
-    },
-    {
-      "parameters": {
-        "workflowId": {
-          "__rl": true,
-          "value": "SM4AyLjAE19VvZt0",
-          "mode": "list",
-          "cachedResultName": "Create ESG Company MD Report"
-        },
-        "workflowInputs": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "ESGCompanyData": "={{ $json.ESGCompanyData }}"
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "ESGCompanyData",
-              "displayName": "ESGCompanyData",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "canBeUsedToMatch": true,
-              "type": "object"
-            },
-            {
-              "id": "",
-              "displayName": "",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "canBeUsedToMatch": true,
-              "type": "string"
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": true
-        },
-        "options": {
-          "waitForSubWorkflow": true
-        }
-      },
-      "type": "n8n-nodes-base.executeWorkflow",
-      "typeVersion": 1.2,
-      "position": [
-        480,
-        0
-      ],
-      "id": "7b45f1f8-dd9c-4a93-9785-d2be6e508937",
-      "name": "Convert Input to MD"
     },
     {
       "parameters": {
@@ -112,7 +62,8 @@
             "ESGData": "={{ $json.CompanyESGReport }}",
             "ESGRating": "={{ $('Extract Fields').item.json.ESGCompanyData.lgtSustainabilityRating }}",
             "CompanyName": "={{ $('Extract Fields').item.json.ESGCompanyData.name }}",
-            "ESGID": "={{ $('Extract Fields').item.json.ESGCompanyData.name }}"
+            "ESGID": "={{ $('Extract Fields').item.json.ESGCompanyData.name }}",
+            "SummaryLength": "={{ $('Extract Fields').item.json.SummaryLength }}"
           },
           "matchingColumns": [
             "ESGData"
@@ -156,6 +107,16 @@
               "canBeUsedToMatch": true,
               "type": "string",
               "removed": false
+            },
+            {
+              "id": "SummaryLength",
+              "displayName": "SummaryLength",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -166,7 +127,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        860,
+        1080,
         180
       ],
       "id": "971188af-21c2-4ca6-b744-fa62041ed80c",
@@ -179,7 +140,7 @@
             {
               "id": "111f11cd-10ff-41d8-a1f0-36f6ee7b7844",
               "name": "ESGCompanyData",
-              "value": "={{ $json.body.data }}",
+              "value": "={{ $json.body.ESGCompanyData }}",
               "type": "object"
             },
             {
@@ -187,6 +148,12 @@
               "name": "UseRAG",
               "value": "={{ $json.body.useRAG }}",
               "type": "boolean"
+            },
+            {
+              "id": "c40d9b26-1741-49d9-8d1b-12df150b5696",
+              "name": "SummaryLength",
+              "value": "={{ $json.body.summaryLength }}",
+              "type": "number"
             }
           ]
         },
@@ -262,7 +229,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        640,
+        860,
         0
       ],
       "id": "a4595e0b-cde5-473c-ab6f-4bfa90558e5a",
@@ -282,7 +249,8 @@
             "ESGData": "={{ $json.CompanyESGReport }}",
             "ESGRating": "={{ $('Extract Fields').item.json.ESGCompanyData.lgtSustainabilityRating }}",
             "CompanyName": "={{ $('Extract Fields').item.json.ESGCompanyData.name }}",
-            "ESGID": "={{ $('Extract Fields').item.json.ESGCompanyData.name }}"
+            "ESGID": "={{ $('Extract Fields').item.json.ESGCompanyData.name }}",
+            "SummaryLength": "={{ $('Extract Fields').item.json.SummaryLength }}"
           },
           "matchingColumns": [
             "ESGData"
@@ -326,6 +294,16 @@
               "canBeUsedToMatch": true,
               "type": "string",
               "removed": false
+            },
+            {
+              "id": "SummaryLength",
+              "displayName": "SummaryLength",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -336,7 +314,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        840,
+        1060,
         -120
       ],
       "id": "46017566-8dd2-4a19-be4d-a5ee6495a0de",
@@ -350,11 +328,54 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1080,
+        1300,
         0
       ],
       "id": "9844d8b5-038b-4800-9bd1-03f10219b9f5",
-      "name": "Clean /n"
+      "name": "Clean /n",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "SM4AyLjAE19VvZt0",
+          "mode": "list",
+          "cachedResultName": "Create ESG Company MD Report"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ESGCompanyData": "={{ $json.ESGCompanyData }}"
+          },
+          "matchingColumns": [
+            "ESGCompanyData"
+          ],
+          "schema": [
+            {
+              "id": "ESGCompanyData",
+              "displayName": "ESGCompanyData",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "6e098d4a-0d55-4a54-9304-32002634fab2",
+      "name": "Execute Workflow to Get MD Report"
     }
   ],
   "pinData": {},
@@ -364,17 +385,6 @@
         [
           {
             "node": "Extract Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Convert Input to MD": {
-      "main": [
-        [
-          {
-            "node": "Switch",
             "type": "main",
             "index": 0
           }
@@ -396,7 +406,7 @@
       "main": [
         [
           {
-            "node": "Convert Input to MD",
+            "node": "Execute Workflow to Get MD Report",
             "type": "main",
             "index": 0
           }
@@ -442,6 +452,17 @@
           }
         ]
       ]
+    },
+    "Execute Workflow to Get MD Report": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -449,7 +470,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "fcc04687-3d43-4ff9-b329-fe4fd135e16b",
+  "versionId": "db0726b6-5274-4dc3-b060-d4a3efac25ca",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0851186287984defd085dfa37fa9b8d6478c9a514d3d7e58c0f9581e228bdb0e"
