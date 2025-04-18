@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { EsgService } from '../../../services/esg.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
+import { MarkdownModule } from 'ngx-markdown';
 
 @Component({
   selector: 'app-summary-tab',
   standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule, MatButtonModule],
+  imports: [CommonModule, MatProgressSpinnerModule, MatButtonModule, MarkdownModule],
   templateUrl: './summary-tab.component.html',
   styleUrl: './summary-tab.component.scss'
 })

@@ -17,8 +17,7 @@
   </div>
 
   <div *ngIf="!loading && !error && summaryContent" class="summary-content">
-    <!-- TODO: Replace with ngx-markdown when available -->
-    <pre class="markdown-content">{{ summaryContent }}</pre>
+    <markdown [data]="summaryContent"></markdown>
   </div>
 
   <div *ngIf="!loading && !error && !summaryContent" class="empty-state">

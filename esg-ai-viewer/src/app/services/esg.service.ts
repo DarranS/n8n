@@ -54,12 +54,20 @@ export class EsgService {
 
     return this.http.post<any>(`${this.baseUrl}/ESG/Company/Summary/Report`, requestBody).pipe(
       map(response => {
-        // Handle both string and object responses
-        if (typeof response === 'string') {
-          return response;
-        } else if (response && typeof response === 'object') {
-          // If it's an object, convert it to string
-          return JSON.stringify(response);
+        // Extract the relevant data from the response
+        const reportData = response?.CompanyESGReport || response;
+        
+        // If the response is a string, try to parse it as JSON first
+        if (typeof reportData === 'string') {
+          try {
+            const parsedData = JSON.parse(reportData);
+            return this.formatReportData(parsedData);
+          } catch (e) {
+            // If parsing fails, return the string with newlines handled
+            return reportData.replace(/\\n/g, '\n');
+          }
+        } else if (reportData && typeof reportData === 'object') {
+          return this.formatReportData(reportData);
         }
         return '';
       }),
@@ -68,33 +76,128 @@ export class EsgService {
         error: (error) => console.log('Full error details:', error)
       })
     );
+  }
+
+  private formatReportData(data: any): string {
+    // If the data has a specific structure, format it accordingly
+    if (data.CompanyESGReport) {
+      return this.formatCompanyESGReport(data.CompanyESGReport);
+    } else if (data.Report) {
+      return this.formatCompanyESGReport(data.Report);
+    } else if (typeof data === 'string') {
+      return data.replace(/\\n/g, '\n');
+    } else {
+      // For any other object structure, convert to string with proper formatting
+      return JSON.stringify(data, null, 2).replace(/\\n/g, '\n');
+    }
+  }
+
+  private formatCompanyESGReport(report: any): string {
+    if (typeof report === 'string') {
+      return report.replace(/\\n/g, '\n');
+    }
+    
+    // If it's an object, try to extract the most relevant content
+    const content = report.content || report.text || report.data || report;
+    
+    if (typeof content === 'string') {
+      return content.replace(/\\n/g, '\n');
+    }
+    
+    // If we still have an object, convert it to a formatted string
+    return JSON.stringify(content, null, 2).replace(/\\n/g, '\n');
   }
 
   getSummary(data: any): Observable<string> {
     const requestBody = {
       ESGCompanyData: data,
-      useRAG: true
+      useRAG: false
     };
 
     return this.http.post<any>(`${this.baseUrl}/ESG/Company/Summary/Description`, requestBody).pipe(
       map(response => {
-        if (typeof response === 'string') {
-          return response;
-        } else if (response && typeof response === 'object') {
-          return JSON.stringify(response);
+        // Extract the relevant data from the response
+        const summaryData = response?.CompanyESGSummary || response;
+        
+        // If the response is a string, try to parse it as JSON first
+        if (typeof summaryData === 'string') {
+          try {
+            const parsedData = JSON.parse(summaryData);
+            return this.formatSummaryData(parsedData);
+          } catch (e) {
+            // If parsing fails, return the string with newlines handled
+            return summaryData.replace(/\\n/g, '\n');
+          }
+        } else if (summaryData && typeof summaryData === 'object') {
+          return this.formatSummaryData(summaryData);
         }
         return '';
       }),
       tap({
-        next: (processedResponse) => console.log('Processed response:', processedResponse),
+        next: (processedResponse) => console.log('Processed summary response:', processedResponse),
         error: (error) => console.log('Full error details:', error)
       })
     );
   }
 
+  private formatSummaryData(data: any): string {
+    // If the data has a specific structure, format it accordingly
+    if (data.CompanyESGSummary) {
+      return this.formatCompanyESGSummary(data.CompanyESGSummary);
+    } else if (data.output) {
+      return this.formatCompanyESGSummary(data.output);
+    } else if (typeof data === 'string') {
+      return data.replace(/\\n/g, '\n');
+    } else {
+      // For any other object structure, convert to string with proper formatting
+      return JSON.stringify(data, null, 2).replace(/\\n/g, '\n');
+    }
+  }
+
+  private formatCompanyESGSummary(summary: any): string {
+    if (typeof summary === 'string') {
+      // Process markdown in the string
+      return this.processMarkdown(summary.replace(/\\n/g, '\n'));
+    }
+    
+    // If it's an object, try to extract the most relevant content
+    const content = summary.content || summary.text || summary.data || summary.description || summary.output || summary;
+    
+    if (typeof content === 'string') {
+      // Process markdown in the extracted content
+      return this.processMarkdown(content.replace(/\\n/g, '\n'));
+    }
+    
+    // If we still have an object, convert it to a formatted string and process markdown
+    const stringContent = JSON.stringify(content, null, 2).replace(/\\n/g, '\n');
+    return this.processMarkdown(stringContent);
+  }
+
   private processMarkdown(response: string): string {
-    console.log('Processing markdown response:', response);
-    return response;
+    // Ensure proper markdown formatting
+    let processed = response;
+    
+    // Handle common markdown patterns
+    processed = processed
+      // Handle headers
+      .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+      // Handle bold and italic
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      // Handle lists
+      .replace(/^\s*\*\s(.*$)/gm, '<li>$1</li>')
+      .replace(/^\s*-\s(.*$)/gm, '<li>$1</li>')
+      // Handle links
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
+      // Handle paragraphs (ensure proper spacing)
+      .replace(/\n\n/g, '</p><p>')
+      // Wrap the entire content in a paragraph if needed
+      .replace(/^(?!<[a-z])(.*)$/gm, '<p>$1</p>');
+    
+    console.log('Processed markdown:', processed);
+    return processed;
   }
 
   private generateSummaryFromData(data: any): string {
