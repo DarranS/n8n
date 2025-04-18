@@ -51,7 +51,7 @@ export class HeaderComponent implements OnInit {
   }
 
   displayFn(company: Company): string {
-    return company && company.name ? company.name : '';
+    return company && company.name ? `${company.name} (${company.id})` : '';
   }
 
   private _filter(value: string): Company[] {

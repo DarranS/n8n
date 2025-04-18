@@ -1,18 +1,19 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ESGData, EsgService } from '../../../services/esg.service';
+import { EsgService } from '../../../services/esg.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
+import { MarkdownModule } from 'ngx-markdown';
 
 @Component({
   selector: 'app-report-tab',
   standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule, MatButtonModule],
+  imports: [CommonModule, MatProgressSpinnerModule, MatButtonModule, MarkdownModule],
   templateUrl: './report-tab.component.html',
   styleUrl: './report-tab.component.scss'
 })
 export class ReportTabComponent implements OnChanges {
-  @Input() data: ESGData | null = null;
+  @Input() data: any = null;
   
   reportContent: string = '';
   loading: boolean = false;
@@ -27,8 +28,8 @@ export class ReportTabComponent implements OnChanges {
   }
 
   private loadReport(): void {
-    if (!this.data || !this.data.companyIsin) {
-      this.error = 'Missing company data or ISIN. Cannot load report.';
+    if (!this.data) {
+      this.error = 'Missing company data. Cannot load report.';
       return;
     }
     
@@ -38,7 +39,8 @@ export class ReportTabComponent implements OnChanges {
 
     this.esgService.getReport(this.data).subscribe({
       next: (report) => {
-        this.reportContent = report;
+        console.log('Received report:', report);
+        this.reportContent = report || '';
         this.loading = false;
       },
       error: (err) => {

@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ESGData, EsgService } from '../../../services/esg.service';
+import { EsgService } from '../../../services/esg.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './summary-tab.component.scss'
 })
 export class SummaryTabComponent implements OnChanges {
-  @Input() data: ESGData | null = null;
+  @Input() data: any = null;
   
   summaryContent: string = '';
   loading: boolean = false;
@@ -27,8 +27,8 @@ export class SummaryTabComponent implements OnChanges {
   }
 
   private loadSummary(): void {
-    if (!this.data || !this.data.companyIsin) {
-      this.error = 'Missing company data or ISIN. Cannot load summary.';
+    if (!this.data) {
+      this.error = 'Missing company data. Cannot load summary.';
       return;
     }
     

@@ -2,6 +2,7 @@ import { ApplicationConfig, provideZoneChangeDetection, importProvidersFrom } fr
 import { provideRouter, withRouterConfig } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideMarkdown } from 'ngx-markdown';
 
 import { routes } from './app.routes';
 
@@ -12,6 +13,7 @@ export const appConfig: ApplicationConfig = {
       onSameUrlNavigation: 'reload'
     })),
     provideHttpClient(),
-    provideAnimations()
+    provideAnimations(),
+    provideMarkdown()
   ]
 };

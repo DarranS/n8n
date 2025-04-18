@@ -6,7 +6,7 @@ import { ReportTabComponent } from '../components/tabs/report-tab/report-tab.com
 import { SummaryTabComponent } from '../components/tabs/summary-tab/summary-tab.component';
 import { ChatTabComponent } from '../components/tabs/chat-tab/chat-tab.component';
 import { Company, CompanyService } from '../services/company.service';
-import { EsgService, ESGData } from '../services/esg.service';
+import { EsgService } from '../services/esg.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,7 +29,7 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class HomeComponent implements OnInit {
   selectedCompany: Company | null = null;
-  esgData: ESGData | null = null;
+  esgData: any = null;
   loading: boolean = false;
   error: string | null = null;
   errorDetails: string | null = null;

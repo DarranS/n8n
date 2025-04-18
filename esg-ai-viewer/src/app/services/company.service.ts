@@ -12,6 +12,7 @@ export interface Company {
 export class CompanyService {
   // Actual companies with their ISINs
   private companies: Company[] = [
+    { id: 'US2546871060', name: 'Walt Disney Co/The' },
     { id: 'US0378331005', name: 'APPLE' },
     { id: 'US67066G1040', name: 'NVIDIA' },
     { id: 'US5949181045', name: 'MICROSOFT CORP' },

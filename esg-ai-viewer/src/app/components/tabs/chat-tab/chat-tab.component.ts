@@ -1,6 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ESGData } from '../../../services/esg.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
@@ -11,7 +10,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   styleUrl: './chat-tab.component.scss'
 })
 export class ChatTabComponent implements OnChanges {
-  @Input() data: ESGData | null = null;
+  @Input() data: any = null;
   
   chatUrl: SafeResourceUrl;
   
