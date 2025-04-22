@@ -27,6 +27,7 @@ export class EsgService {
       const requestBody = {
         "esgid": companyIsin,
         "useRAG": true,
+        "length": 1000,
         "ESGCompanyData": {}
       };
       
@@ -111,7 +112,8 @@ export class EsgService {
   getSummary(data: any): Observable<string> {
     const requestBody = {
       ESGCompanyData: data,
-      useRAG: false
+      useRAG: data.useRAG ?? true,
+      summaryLength: data.length ?? 1000
     };
 
     return this.http.post<any>(`${this.baseUrl}/ESG/Company/Summary/Description`, requestBody).pipe(

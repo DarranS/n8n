@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { EsgService } from '../../../services/esg.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { FormsModule } from '@angular/forms';
 import { MarkdownModule } from 'ngx-markdown';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -10,7 +14,16 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-summary-tab',
   standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule, MatButtonModule, MarkdownModule],
+  imports: [
+    CommonModule, 
+    MatProgressSpinnerModule, 
+    MatButtonModule, 
+    MatFormFieldModule,
+    MatInputModule,
+    MatSlideToggleModule,
+    FormsModule,
+    MarkdownModule
+  ],
   templateUrl: './summary-tab.component.html',
   styleUrl: './summary-tab.component.scss'
 })
@@ -22,7 +35,38 @@ export class SummaryTabComponent implements OnChanges, OnDestroy {
   error: string | null = null;
   private destroy$ = new Subject<void>();
 
-  constructor(private esgService: EsgService) {}
+  // Settings with defaults
+  summaryLength: number = 500;
+  useRAG: boolean = true;
+
+  constructor(private esgService: EsgService) {
+    // Load saved settings
+    this.loadSettings();
+  }
+
+  private loadSettings(): void {
+    const savedLength = localStorage.getItem('summaryLength');
+    const savedUseRAG = localStorage.getItem('useRAG');
+    
+    if (savedLength) {
+      this.summaryLength = parseInt(savedLength, 10);
+    }
+    if (savedUseRAG !== null) {
+      this.useRAG = savedUseRAG === 'true';
+    }
+  }
+
+  private saveSettings(): void {
+    localStorage.setItem('summaryLength', this.summaryLength.toString());
+    localStorage.setItem('useRAG', this.useRAG.toString());
+  }
+
+  onSettingsChange(): void {
+    this.saveSettings();
+    if (this.data) {
+      this.loadSummary();
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data']) {
@@ -56,7 +100,14 @@ export class SummaryTabComponent implements OnChanges, OnDestroy {
     this.error = null;
     this.summaryContent = '';
 
-    this.esgService.getSummary(this.data)
+    // Add settings to the request
+    const requestData = {
+      ...this.data,
+      length: this.summaryLength,
+      useRAG: this.useRAG
+    };
+
+    this.esgService.getSummary(requestData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (summary) => {
