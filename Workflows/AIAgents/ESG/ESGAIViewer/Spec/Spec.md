@@ -2,98 +2,127 @@
 
 ## 1. Overview
 
-The ESG AI Viewer is a single-page web application built with Angular, designed to allow users to select a company, retrieve its Environmental, Social, and Governance (ESG) data, and view the data in multiple formats. The application will feature a clean, professional design inspired by www.lgt.com, with a header for company selection and four tabs for data visualization and interaction. The Report and Summary tabs will render Markdown responses, with `\n` replaced by carriage returns for proper formatting.
+The ESG AI Viewer is a single-page web application built with Angular, designed to allow users to select a company, retrieve its Environmental, Social, and Governance (ESG) data, and view the data in multiple formats. The application features a clean, professional design with a header for company selection and four tabs for data visualization and interaction.
 
 ## 2. Functional Requirements
 
 ### 2.1 Header Section
 
 - **Company Selection**:
-  - A dropdown combo box for selecting a company, implemented using Angular Material's `mat-select` or `mat-autocomplete`.
-  - Supports text input to filter the company list dynamically (e.g., typeahead functionality).
-  - Populated by an API call (to be specified) or a static list if no API is provided.
+  - An autocomplete input field for selecting a company
+  - Supports text input to filter the company list dynamically
+  - Displays company name and ID in the format "COMPANY NAME (ID)"
 - **Clear Button**:
+  - Pink-colored button aligned to the right
   - Resets the application state:
-    - Clears the selected company.
-    - Resets all tabs to their initial state.
-    - Clears any displayed data.
-- **Design**:
-  - Consistent with www.lgt.com styling (clean, professional, minimalistic, with a focus on typography and subtle color palette).
+    - Clears the selected company
+    - Resets all tabs to their initial state
+    - Clears any displayed data
 
 ### 2.2 Tabs
 
-The application will feature four tabs below the header, each displaying different views of the ESG data, implemented using Angular Material's `mat-tab-group`.
+The application features four tabs below the header, each displaying different views of the ESG data.
 
 #### 2.2.1 Raw Tab
 
 - **Functionality**:
-  - Displays the raw JSON data retrieved from the ESG API after a company is selected.
-  - JSON is formatted for readability (e.g., pretty-printed with indentation).
-- **API Call**:
-  - Triggered upon company selection.
-  - API endpoint: To be specified (or placeholder until provided).
-  - Response: JSON object containing ESG details for the selected company.
+  - Displays the raw JSON data retrieved from the ESG API
+  - JSON is formatted with proper indentation and syntax highlighting
 - **Display**:
-  - Read-only, scrollable view of the JSON data.
-  - Syntax highlighting using a library like `ngx-prism` or a custom component.
+  - Full-width container with padding
+  - Light background color for better readability
+  - Scrollable content area
 
 #### 2.2.2 Report Tab
 
 - **Functionality**:
-  - Displays a report generated from the raw JSON data, rendered as Markdown.
-  - API call is made when the tab is selected.
+  - Displays a report generated from the raw JSON data
+  - API call is made when the tab is selected
 - **API Call**:
   - Endpoint: `https://n8n.sheltononline.com/webhook/ESG/Company/Summary/Report`
   - Method: POST
-  - Body: Raw JSON from the Raw Tab.
-  - Response: Markdown text.
+  - Body: Raw JSON data
 - **Display**:
-  - Renders the Markdown response after replacing `\n` with carriage returns (`\r\n`) for proper line breaks.
-  - Uses an Angular Markdown rendering library (e.g., `ngx-markdown`) to convert Markdown to HTML.
-  - Ensures consistent styling with www.lgt.com aesthetic (e.g., typography, spacing).
+  - Full-width container with padding
+  - Clean typography for easy reading
+  - Refresh button in the top-right corner
 
 #### 2.2.3 Summary Tab
 
 - **Functionality**:
-  - Displays a summarized description of the ESG data, rendered as Markdown.
-  - API call is made when the tab is selected.
+  - Displays a summarized description of the ESG data
+  - Includes a character count input (250-2500)
+  - Toggle for RAG (Retrieval Augmented Generation)
 - **API Call**:
   - Endpoint: `https://n8n.sheltononline.com/webhook/ESG/Company/Summary/Description`
   - Method: POST
-  - Body: Raw JSON from the Raw Tab.
-  - Response: Markdown text.
+  - Body: Raw JSON data and settings
 - **Display**:
-  - Renders the Markdown response after replacing `\n` with carriage returns (`\r\n`) for proper line breaks.
-  - Uses `ngx-markdown` or similar to convert Markdown to HTML.
-  - Minimal styling to maintain focus on content, aligned with www.lgt.com design.
+  - Full-width container with padding
+  - Settings panel at the top
+  - Refresh button in the top-right corner
+  - Clean typography for content
 
 #### 2.2.4 Chat Tab
 
 - **Functionality**:
-  - Embeds an AI chatbot interface for interacting with ESG data.
-  - References the N8N chatbot workflow.
+  - Embeds an AI chatbot interface for ESG data interaction
+  - Automatically includes context of the selected company
 - **Integration**:
-  - Embeds or connects to `https://n8n.sheltononline.com/workflow/8Pkpdy3klGJe8CSm`.
-  - Uses an iframe or API-based chat interface (depending on N8N capabilities).
-  - Passes relevant context (e.g., selected company or raw JSON) to the chatbot.
+  - Endpoint: `https://n8n.sheltononline.com/webhook/047eecfa-1a30-4d08-a9fa-ab0271c4409a/chat`
+  - Embedded via iframe with scaled content (0.85)
 - **Display**:
-  - Chatbot UI with a conversation window and input field, implemented as an Angular component.
-  - Responsive design to fit within the tab.
+  - Full-width container
+  - Navy blue header with welcome message
+  - White chat interface
+  - Optimized height for better usability
 
-### 2.3 Application Flow
+### 2.3 Error Handling
 
-1. User selects a company from the dropdown or types to filter the list.
-2. Upon selection, an API call retrieves the ESG JSON data, and the Raw Tab is displayed.
-3. User can switch between tabs:
-   - Raw: Shows the JSON data.
-   - Report: Triggers the Report API, processes the Markdown response (replacing `\n` with `\r\n`), and renders it.
-   - Summary: Triggers the Summary API, processes the Markdown response (replacing `\n` with `\r\n`), and renders it.
-   - Chat: Loads the chatbot interface.
-4. User can click the Clear button to reset the application.
+- Loading states with spinners during API calls
+- Error messages displayed in red with retry options
+- Graceful fallbacks for API failures
 
-## 3. Non-Functional Requirements
+## 3. Technical Implementation
 
-### 3.1 Design and Styling
+### 3.1 Frontend
+
+- **Framework**: Angular with Angular Material
+- **Styling**:
+  - Component-scoped SCSS
+  - Responsive design
+  - Consistent padding and spacing
+- **Components**:
+  - Header component with company selection
+  - Tab components with specific layouts
+  - Shared components for error and loading states
+
+### 3.2 API Integration
+
+- **ESG Data API**: Retrieves company ESG data
+- **Report Generation**: Markdown-formatted report
+- **Summary Generation**: Configurable summary with RAG support
+- **Chat Integration**: Real-time AI chat interface
+
+### 3.3 Styling Guidelines
+
+- **Colors**:
+  - Primary: Navy blue for headers
+  - Accent: Pink for action buttons
+  - Background: White/light gray for content areas
+- **Typography**:
+  - Sans-serif fonts for readability
+  - Consistent heading sizes
+  - Proper line height and spacing
+- **Layout**:
+  - 20px padding for containers
+  - 8px border radius for cards
+  - Subtle shadows for depth
+  - Full-width design for optimal content display
+
+## 4. Non-Functional Requirements
+
+### 4.1 Design and Styling
 
 - **Look and Feel**:
   - Inspired by www.lgt.com:
@@ -109,7 +138,7 @@ The application will feature four tabs below the header, each displaying differe
   - Keyboard navigation for dropdown and tabs using Angular Material's built-in accessibility features.
   - ARIA labels for interactive elements.
 
-### 3.2 Performance
+### 4.2 Performance
 
 - **Loading**:
   - Initial page load < 2 seconds, optimized with Angular's Ahead-of-Time (AOT) compilation.
@@ -118,7 +147,7 @@ The application will feature four tabs below the header, each displaying differe
   - Cache company list (if static) using Angular's `HttpClient` with RxJS operators.
   - Cache raw JSON data locally to avoid redundant calls when switching tabs.
 
-### 3.3 Security
+### 4.3 Security
 
 - **API Calls**:
   - Use HTTPS for all API requests.
@@ -127,9 +156,9 @@ The application will feature four tabs below the header, each displaying differe
   - Sanitize Markdown-rendered HTML using Angular's `DomSanitizer` to prevent XSS attacks.
   - No storage of sensitive data beyond session scope.
 
-## 4. Technical Requirements
+## 5. Technical Requirements
 
-### 4.1 Frontend
+### 5.1 Frontend
 
 - **Framework**: Angular (latest stable version, e.g., Angular 17 or 18).
 - **Styling**:
@@ -153,7 +182,7 @@ The application will feature four tabs below the header, each displaying differe
     - `SummaryTabComponent`: Markdown summary display.
     - `ChatTabComponent`: Chatbot integration.
 
-### 4.2 API Integration
+### 5.2 API Integration
 
 - **Company List API**:
   - Endpoint: To be specified.
@@ -178,21 +207,21 @@ The application will feature four tabs below the header, each displaying differe
   - Integration method: Iframe or API (to be confirmed).
   - Handled by a dedicated Angular component.
 
-### 4.3 Hosting
+### 5.3 Hosting
 
 - Deployable as a static Angular application (e.g., via `ng build`).
 - No server-side backend required (all logic handled client-side).
 
-## 5. User Interface Mockup
+## 6. User Interface Mockup
 
-### 5.1 Layout
+### 6.1 Layout
 
 | [Logo] [Company Dropdown] [Clear Button] |
 | [Raw] [Report] [Summary] [Chat] |
 | Tab Content Area | | (JSON, Markdown Report, Markdown Summary, or Chatbot UI) |
 
 
-### 5.2 Styling Notes
+### 6.2 Styling Notes
 
 - **Header**: Fixed or sticky, with a subtle shadow, styled with Angular Material's `mat-toolbar`.
 - **Dropdown**: Wide, with autocomplete and hover effects using `mat-autocomplete`.
@@ -200,7 +229,7 @@ The application will feature four tabs below the header, each displaying differe
 - **Content Area**: Scrollable, with padding and max-width for readability.
 - **Markdown Rendering**: Styled to match www.lgt.com typography and spacing.
 
-## 6. Assumptions and Constraints
+## 7. Assumptions and Constraints
 
 - **Assumptions**:
   - Company list API will be provided or a static list will suffice.
@@ -211,7 +240,7 @@ The application will feature four tabs below the header, each displaying differe
   - Limited to static hosting (e.g., GitHub Pages, Netlify).
   - APIs may require authentication (details TBD).
 
-## 7. Deliverables
+## 8. Deliverables
 
 - Angular project structure containing:
   - `app.module.ts`: Root module.
@@ -223,7 +252,7 @@ The application will feature four tabs below the header, each displaying differe
   - README with setup instructions (`ng serve`, `ng build`).
   - Notes on API dependencies and configuration.
 
-## 8. Future Enhancements
+## 9. Future Enhancements
 
 - Offline support using Angular's service workers.
 - Local storage for recent company selections using `localStorage`.
