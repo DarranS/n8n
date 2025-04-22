@@ -15,13 +15,16 @@ export class ChatTabComponent implements OnChanges {
   chatUrl: SafeResourceUrl;
   
   constructor(private sanitizer: DomSanitizer) {
-    // Sanitize the iframe URL
-    this.chatUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-      'https://n8n.sheltononline.com/workflow/8Pkpdy3klGJe8CSm'
-    );
+    // Use the webhook chat URL
+    const chatEndpoint = 'https://n8n.sheltononline.com/webhook/047eecfa-1a30-4d08-a9fa-ab0271c4409a/chat';
+    this.chatUrl = this.sanitizer.bypassSecurityTrustResourceUrl(chatEndpoint);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // In a real implementation, we might update the chat URL with context about the selected company
+    if (changes['data'] && this.data) {
+      // Update chat URL with company context if needed
+      const chatEndpoint = `https://n8n.sheltononline.com/webhook/047eecfa-1a30-4d08-a9fa-ab0271c4409a/chat?company=${encodeURIComponent(this.data.name)}`;
+      this.chatUrl = this.sanitizer.bypassSecurityTrustResourceUrl(chatEndpoint);
+    }
   }
 }

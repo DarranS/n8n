@@ -6,6 +6,9 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Content-Security-Policy: frame-ancestors 'self' http://localhost:4200 https://your-app-domain.com";
+      more_set_headers "X-Frame-Options: ALLOW-FROM http://localhost:4200 https://your-app-domain.com";
 spec:
   ingressClassName: nginx
   rules:
