@@ -22,11 +22,13 @@
             [formControl]="companyControl"
             [matAutocomplete]="auto"
             placeholder="Search companies..."
+            (click)="onInputClick($event)"
           >
           <mat-autocomplete 
             #auto="matAutocomplete" 
             [displayWith]="displayFn"
             (optionSelected)="onCompanySelected($event.option.value)"
+            [autoActiveFirstOption]="true"
           >
             <mat-option
               *ngFor="let company of filteredCompanies | async"
