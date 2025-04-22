@@ -22,18 +22,20 @@
     </button>
   </div>
 
-  <mat-tab-group *ngIf="selectedCompany && esgData && !loading && !error" animationDuration="0ms">
-    <mat-tab label="Raw">
-      <app-raw-tab [data]="esgData"></app-raw-tab>
-    </mat-tab>
-    <mat-tab label="Report">
-      <app-report-tab [data]="esgData"></app-report-tab>
-    </mat-tab>
-    <mat-tab label="Summary">
-      <app-summary-tab [data]="esgData"></app-summary-tab>
-    </mat-tab>
-    <mat-tab label="Chat">
-      <app-chat-tab [data]="esgData"></app-chat-tab>
-    </mat-tab>
-  </mat-tab-group>
+  <div *ngIf="selectedCompany && esgData && !loading && !error" class="tab-container">
+    <mat-tab-group>
+      <mat-tab label="Raw">
+        <app-raw-tab [data]="esgData"></app-raw-tab>
+      </mat-tab>
+      <mat-tab label="Report">
+        <app-report-tab [data]="esgData"></app-report-tab>
+      </mat-tab>
+      <mat-tab label="Summary">
+        <app-summary-tab [data]="esgData"></app-summary-tab>
+      </mat-tab>
+      <mat-tab label="Chat">
+        <app-chat-tab [data]="esgData"></app-chat-tab>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
 </div>

@@ -1,9 +1,36 @@
 .home-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  height: calc(100vh - 130px); /* Account for header height (64px) and company selection bar (approx 66px) */
+  height: calc(100vh - 130px); // Account for header and company selection
   display: flex;
   flex-direction: column;
+  padding: 20px;
+}
+
+.tab-container {
+  flex: 1;
+  height: 100%;
+
+  ::ng-deep {
+    .mat-mdc-tab-group {
+      height: 100%;
+    }
+
+    .mat-mdc-tab-header {
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .mat-mdc-tab-body-wrapper {
+      height: calc(100% - 49px); // Subtract tab header height
+    }
+
+    .mat-mdc-tab-body {
+      height: 100%;
+    }
+
+    .mat-mdc-tab-body-content {
+      height: 100%;
+    }
+  }
 }
 
 .no-selection-message {
@@ -11,7 +38,6 @@
   padding: 3rem;
   background-color: #f8f9fa;
   border-radius: 8px;
-  margin-top: 2rem;
 
   h2 {
     color: #333;
@@ -31,7 +57,6 @@
   padding: 3rem;
   background-color: #f8f9fa;
   border-radius: 8px;
-  margin-top: 2rem;
 
   p {
     margin-top: 1rem;
@@ -44,7 +69,6 @@
   padding: 2rem;
   background-color: #fff6f6;
   border-radius: 8px;
-  margin-top: 2rem;
 
   h3 {
     color: #d32f2f;
@@ -87,27 +111,5 @@
   
   .retry-button {
     margin-top: 20px;
-  }
-}
-
-:host ::ng-deep {
-  .mat-tab-body-content {
-    padding: 1.5rem;
-  }
-
-  .mat-tab-label {
-    font-weight: 500;
-  }
-
-  .mat-tab-group {
-    height: 100%;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .mat-tab-body-wrapper {
-    flex: 1;
-    height: 100%;
   }
 }

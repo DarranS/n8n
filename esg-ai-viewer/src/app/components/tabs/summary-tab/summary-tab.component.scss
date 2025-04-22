@@ -1,7 +1,15 @@
 .summary-tab-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  h2 {
+    margin-bottom: 1rem;
+    color: #333;
+  }
 }
 
 .summary-header {
@@ -55,7 +63,6 @@
   align-items: center;
   justify-content: center;
   padding: 40px;
-  flex: 1;
 
   p {
     margin-top: 1rem;
@@ -69,7 +76,6 @@
   padding: 1.5rem;
   margin-bottom: 1rem;
   text-align: center;
-  flex: 1;
 
   p {
     color: #d32f2f;
@@ -93,19 +99,41 @@
 }
 
 .summary-content {
-  background-color: white;
-  padding: 20px;
+  background-color: #f8f9fa;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: auto;
+  padding: 1.5rem;
+  overflow-y: auto;
   flex: 1;
+  box-sizing: border-box;
+  line-height: 1.6;
+  color: #333;
+  font-size: 16px;
 
-  .markdown-content {
-    white-space: pre-wrap;
-    font-family: 'Helvetica', 'Arial', sans-serif;
-    line-height: 1.6;
-    color: #333;
+  p {
+    margin: 0 0 1rem;
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
+}
+
+// Custom scrollbar styles
+.summary-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.summary-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.summary-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.summary-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .empty-state {
@@ -113,7 +141,6 @@
   padding: 3rem;
   background-color: #f8f9fa;
   border-radius: 8px;
-  flex: 1;
 
   p {
     color: #666;
