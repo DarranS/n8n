@@ -23,13 +23,16 @@
             [matAutocomplete]="auto"
             placeholder="Search companies..."
           >
-          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+          <mat-autocomplete 
+            #auto="matAutocomplete" 
+            [displayWith]="displayFn"
+            (optionSelected)="onCompanySelected($event.option.value)"
+          >
             <mat-option
               *ngFor="let company of filteredCompanies | async"
               [value]="company"
-              (onSelectionChange)="onCompanySelected(company)"
             >
-              {{company.name}}
+              {{company.name}} ({{company.id}})
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>

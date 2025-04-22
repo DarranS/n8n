@@ -38,6 +38,13 @@ export class HeaderComponent implements OnInit {
 
   constructor(private companyService: CompanyService) {
     this.companies = this.companyService.getCompanies();
+    
+    // Subscribe to selected company changes to update the form control
+    this.companyService.selectedCompany$.subscribe(company => {
+      if (company) {
+        this.companyControl.setValue(company, { emitEvent: false });
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -57,12 +64,17 @@ export class HeaderComponent implements OnInit {
   private _filter(value: string): Company[] {
     const filterValue = value.toLowerCase();
     return this.companies.filter(company => 
-      company.name.toLowerCase().includes(filterValue)
+      company.name.toLowerCase().includes(filterValue) ||
+      company.id.toLowerCase().includes(filterValue)
     );
   }
 
   onCompanySelected(company: Company): void {
-    this.companyService.setSelectedCompany(company);
+    if (company) {
+      this.companyService.setSelectedCompany(company);
+      // Keep the selected company in the input field
+      this.companyControl.setValue(company, { emitEvent: false });
+    }
   }
 
   clearSelection(): void {
