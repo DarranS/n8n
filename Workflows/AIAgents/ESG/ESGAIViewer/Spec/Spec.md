@@ -51,7 +51,7 @@ The application features four tabs below the header, each displaying different v
 
 - **Functionality**:
   - Displays a summarized description of the ESG data
-  - Includes a character count input (250-2500)
+  - Includes a word count input (250-2500 words)
   - Toggle for RAG (Retrieval Augmented Generation)
 - **API Call**:
   - Endpoint: `https://n8n.sheltononline.com/webhook/ESG/Company/Summary/Description`
@@ -59,7 +59,7 @@ The application features four tabs below the header, each displaying different v
   - Body: Raw JSON data and settings
 - **Display**:
   - Full-width container with padding
-  - Settings panel at the top
+  - Settings panel at the top with word count control
   - Refresh button in the top-right corner
   - Clean typography for content
 

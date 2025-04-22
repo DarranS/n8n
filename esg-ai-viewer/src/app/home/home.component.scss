@@ -23,9 +23,11 @@
 
       .mat-mdc-tab-label-container {
         .mat-mdc-tab-list {
+          justify-content: stretch;
+          
           .mat-mdc-tab {
-            flex: 1;
-            min-width: 0 !important;
+            min-width: 150px !important;
+            flex: 1 1 0;
           }
         }
       }
@@ -33,17 +35,14 @@
 
     .mat-mdc-tab-body-wrapper {
       height: calc(100% - 49px);
-      width: 100%;
     }
 
     .mat-mdc-tab-body {
       height: 100%;
-      width: 100%;
     }
 
     .mat-mdc-tab-body-content {
       height: 100%;
-      width: 100%;
     }
   }
 }
