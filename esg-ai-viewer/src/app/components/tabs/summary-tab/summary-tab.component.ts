@@ -46,7 +46,7 @@ export class SummaryTabComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.loadSummary();
+    // Do not automatically load summary
   }
 
   private loadSettings(): void {
@@ -68,19 +68,12 @@ export class SummaryTabComponent implements OnChanges, OnDestroy, OnInit {
 
   onSettingsChange(): void {
     this.saveSettings();
-    if (this.data) {
-      this.loadSummary();
-    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data']) {
       // Reset the component state when data changes
       this.resetComponent();
-      
-      if (this.data) {
-        this.loadSummary();
-      }
     }
   }
 
@@ -99,7 +92,7 @@ export class SummaryTabComponent implements OnChanges, OnDestroy, OnInit {
     if (!this.useRAG) {
       this.refreshRAGData = false;
     }
-    this.loadSummary();
+    this.saveSettings();
   }
 
   loadSummary() {

@@ -24,22 +24,7 @@
   }
 
   .refresh-button {
-    background-color: #f0f0f0;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.3s;
-
-    &:hover {
-      background-color: #e0e0e0;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    min-width: 150px;
   }
 }
 
@@ -141,8 +126,14 @@
   padding: 3rem;
   background-color: #f8f9fa;
   border-radius: 8px;
+  color: #666;
 
   p {
-    color: #666;
+    margin: 0 0 1rem;
+    
+    &.hint {
+      font-size: 0.9em;
+      color: #888;
+    }
   }
 }

@@ -1,0 +1,15 @@
+services:
+  esg-ai-viewer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      # Change this URL to point to your n8n webhook endpoint
+      - WEBHOOK_URL=https://n8n.sheltononline.com
+      # Enable Nginx debug logging
+      - NGINX_DEBUG=true
+    volumes:
+      - ./logs:/var/log/nginx
+    restart: unless-stopped 
