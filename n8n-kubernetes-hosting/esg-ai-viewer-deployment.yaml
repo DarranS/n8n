@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esg-ai-viewer
+  namespace: n8n
+  labels:
+    app: esg-ai-viewer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: esg-ai-viewer
+  template:
+    metadata:
+      labels:
+        app: esg-ai-viewer
+    spec:
+      containers:
+      - name: esg-ai-viewer
+        image: esgai.azurecr.io/esg-ai-viewer:latest
+        imagePullPolicy: Always
+        env:
+        - name: WEBHOOK_URL
+          value: "https://n8n.sheltononline.com"
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5 
