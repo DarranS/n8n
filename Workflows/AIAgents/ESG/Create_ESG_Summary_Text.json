@@ -41,7 +41,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        1480,
+        1920,
         0
       ],
       "id": "9fabdd85-87cf-4ba9-bafc-307a02fd149f",
@@ -62,7 +62,7 @@
             "ESGData": "={{ $json.CompanyESGReport }}",
             "ESGRating": "={{ $('Extract Fields').item.json.ESGCompanyData.lgtSustainabilityRating }}",
             "CompanyName": "={{ $('Extract Fields').item.json.ESGCompanyData.name }}",
-            "ESGID": "={{ $('Extract Fields').item.json.ESGCompanyData.name }}",
+            "ESGID": "={{ $('Extract Fields').item.json.ESGID }}",
             "SummaryLength": "={{ $('Extract Fields').item.json.SummaryLength }}"
           },
           "matchingColumns": [
@@ -127,7 +127,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        1080,
+        1300,
         180
       ],
       "id": "971188af-21c2-4ca6-b744-fa62041ed80c",
@@ -154,6 +154,18 @@
               "name": "SummaryLength",
               "value": "={{ $json.body.summaryLength }}",
               "type": "number"
+            },
+            {
+              "id": "0b3d08fd-ad96-435f-95f4-906dace271f9",
+              "name": "ESGID",
+              "value": "={{ $json.body.esgID }}",
+              "type": "string"
+            },
+            {
+              "id": "24f48f8c-634e-4636-9200-dd6fcbe79dd5",
+              "name": "RefreshRAGData",
+              "value": "={{ $json.body.refreshRAGData }}",
+              "type": "boolean"
             }
           ]
         },
@@ -162,7 +174,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        260,
+        220,
         0
       ],
       "id": "b1cd198d-9ecf-4ff0-bf64-b93c3d077b13",
@@ -229,7 +241,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        860,
+        460,
         0
       ],
       "id": "a4595e0b-cde5-473c-ab6f-4bfa90558e5a",
@@ -247,10 +259,9 @@
           "mappingMode": "defineBelow",
           "value": {
             "ESGData": "={{ $json.CompanyESGReport }}",
-            "ESGRating": "={{ $('Extract Fields').item.json.ESGCompanyData.lgtSustainabilityRating }}",
-            "CompanyName": "={{ $('Extract Fields').item.json.ESGCompanyData.name }}",
-            "ESGID": "={{ $('Extract Fields').item.json.ESGCompanyData.name }}",
-            "SummaryLength": "={{ $('Extract Fields').item.json.SummaryLength }}"
+            "ESGID": "={{ $('Extract Fields').item.json.ESGID }}",
+            "SummaryLength": "={{ $('Extract Fields').item.json.SummaryLength }}",
+            "RefreshRAGData": "={{ $('Extract Fields').item.json.RefreshRAGData }}"
           },
           "matchingColumns": [
             "ESGData"
@@ -263,26 +274,6 @@
               "defaultMatch": false,
               "display": true,
               "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "CompanyName",
-              "displayName": "CompanyName",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
-            },
-            {
-              "id": "ESGRating",
-              "displayName": "ESGRating",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "canBeUsedToMatch": true,
-              "type": "number",
               "removed": false
             },
             {
@@ -304,6 +295,16 @@
               "canBeUsedToMatch": true,
               "type": "number",
               "removed": false
+            },
+            {
+              "id": "RefreshRAGData",
+              "displayName": "RefreshRAGData",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "boolean",
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -314,8 +315,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        1060,
-        -120
+        1560,
+        -240
       ],
       "id": "46017566-8dd2-4a19-be4d-a5ee6495a0de",
       "name": "Use RAG AI to get summary"
@@ -328,12 +329,47 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1300,
+        1740,
         0
       ],
       "id": "9844d8b5-038b-4800-9bd1-03f10219b9f5",
       "name": "Clean /n",
       "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b26ad1e6-1257-4ace-a998-13e3d3d37317",
+              "leftValue": "={{ $('Webhook').item.json.body.refreshRAGData }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        820,
+        -240
+      ],
+      "id": "871d9f1a-8e95-45bd-8221-15b427ece60a",
+      "name": "If we have data summaries it"
     },
     {
       "parameters": {
@@ -371,14 +407,93 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        480,
-        0
+        1300,
+        -400
       ],
       "id": "6e098d4a-0d55-4a54-9304-32002634fab2",
-      "name": "Execute Workflow to Get MD Report"
+      "name": "CAll Workflow to Get MD Report"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "SM4AyLjAE19VvZt0",
+          "mode": "list",
+          "cachedResultName": "Create ESG Company MD Report"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ESGCompanyData": "={{ $json.ESGCompanyData }}"
+          },
+          "matchingColumns": [
+            "ESGCompanyData"
+          ],
+          "schema": [
+            {
+              "id": "ESGCompanyData",
+              "displayName": "ESGCompanyData",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1060,
+        180
+      ],
+      "id": "e69f3110-20e5-48db-ab59-0b951a917180",
+      "name": "CAll Workflow to Get MD Report1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "627fcacd-c37a-4fcf-9d93-6b15a731b0ca",
+              "name": "ESGData",
+              "value": "null",
+              "type": "object"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1300,
+        -180
+      ],
+      "id": "023f23da-0bee-4949-bcbe-98463dd41d1c",
+      "name": "Edit Fields"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "body": {
+            "ESGCompanyData": null,
+            "useRAG": true,
+            "summaryLength": 2500,
+            "refreshRAGData": true
+          }
+        }
+      }
+    ]
+  },
   "connections": {
     "Webhook": {
       "main": [
@@ -406,7 +521,7 @@
       "main": [
         [
           {
-            "node": "Execute Workflow to Get MD Report",
+            "node": "Switch",
             "type": "main",
             "index": 0
           }
@@ -417,14 +532,14 @@
       "main": [
         [
           {
-            "node": "Use RAG AI to get summary",
+            "node": "If we have data summaries it",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Use AI to get summary",
+            "node": "CAll Workflow to Get MD Report1",
             "type": "main",
             "index": 0
           }
@@ -453,11 +568,51 @@
         ]
       ]
     },
-    "Execute Workflow to Get MD Report": {
+    "If we have data summaries it": {
       "main": [
         [
           {
-            "node": "Switch",
+            "node": "CAll Workflow to Get MD Report",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CAll Workflow to Get MD Report": {
+      "main": [
+        [
+          {
+            "node": "Use RAG AI to get summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CAll Workflow to Get MD Report1": {
+      "main": [
+        [
+          {
+            "node": "Use AI to get summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Use RAG AI to get summary",
             "type": "main",
             "index": 0
           }
@@ -470,7 +625,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "db0726b6-5274-4dc3-b060-d4a3efac25ca",
+  "versionId": "d302d8b5-2d58-4f2e-abec-b0136742a9d6",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0851186287984defd085dfa37fa9b8d6478c9a514d3d7e58c0f9581e228bdb0e"

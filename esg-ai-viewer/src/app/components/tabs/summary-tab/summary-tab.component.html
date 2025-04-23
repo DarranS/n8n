@@ -18,6 +18,10 @@
     <mat-slide-toggle [(ngModel)]="useRAG" (change)="onSettingsChange()">
       Use RAG
     </mat-slide-toggle>
+
+    <mat-slide-toggle *ngIf="useRAG" [(ngModel)]="refreshRAGData">
+      Refresh RAG Data
+    </mat-slide-toggle>
   </div>
 
   <div *ngIf="loading" class="loading-container">

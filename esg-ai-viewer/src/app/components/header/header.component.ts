@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { EsgService } from '../../services/esg.service';
 
 @Component({
   selector: 'app-header',
@@ -36,7 +37,7 @@ export class HeaderComponent implements OnInit {
   filteredCompanies: Observable<Company[]> = new Observable<Company[]>();
   companies: Company[] = [];
 
-  constructor(private companyService: CompanyService) {
+  constructor(private companyService: CompanyService, private esgService: EsgService) {
     this.companies = this.companyService.getCompanies();
     
     // Subscribe to selected company changes to update the form control
@@ -58,6 +59,14 @@ export class HeaderComponent implements OnInit {
         return this._filter(searchStr || '');
       })
     );
+
+    // Subscribe to value changes to handle selection
+    this.companyControl.valueChanges.subscribe(value => {
+      if (value && typeof value !== 'string') {
+        this.esgService.setCurrentCompanyData(value);
+        this.companyService.setSelectedCompany(value);
+      }
+    });
   }
 
   displayFn(company: Company): string {
@@ -76,12 +85,6 @@ export class HeaderComponent implements OnInit {
       company.name.toLowerCase().includes(filterValue) ||
       company.id.toLowerCase().includes(filterValue)
     );
-  }
-
-  onCompanySelected(company: Company): void {
-    if (company) {
-      this.companyService.setSelectedCompany(company);
-    }
   }
 
   clearSelection(): void {

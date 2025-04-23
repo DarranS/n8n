@@ -27,13 +27,8 @@
           <mat-autocomplete 
             #auto="matAutocomplete" 
             [displayWith]="displayFn"
-            (optionSelected)="onCompanySelected($event.option.value)"
-            [autoActiveFirstOption]="true"
           >
-            <mat-option
-              *ngFor="let company of filteredCompanies | async"
-              [value]="company"
-            >
+            <mat-option *ngFor="let company of filteredCompanies | async" [value]="company">
               {{company.name}} ({{company.id}})
             </mat-option>
           </mat-autocomplete>

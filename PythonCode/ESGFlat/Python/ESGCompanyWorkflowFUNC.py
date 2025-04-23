@@ -453,14 +453,6 @@ def generate_markdown_report(
 
 def main(company_data: str):
     """Process JSON data and generate reports."""
-    input_file = './/SampleData//Glencore.json'
-    esg_output_file = 'esg_data.csv'
-    esg_qualitative_output_file = 'esg_qualitative_data.csv'
-    critical_output_file = 'critical_issues.csv'
-    sdg_output_file = 'sdg_impact.csv'
-    controversy_output_file = 'controversy_data.csv'
-    controversy_adjustments_output_file = 'esg_controversy_adjustments.csv'
-
     try:
         data = json.loads(company_data)
         company_name = data.get('name', 'Unknown Company')
@@ -483,13 +475,26 @@ def main(company_data: str):
             controversy_data, controversy_adjustments_data, critical_issues_data
         )
 
-    except FileNotFoundError:
-        print(f"Error: File '{input_file}' not found. Please check the path.")
     except json.JSONDecodeError:
-        print(f"Error: Invalid JSON format in '{input_file}'.")
+        print("Error: Invalid JSON format in input data.")
 
-if __name__ == '__main__':
-    md= main('{ "name":"John", "age":30, "city":"New York"}')
-    ret=[]
-    ret.append({"CompanyESGReport":md})
-    return(ret)
+#Main Script Starts here
+print('ESG Report Generation Started')
+#Get main data Json and convert from JSProxy
+company_data = _input.first().json.ESGCompanyData
+if hasattr(company_data, 'to_py'):
+    company_data = company_data.to_py()  # Convert JsProxy to Python object
+if isinstance(company_data, dict):
+    # If it's already a dict, convert to JSON string
+    company_data = json.dumps(company_data)
+elif not isinstance(company_data, (str, bytes, bytearray)):
+    raise TypeError(f"Expected str, bytes, or bytearray, got {type(company_data)}")
+
+# Process the data
+md = ''
+md= main(company_data)
+
+#Prep Return
+ret=[]
+ret.append({"CompanyESGReport":md})
+return ret

@@ -83,7 +83,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          this.esgData = data;
+          this.esgData = {
+            ...data,
+            isin: companyId
+          };
           this.loading = false;
         },
         error: (err: HttpErrorResponse) => {

@@ -1,5 +1,5 @@
 {
-  "name": "ESG Summary Chat",
+  "name": "ESG Summary Chat Pinecone",
   "nodes": [
     {
       "parameters": {
@@ -8,7 +8,7 @@
           "maxIterations": 10
         }
       },
-      "id": "608c9574-30c4-4674-a608-379dfe24eddc",
+      "id": "1da7685c-49c1-4753-9463-a67066835d2e",
       "name": "AI Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -19,18 +19,18 @@
     },
     {
       "parameters": {
-        "content": "## 👋 ESG Summary Agent Using RAG\nAs the ESG data is bigger than a single prompt allows this example uses Pinecone to store the data as a document then reference this to all the LLM to generate the result\n",
+        "content": "## 👋 ESG CHAT Agent Using RAG Data\nProvides a chat interface using the data in Pinecone. Uses all data in default namespace.\n",
         "height": 389,
         "width": 319,
         "color": 6
       },
-      "id": "08923118-06bc-48c7-af33-e9605d90e945",
+      "id": "c74bf9b8-9ff1-468f-9565-7223a7a11ef1",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -420,
-        120
+        -440,
+        -20
       ]
     },
     {
@@ -38,7 +38,7 @@
         "model": "gpt-4-turbo",
         "options": {}
       },
-      "id": "0b201dfd-5b8f-4f8c-b3a8-0ac75e961988",
+      "id": "26737f0f-b6e2-4255-815b-43f2d7e9d717",
       "name": "OpenAI Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
@@ -69,9 +69,9 @@
         0,
         0
       ],
-      "id": "f503dbb2-7c58-408a-be54-68c860a73c26",
+      "id": "9ce4e490-6f4e-416a-8dd9-6e95107e2844",
       "name": "When chat message received",
-      "webhookId": "047eecfa-1a30-4d08-a9fa-ab0271c4409a"
+      "webhookId": "533a8900-80fa-42ef-bcfb-cbebdfbaf639"
     },
     {
       "parameters": {},
@@ -81,7 +81,7 @@
         600,
         220
       ],
-      "id": "b2ec2d80-b218-41ce-81ad-2c1fc9cae043",
+      "id": "12e408e4-c100-4508-9ef5-1f56bcefc17f",
       "name": "Simple Memory"
     },
     {
@@ -94,7 +94,7 @@
         720,
         580
       ],
-      "id": "dee45e51-ed77-45f7-947e-677fac63ada8",
+      "id": "b37755fc-2eb7-468e-9cda-cbd307c111de",
       "name": "Embeddings OpenAI",
       "credentials": {
         "openAiApi": {
@@ -114,8 +114,33 @@
         780,
         220
       ],
-      "id": "8ae37538-3ff6-4f04-bb5c-1161a0f59ef1",
+      "id": "20240c5a-dedd-4ae3-9ad2-e7b3027700f6",
       "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "esgkb",
+          "mode": "list",
+          "cachedResultName": "esgkb"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        700,
+        400
+      ],
+      "id": "419cfbc1-d67e-477b-88e2-db9c620f9a5c",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "PaFv5UXAHFe9s8wV",
+          "name": "PineconeApi account"
+        }
+      }
     },
     {
       "parameters": {
@@ -129,42 +154,15 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        980,
-        540
+        1080,
+        360
       ],
-      "id": "e4a38da0-199c-479a-a938-34274b6c7dbb",
+      "id": "529a6ab2-464c-4cc1-9356-9dfb10836041",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
           "id": "UtgJomhtLaADCLkT",
           "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "tableName": {
-          "__rl": true,
-          "value": "esgdocuments",
-          "mode": "list",
-          "cachedResultName": "esgdocuments"
-        },
-        "options": {
-          "queryName": "match_esgdocuments"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
-      "typeVersion": 1.1,
-      "position": [
-        680,
-        420
-      ],
-      "id": "1c1f096a-c9bf-421e-829b-a10c1362d223",
-      "name": "Supabase Vector Store",
-      "credentials": {
-        "supabaseApi": {
-          "id": "5ouwX4Dp3ZiBg6Ca",
-          "name": "Supabase account"
         }
       }
     }
@@ -213,7 +211,7 @@
       "ai_embedding": [
         [
           {
-            "node": "Supabase Vector Store",
+            "node": "Pinecone Vector Store",
             "type": "ai_embedding",
             "index": 0
           }
@@ -231,6 +229,17 @@
         ]
       ]
     },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "OpenAI Chat Model": {
       "ai_languageModel": [
         [
@@ -241,30 +250,19 @@
           }
         ]
       ]
-    },
-    "Supabase Vector Store": {
-      "ai_vectorStore": [
-        [
-          {
-            "node": "Answer questions with a vector store",
-            "type": "ai_vectorStore",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "e07dbe9a-ca1d-45af-90a8-8d9b4b41e5bc",
+  "versionId": "b7cc62f8-b7a7-4d6f-9832-a6128e3c41d7",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0851186287984defd085dfa37fa9b8d6478c9a514d3d7e58c0f9581e228bdb0e"
   },
-  "id": "8Pkpdy3klGJe8CSm",
+  "id": "118Bn0ufJlBb5WVq",
   "tags": [
     {
       "createdAt": "2025-04-09T12:43:49.518Z",

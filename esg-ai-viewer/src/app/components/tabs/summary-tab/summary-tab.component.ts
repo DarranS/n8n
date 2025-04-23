@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EsgService } from '../../../services/esg.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -27,7 +27,7 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './summary-tab.component.html',
   styleUrl: './summary-tab.component.scss'
 })
-export class SummaryTabComponent implements OnChanges, OnDestroy {
+export class SummaryTabComponent implements OnChanges, OnDestroy, OnInit {
   @Input() data: any = null;
   
   summaryContent: string = '';
@@ -36,12 +36,17 @@ export class SummaryTabComponent implements OnChanges, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // Settings with defaults
-  summaryLength: number = 500;
+  summaryLength: number = 1000;
   useRAG: boolean = true;
+  refreshRAGData: boolean = false;
 
   constructor(private esgService: EsgService) {
     // Load saved settings
     this.loadSettings();
+  }
+
+  ngOnInit() {
+    this.loadSummary();
   }
 
   private loadSettings(): void {
@@ -90,28 +95,37 @@ export class SummaryTabComponent implements OnChanges, OnDestroy {
     this.error = null;
   }
 
-  private loadSummary(): void {
-    if (!this.data) {
-      this.error = 'Missing company data. Cannot load summary.';
+  onUseRagChange() {
+    if (!this.useRAG) {
+      this.refreshRAGData = false;
+    }
+    this.loadSummary();
+  }
+
+  loadSummary() {
+    const currentData = this.esgService.getCurrentCompanyData();
+    const rawData = this.esgService.getRawCompanyData();
+    
+    if (!currentData) {
+      this.error = 'No company data available';
       return;
     }
-    
+
     this.loading = true;
     this.error = null;
     this.summaryContent = '';
 
-    // Add settings to the request
-    const requestData = {
-      ...this.data,
-      length: this.summaryLength,
-      useRAG: this.useRAG
+    const data = {
+      ...rawData,
+      useRAG: this.useRAG,
+      length: this.summaryLength
     };
 
-    this.esgService.getSummary(requestData)
+    this.esgService.getSummary(data, this.refreshRAGData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (summary) => {
-          this.summaryContent = summary;
+        next: (response) => {
+          this.summaryContent = response;
           this.loading = false;
         },
         error: (err) => {

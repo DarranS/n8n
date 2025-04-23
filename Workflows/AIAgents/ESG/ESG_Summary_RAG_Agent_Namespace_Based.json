@@ -1,20 +1,20 @@
 {
-  "name": "ESG Summary RAG Agent",
+  "name": "ESG Summary RAG Agent Namespace Based",
   "nodes": [
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Create a summary of the ESG status for {{ $('When Executed by Another Workflow').item.json.CompanyName }}. Use a clear, structured, and objective tone. Use only the data from the Vestor Store for ESG. DO NOT use any other source \nOrganize the summary using headings, bullet points, and short paragraphs.\nProvide a balanced view: highlight both strengths and areas for improvement. An example outline of the summary would be \n\n\nThis ESG summary provides a snapshot of {{ $('When Executed by Another Workflow').item.json.CompanyName }} ESG Rating: {{ $('When Executed by Another Workflow').item.json.ESGRating }}Stars, sustainability profile, highlighting key strengths, challenges, and opportunities for improvement across environmental, social, and governance dimensions.\n\nCreate a summary of approximately 350 words on the ESG data provide.\n1. Overall ESG Performance\nState the overall ESG Rating.\nExplain that the score reflects performance across environmental, social, and governance (ESG) pillars, including adjustments for controversies and Sustainable Development Goal (SDG) impacts.\n\n2. Pillar Breakdown\nDescribe the performance of each ESG pillar:\nEnvironmental: Mention the score and any key strengths or weaknesses (e.g., emissions, energy use, resource efficiency).\nSocial: Discuss relevant scores and highlight workforce practices, diversity, and customer impact.\nGovernance: Highlight board practices, independence, compensation policies, and ESG integration.\n\n3. Top Positive KPIs (based on influence)\nList key performance indicators including the Pillar they belong to that significantly contributed to a higher ESG score. Include both quantitative and qualitative aspects where available. \n4. Top Negative KPIs (based on influence)\nList the KPIs indicators including the Pillar they belong to that most negatively impacted the ESG score. \n\n5. Major Controversy Adjustments\nSummarize how controversies affected the ESG score:\nIndicate which pillars (E, S, G) were impacted and describe the nature of the issues (e.g., labor disputes, governance scandals, environmental fines).\n\nInclude the magnitude of adjustments if provided.\n\n6. SDG Impacts\nExplain the company's alignment (positive or negative) with the United Nations Sustainable Development Goals (SDGs). Mention:\nPositive contributions and Negative impacts always include the associated details\n\n\n",
+        "text": "=Create a summary of the ESG status for {{ $('When Executed by Another Workflow').item.json.CompanyName }}. Use a clear, structured, and objective tone. Use only the data from the Vestor Store for ESG. DO NOT use any other source \nOrganize the summary using headings, bullet points, and short paragraphs.\nProvide a balanced view: highlight both strengths and areas for improvement. An example outline of the summary would be \n\n\nThis ESG summary provides a snapshot of {{ $('When Executed by Another Workflow').item.json.CompanyName }} ESG Rating: {{ $('When Executed by Another Workflow').item.json.ESGRating }}Stars, sustainability profile, highlighting key strengths, challenges, and opportunities for improvement across environmental, social, and governance dimensions.\n\nCreate a summary of approximately {{ $('When Executed by Another Workflow').item.json.SummaryLength }} words on the ESG data provide.\n1. Overall ESG Performance\nState the overall ESG Rating.\nExplain that the score reflects performance across environmental, social, and governance (ESG) pillars, including adjustments for controversies and Sustainable Development Goal (SDG) impacts.\n\n2. Pillar Breakdown\nDescribe the performance of each ESG pillar:\nEnvironmental: Mention the score and any key strengths or weaknesses (e.g., emissions, energy use, resource efficiency).\nSocial: Discuss relevant scores and highlight workforce practices, diversity, and customer impact.\nGovernance: Highlight board practices, independence, compensation policies, and ESG integration.\n\n3. Top Positive KPIs (based on influence)\nList key performance indicators including the Pillar they belong to that significantly contributed to a higher ESG score. Include both quantitative and qualitative aspects where available. \n4. Top Negative KPIs (based on influence)\nList the KPIs indicators including the Pillar they belong to that most negatively impacted the ESG score. \n\n5. Major Controversy Adjustments\nSummarize how controversies affected the ESG score:\nIndicate which pillars (E, S, G) were impacted and describe the nature of the issues (e.g., labor disputes, governance scandals, environmental fines).\n\nInclude the magnitude of adjustments if provided.\n\n6. SDG Impacts\nExplain the company's alignment (positive or negative) with the United Nations Sustainable Development Goals (SDGs). Mention:\nPositive contributions and Negative impacts always include the associated details\n\n\n",
         "options": {
           "systemMessage": "=Use the Tool ESGDataStore to source ESG data for the summary from the Vestor Store. DO NOT use any other source "
         }
       },
-      "id": "78147bc3-ed58-4f2e-9ee9-7f6c74b49675",
+      "id": "b4057d06-dceb-4544-aebe-ced7b3a14e1b",
       "name": "AI Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
       "position": [
-        1840,
+        2060,
         0
       ]
     },
@@ -25,7 +25,7 @@
         "width": 319,
         "color": 6
       },
-      "id": "c75328f6-9eba-4180-a40c-36879ff829e8",
+      "id": "30231e98-6e68-44f2-a464-b4db17117d0a",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -39,12 +39,12 @@
         "model": "gpt-4-turbo",
         "options": {}
       },
-      "id": "7aae7afa-cf99-4b31-8629-51564b10c330",
+      "id": "27c57b78-c365-4cdc-a509-675e456e0a31",
       "name": "OpenAI Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
       "position": [
-        1840,
+        2060,
         160
       ],
       "credentials": {
@@ -61,10 +61,10 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1320,
+        1540,
         840
       ],
-      "id": "badd53e7-b196-4a97-bc07-5a2f8ab88cda",
+      "id": "a5dfc06e-0815-4170-a800-1ae6b21f6abe",
       "name": "Embeddings OpenAI",
       "credentials": {
         "openAiApi": {
@@ -100,10 +100,10 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1.1,
       "position": [
-        1900,
+        2120,
         300
       ],
-      "id": "521008fa-6e2a-462c-8d39-b90796dd872d",
+      "id": "95558528-9eea-4442-a21d-f0acb23e29c3",
       "name": "Pinecone Vector Store",
       "credentials": {
         "pineconeApi": {
@@ -130,15 +130,15 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1,
       "position": [
-        1260,
+        1480,
         200
       ],
-      "id": "8b856962-6917-4780-b492-9ab5c21c9561",
+      "id": "93d97ff9-006a-4d04-9cc2-1f99a2513b2d",
       "name": "Default Data Loader"
     },
     {
       "parameters": {
-        "chunkSize": 50000,
+        "chunkSize": 10000,
         "options": {
           "splitCode": "markdown"
         }
@@ -146,10 +146,10 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        1400,
+        1620,
         400
       ],
-      "id": "6858e89b-980d-44f3-b5ec-3a676c82936e",
+      "id": "771344ae-04b0-4421-a33d-268c8c451b77",
       "name": "Recursive Character Text Splitter"
     },
     {
@@ -169,10 +169,10 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1.1,
       "position": [
-        1116,
+        1336,
         0
       ],
-      "id": "293c4bb8-36d2-49f4-8faf-b4a68df7426f",
+      "id": "9424f300-14b7-4c64-852a-bd59b24ba479",
       "name": "Pinecone Save Data",
       "credentials": {
         "pineconeApi": {
@@ -193,10 +193,10 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        1460,
+        1680,
         0
       ],
-      "id": "39ec6c2c-0d39-41d4-9121-252a715f3b18",
+      "id": "ef623f02-6772-4282-91f3-62657fa8657f",
       "name": "Aggregate"
     },
     {
@@ -216,6 +216,10 @@
             },
             {
               "name": "ESGID"
+            },
+            {
+              "name": "SummaryLength",
+              "type": "number"
             }
           ]
         }
@@ -226,7 +230,7 @@
         220,
         -20
       ],
-      "id": "b09f92a5-ef3b-4750-ac91-4333a23456c3",
+      "id": "84731c20-6e29-4773-b10c-32badd870e6b",
       "name": "When Executed by Another Workflow"
     },
     {
@@ -241,7 +245,7 @@
         440,
         -20
       ],
-      "id": "bc8d2c4d-5e6b-4bf0-b886-e77eeb450b45",
+      "id": "c8ea512e-e054-4a18-913c-1c2cae8a8652",
       "name": "Convert to File"
     }
   ],
@@ -252,7 +256,8 @@
           "ESGData": "# ESG Report: Walt Disney Co/The\n\n## Company Metrics\n| ESG Score | Controversy Adjustment | SDG Impact |\n|-----------|------------------------|------------|\n| 64.3 | -0.5 | -0.29 |\n\n## Pillar: Environmental\n| Name | Score | Weight | Influence | Controversy Adjustment |\n|------|-------|--------|----------|------------------------|\n| Environmental | 22.8 | 0.300 | 0.300 | 0.0 |\n\n### Pillar Controversy Adjustments\n| ID | Pillar | Description | Score | Weight | Year |\n|----|--------|-------------|-------|--------|------|\n| C1 | Environmental | Controversy adjustments from GHG emissions | 0.0 | 0.20 |  |\n| C2 | Environmental | Controversy adjustments from Natural resources | -0.2 | 0.10 |  |\n\n### KPIs\n| Name | Score | Weight | Influence | Qualitative Adjustment |\n|------|-------|--------|----------|-----------------------|\n| Energy use | 32.6 | 0.600 | 0.180 |  |\n| GHG emissions | 30.1 | 0.200 | 0.060 |  |\n| Natural resources | 1.6 | 0.100 | 0.030 |  |\n| Waste and emissions | 26.9 | 0.100 | 0.030 |  |\n\n### Quantitative Indicators\n| KPI | Name | Score | Weight | Influence |\n|-----|------|-------|--------|----------|\n| Energy use | Energy Consumption | 12.0 | 0.400 | 0.072 |\n| Energy use | Percentage of energy purchased from renewables | 35.9 | 0.300 | 0.054 |\n| Energy use | Trend in energy consumption | 63.3 | 0.300 | 0.054 |\n| GHG emissions | Greenhouse Gas Emissions | 19.7 | 0.600 | 0.036 |\n| GHG emissions | Trend in GHG emissions | 71.2 | 0.400 | 0.024 |\n| Natural resources | Water Use | 1.6 | 1.000 | 0.030 |\n| Waste and emissions | Waste Generation | 2.4 | 0.500 | 0.015 |\n| Waste and emissions | EMS Certified Percent | 50.0 | 0.250 | 0.007 |\n| Waste and emissions | Waste Recycling Ratio | 47.5 | 0.250 | 0.007 |\n\n### Qualitative Indicators\n| KPI | Name | Score | Weight |\n|-----|------|-------|--------|\n| Energy use | Renewable Energy Use |  | 0.570 |\n| Energy use | Policy Energy Efficiency |  | 0.290 |\n| Energy use | Targets Energy Efficiency |  | 0.140 |\n| GHG emissions | Product Environmental Responsible Use |  | 0.400 |\n| GHG emissions | Climate Change Commercial Risks Opportunities |  | 0.200 |\n| GHG emissions | Policy Emissions |  | 0.200 |\n| GHG emissions | Targets Emissions |  | 0.200 |\n| Natural resources | Policy Water Efficiency |  | 0.500 |\n| Natural resources | Targets Water Efficiency |  | 0.500 |\n| Waste and emissions | Environmental Partnerships |  | 0.500 |\n| Waste and emissions | ISO 14000 or EMS |  | 0.500 |\n\n## Pillar: Governance\n| Name | Score | Weight | Influence | Controversy Adjustment |\n|------|-------|--------|----------|------------------------|\n| Governance | 84.5 | 0.400 | 0.400 | -0.1 |\n\n### Pillar Controversy Adjustments\n| ID | Pillar | Description | Score | Weight | Year |\n|----|--------|-------------|-------|--------|------|\n| C1 | Governance | Controversy adjustments from Compensation | -0.6 | 0.08 |  |\n| C2 | Governance | Controversy adjustments on pillar level | -0.1 |  |  |\n\n### KPIs\n| Name | Score | Weight | Influence | Qualitative Adjustment |\n|------|-------|--------|----------|-----------------------|\n| Compensation policy (long term and ESG orientated) | 52.4 | 0.230 | 0.092 |  |\n| Board of directors independence and expertise | 57.1 | 0.190 | 0.076 |  |\n| Independent board leadership | 100.0 | 0.150 | 0.060 |  |\n| Commitment to an effective and well-balanced board | 100.0 | 0.080 | 0.032 |  |\n| Compensation | 100.0 | 0.080 | 0.032 |  |\n| Integration of ESG aspects in corporate strategy | 88.9 | 0.080 | 0.032 |  |\n| Nomination committee independence and empowerment | 100.0 | 0.080 | 0.032 |  |\n| Protection of minority shareholders | 80.8 | 0.080 | 0.032 |  |\n| Audit committee independence and expertise | 100.0 | 0.050 | 0.020 |  |\n\n## Pillar: Social\n| Name | Score | Weight | Influence | Controversy Adjustment |\n|------|-------|--------|----------|------------------------|\n| Social | 81.7 | 0.300 | 0.300 | -1.4 |\n\n### Pillar Controversy Adjustments\n| ID | Pillar | Description | Score | Weight | Year |\n|----|--------|-------------|-------|--------|------|\n| C1 | Social | Controversy adjustments from Community Relations | -0.9 | 0.10 |  |\n| C2 | Social | Controversy adjustments from Customer Impact and Product Features | -0.5 | 0.20 |  |\n| C3 | Social | Controversy adjustments from Diversity | -0.9 | 0.20 |  |\n| C4 | Social | Controversy adjustments from Human Resources | -0.9 | 0.40 |  |\n| C5 | Social | Controversy adjustments from Labor Conditions | -0.1 | NULL |  |\n| C6 | Social | Controversy adjustments from Suppliers | -0.7 | 0.10 |  |\n| C7 | Social | Controversy adjustments on pillar level | -0.8 |  |  |\n\n### KPIs\n| Name | Score | Weight | Influence | Qualitative Adjustment |\n|------|-------|--------|----------|-----------------------|\n| Human Resources | 65.6 | 0.400 | 0.120 |  |\n| Customer Impact and Product Features | 100.0 | 0.200 | 0.060 |  |\n| Diversity | 83.9 | 0.200 | 0.060 |  |\n| Community Relations | 97.0 | 0.100 | 0.030 |  |\n| Suppliers | 27.0 | 0.100 | 0.030 |  |\n\n### Quantitative Indicators\n| KPI | Name | Score | Weight | Influence |\n|-----|------|-------|--------|----------|\n| Diversity | Women Managers | 90.0 | 0.500 | 0.030 |\n| Diversity | Women Employees | 100.0 | 0.300 | 0.018 |\n| Diversity | Employees with disabilities | 74.2 | 0.200 | 0.012 |\n| Human Resources | Turnover of Employees | 69.8 | 0.500 | 0.060 |\n| Human Resources | Salaries and Wages | 70.7 | 0.300 | 0.036 |\n| Human Resources | Average Training Hours | 78.7 | 0.200 | 0.024 |\n\n### Qualitative Indicators\n| KPI | Name | Score | Weight |\n|-----|------|-------|--------|\n| Community Relations | Policy Community Involvement |  | 0.400 |\n| Community Relations | Corporate Responsibility Awards |  | 0.200 |\n| Community Relations | Employee Engagement Voluntary Work |  | 0.200 |\n| Community Relations | Total amount of all donations by the company | 79.9 | 0.200 |\n| Customer Impact and Product Features | Policy Responsible Marketing |  | 0.500 |\n| Customer Impact and Product Features | Policy Cyber Security |  | 0.250 |\n| Customer Impact and Product Features | Policy Data Privacy |  | 0.250 |\n| Customer Impact and Product Features | Product Recall |  | 0.000 |\n| Diversity | Flexible Working Hours |  | 0.430 |\n| Diversity | Targets Diversity and Opportunity |  | 0.290 |\n| Diversity | Day Care Services |  | 0.140 |\n| Diversity | Policy Diversity and Opportunity |  | 0.140 |\n| Human Resources | Management Departures |  | 0.330 |\n| Human Resources | Internal Promotion |  | 0.170 |\n| Human Resources | Management Training |  | 0.170 |\n| Human Resources | Policy Career Development |  | 0.170 |\n| Human Resources | Policy Skills Training |  | 0.170 |\n| Suppliers | Human Rights Breaches Contractor |  | 0.200 |\n| Suppliers | Human Rights Contractor |  | 0.200 |\n| Suppliers | Supplier ESG training |  | 0.200 |\n| Suppliers | Supply Chain Health & Safety Improvements |  | 0.200 |\n| Suppliers | Policy Supply Chain Health & Safety |  | 0.100 |\n| Suppliers | Supply Chain Health & Safety Training |  | 0.100 |\n\n## Controversies\n| ID | Pillar | Description | Score | Weight | Year |\n|----|--------|-------------|-------|--------|------|\n| C1 | Environmental | Controversy adjustments from GHG emissions | 0.0 | 0.20 |  |\n| C2 | Environmental | Controversy adjustments from Natural resources | -0.2 | 0.10 |  |\n| C3 | Social | Controversy adjustments from Community Relations | -0.9 | 0.10 |  |\n| C4 | Social | Controversy adjustments from Customer Impact and Product Features | -0.5 | 0.20 |  |\n| C5 | Social | Controversy adjustments from Diversity | -0.9 | 0.20 |  |\n| C6 | Social | Controversy adjustments from Human Resources | -0.9 | 0.40 |  |\n| C7 | Social | Controversy adjustments from Labor Conditions | -0.1 | NULL |  |\n| C8 | Social | Controversy adjustments from Suppliers | -0.7 | 0.10 |  |\n| C9 | Social | Controversy adjustments on pillar level | -0.8 |  |  |\n| C10 | Governance | Controversy adjustments from Compensation | -0.6 | 0.08 |  |\n| C11 | Governance | Controversy adjustments on pillar level | -0.1 |  |  |\n\n## SDG Impacts\n| Category | Name | Details | Impact | Measure | Revenue Exposure |\n|----------|------|---------|--------|---------|------------------|\n| SDG 4 Quality Education Impact | information media/content (limited contribution) | information media content | 0.210 | 3 | 7.0% |\n| SDG 13 Climate Action Impact | cruises (limited obstruction) | cruises (conventional propulsion) | -0.250 | -5 | 5.0% |\n| SDG 14 Life Below Water Impact | cruises (limited obstruction) | cruises (conventional propulsion) | -0.250 | -5 | 5.0% |\n\n## Controversy Events\n| ID | Date | Penalty | % Penalty | Severity | Source | E | S | G |\n|----|------|---------|-----------|----------|--------|---|---|---|\n| E1 | 2021-12-21 | 0.00 | 0.3 | less severe | influential | false | true | false |\n| E2 | 2024-01-10 | 0.02 | 4.0 | less severe | influential | false | true | true |\n| E3 | 2023-01-10 | 0.28 | 60.6 | severe | high influence | false | true | false |\n| E4 | 2023-01-05 | 0.00 | 0.0 | less severe | low influence | false | true | true |\n| E5 | 2024-02-07 | 0.05 | 11.3 | less severe | high influence | false | true | false |\n| E6 | 2024-02-06 | 0.10 | 22.5 | less severe | high influence | false | true | false |\n| E7 | 2024-10-14 | 0.01 | 1.4 | less severe | influential | true | true | true |\n\n## Critical Issues\n| ID | Name | Description | Value |\n|----|------|-------------|-------|\n| I1 | Alcohol Distributor |  | 0.99% |\n| I2 | EU CTB Exclusion |  | false |\n| I3 | EU PAB Exclusion |  | false |\n| I4 | LGT Focus Sustainability Exclusion |  | false |\n| I5 | Pork Related |  | 0.40% |\n",
           "CompanyName": "Walt Disney Co/The",
           "ESGRating": 4,
-          "ESGID": "Walt Disney Co/The"
+          "ESGID": "Walt Disney Co/The",
+          "SummaryLength": 350
         }
       }
     ]
@@ -373,12 +378,12 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "90bddfec-cb20-464b-a07f-3d6ca6431182",
+  "versionId": "67720816-5984-4d9e-bbfa-3e7c5c6d9d0e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0851186287984defd085dfa37fa9b8d6478c9a514d3d7e58c0f9581e228bdb0e"
   },
-  "id": "CB6zzj4HyUPPJE2o",
+  "id": "DzKoy0tkOPwmN1OO",
   "tags": [
     {
       "createdAt": "2025-04-09T12:43:49.518Z",

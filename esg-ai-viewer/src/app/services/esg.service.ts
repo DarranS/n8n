@@ -9,8 +9,33 @@ import { map, catchError, tap } from 'rxjs/operators';
 export class EsgService {
   private baseUrl = '/webhook'; // Update this to match the proxy path
   private readonly useLocalFiles = true; // Toggle to use local files instead of API
+  private currentCompanyData: any = null;
+  private rawCompanyData: any = null;
 
   constructor(private http: HttpClient) {}
+
+  setCurrentCompanyData(data: any) {
+    this.currentCompanyData = data;
+    // When a company is selected, fetch its raw data
+    if (data && data.id) {
+      this.getRawData(data.id).subscribe(
+        rawData => {
+          this.rawCompanyData = rawData;
+        },
+        error => {
+          console.error('Error fetching raw data:', error);
+        }
+      );
+    }
+  }
+
+  getCurrentCompanyData(): any {
+    return this.currentCompanyData;
+  }
+
+  getRawCompanyData(): any {
+    return this.rawCompanyData;
+  }
 
   getRawData(companyIsin: string): Observable<any> {
     if (this.useLocalFiles) {
@@ -109,11 +134,13 @@ export class EsgService {
     return JSON.stringify(content, null, 2).replace(/\\n/g, '\n');
   }
 
-  getSummary(data: any): Observable<string> {
+  getSummary(data: any, refreshRagData: boolean = false): Observable<string> {
     const requestBody = {
-      ESGCompanyData: data,
+      ESGCompanyData: data.useRAG && !refreshRagData ? null : data,
       useRAG: data.useRAG ?? true,
-      summaryLength: data.length ?? 1000
+      summaryLength: data.length ?? 1000,
+      esgID: this.currentCompanyData?.id,
+      refreshRAGData: refreshRagData
     };
 
     return this.http.post<any>(`${this.baseUrl}/ESG/Company/Summary/Description`, requestBody).pipe(

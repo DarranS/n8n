@@ -1,15 +1,15 @@
 {
-  "name": "ESG Summary RAG Agent",
+  "name": "ESG Summary RAG Agent Pinecone",
   "nodes": [
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Create a summary of the ESG status, using a clear, structured, and objective tone. Ensure you reference the company by Name Use only the data from the Vestor Store for ESG. DO NOT use any other source. The data should be filtered by the ISIN provided in the workflow. If no data available please refeence the ID: {{ $('When Executed by Another Workflow').item.json.ESGID }} in your response\n\nOrganize the summary using headings, bullet points, and short paragraphs.\nProvide a balanced view: highlight both strengths and areas for improvement. An example outline of the summary would be \n\n\nCreate a summary of approximately {{ $('When Executed by Another Workflow').item.json.SummaryLength }} words on the ESG data provide.\n1. Overall ESG Performance\nState the overall ESG Score and the LGT Sustainability Rating measure in stars (0-5) .\nExplain that the score reflects performance across environmental, social, and governance (ESG) pillars, including adjustments for controversies and Sustainable Development Goal (SDG) impacts.\n\n2. Pillar Breakdown\nDescribe the performance of each ESG pillar:\nEnvironmental: Mention the score and any key strengths or weaknesses (e.g., emissions, energy use, resource efficiency).\nSocial: Discuss relevant scores and highlight workforce practices, diversity, and customer impact.\nGovernance: Highlight board practices, independence, compensation policies, and ESG integration.\n\n3. Top Positive KPIs (based on influence)\nList key performance indicators including the Pillar they belong to that significantly contributed to a higher ESG score. Include both quantitative and qualitative aspects where available. \n4. Top Negative KPIs (based on influence)\nList the KPIs indicators including the Pillar they belong to that most negatively impacted the ESG score. \n\n5. Major Controversy Adjustments\nSummarize how controversies affected the ESG score:\nIndicate which pillars (E, S, G) were impacted and describe the nature of the issues (e.g., labor disputes, governance scandals, environmental fines).\n\nInclude the magnitude of adjustments if provided.\n\n6. SDG Impacts\nExplain the company's alignment (positive or negative) with the United Nations Sustainable Development Goals (SDGs). Mention:\nPositive contributions and Negative impacts always include the associated details\n\n\n",
+        "text": "=Create a summary of the ESG status for {{ $('When Executed by Another Workflow').item.json.CompanyName }}. Use a clear, structured, and objective tone. Use only the data from the Vestor Store for ESG. DO NOT use any other source \nOrganize the summary using headings, bullet points, and short paragraphs.\nProvide a balanced view: highlight both strengths and areas for improvement. An example outline of the summary would be \n\n\nThis ESG summary provides a snapshot of {{ $('When Executed by Another Workflow').item.json.CompanyName }} ESG Rating: {{ $('When Executed by Another Workflow').item.json.ESGRating }}Stars, sustainability profile, highlighting key strengths, challenges, and opportunities for improvement across environmental, social, and governance dimensions.\n\nCreate a summary of approximately {{ $('When Executed by Another Workflow').item.json.SummaryLength }} words on the ESG data provide.\n1. Overall ESG Performance\nState the overall ESG Rating.\nExplain that the score reflects performance across environmental, social, and governance (ESG) pillars, including adjustments for controversies and Sustainable Development Goal (SDG) impacts.\n\n2. Pillar Breakdown\nDescribe the performance of each ESG pillar:\nEnvironmental: Mention the score and any key strengths or weaknesses (e.g., emissions, energy use, resource efficiency).\nSocial: Discuss relevant scores and highlight workforce practices, diversity, and customer impact.\nGovernance: Highlight board practices, independence, compensation policies, and ESG integration.\n\n3. Top Positive KPIs (based on influence)\nList key performance indicators including the Pillar they belong to that significantly contributed to a higher ESG score. Include both quantitative and qualitative aspects where available. \n4. Top Negative KPIs (based on influence)\nList the KPIs indicators including the Pillar they belong to that most negatively impacted the ESG score. \n\n5. Major Controversy Adjustments\nSummarize how controversies affected the ESG score:\nIndicate which pillars (E, S, G) were impacted and describe the nature of the issues (e.g., labor disputes, governance scandals, environmental fines).\n\nInclude the magnitude of adjustments if provided.\n\n6. SDG Impacts\nExplain the company's alignment (positive or negative) with the United Nations Sustainable Development Goals (SDGs). Mention:\nPositive contributions and Negative impacts always include the associated details\n\n\n",
         "options": {
           "systemMessage": "=Use the Tool ESGDataStore to source ESG data for the summary from the Vestor Store. DO NOT use any other source "
         }
       },
-      "id": "78147bc3-ed58-4f2e-9ee9-7f6c74b49675",
+      "id": "5071ca91-33d5-4120-80d0-629671e7bb20",
       "name": "AI Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -25,7 +25,7 @@
         "width": 319,
         "color": 6
       },
-      "id": "c75328f6-9eba-4180-a40c-36879ff829e8",
+      "id": "fe79939d-7abb-49f6-9399-f64eb2a27a7c",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -36,10 +36,10 @@
     },
     {
       "parameters": {
-        "model": "gpt-4o",
+        "model": "gpt-4-turbo",
         "options": {}
       },
-      "id": "7aae7afa-cf99-4b31-8629-51564b10c330",
+      "id": "a4d869df-160d-41e3-b0f6-d8941e46894a",
       "name": "OpenAI Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
@@ -64,7 +64,7 @@
         1980,
         840
       ],
-      "id": "badd53e7-b196-4a97-bc07-5a2f8ab88cda",
+      "id": "4361b62c-9caa-4045-a310-c9e6ebaea6dd",
       "name": "Embeddings OpenAI",
       "credentials": {
         "openAiApi": {
@@ -76,9 +76,46 @@
     },
     {
       "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "ESGDataStore",
+        "toolDescription": "USE THIS TOOL to retrieve to retreive the relevant ESG data from the Vector Store\n",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "esgkb",
+          "mode": "list",
+          "cachedResultName": "esgkb"
+        },
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "ESGID",
+                "value": "={{ $('When Executed by Another Workflow').item.json.ESGID }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        2560,
+        300
+      ],
+      "id": "99f21bb4-7641-48b7-8073-0e7b75875afd",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "PaFv5UXAHFe9s8wV",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
         "dataType": "binary",
         "binaryMode": "specificField",
-        "binaryDataKey": "=ESGData",
+        "binaryDataKey": "=data",
         "options": {
           "metadata": {
             "metadataValues": [
@@ -93,10 +130,10 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1,
       "position": [
-        1860,
-        240
+        1920,
+        200
       ],
-      "id": "8b856962-6917-4780-b492-9ab5c21c9561",
+      "id": "c0f220bd-6990-472a-bf06-b539ed8d0f63",
       "name": "Default Data Loader"
     },
     {
@@ -109,11 +146,39 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        2000,
-        440
+        2060,
+        400
       ],
-      "id": "6858e89b-980d-44f3-b5ec-3a676c82936e",
+      "id": "bbd18ece-d1cf-4afc-84e7-e3832701713f",
       "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "esgkb",
+          "mode": "list",
+          "cachedResultName": "esgkb"
+        },
+        "options": {
+          "clearNamespace": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        1620,
+        -20
+      ],
+      "id": "544959f1-a6bd-40f2-89ad-b81b0111123e",
+      "name": "Pinecone Save Data",
+      "credentials": {
+        "pineconeApi": {
+          "id": "PaFv5UXAHFe9s8wV",
+          "name": "PineconeApi account"
+        }
+      }
     },
     {
       "parameters": {
@@ -127,10 +192,10 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        1840,
-        -20
+        2120,
+        0
       ],
-      "id": "39ec6c2c-0d39-41d4-9121-252a715f3b18",
+      "id": "f2063abb-4176-4274-9a48-97d0a99215aa",
       "name": "Aggregate"
     },
     {
@@ -142,15 +207,18 @@
               "type": "any"
             },
             {
+              "name": "CompanyName"
+            },
+            {
+              "name": "ESGRating",
+              "type": "number"
+            },
+            {
               "name": "ESGID"
             },
             {
               "name": "SummaryLength",
               "type": "number"
-            },
-            {
-              "name": "RefreshRAGData",
-              "type": "boolean"
             }
           ]
         }
@@ -158,27 +226,61 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        40,
-        300
+        20,
+        -20
       ],
-      "id": "b09f92a5-ef3b-4750-ac91-4333a23456c3",
+      "id": "aed066b9-eed3-41ae-b7c8-229d92b7d90f",
       "name": "When Executed by Another Workflow"
     },
     {
       "parameters": {
         "operation": "toText",
-        "sourceProperty": "=ESGData",
-        "binaryPropertyName": "ESGData",
+        "sourceProperty": "ESGData",
         "options": {}
       },
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        1140,
+        1080,
         -20
       ],
-      "id": "bc8d2c4d-5e6b-4bf0-b886-e77eeb450b45",
+      "id": "4d723779-461e-476a-b850-d388d7949d5f",
       "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "code": {
+          "execute": {
+            "code": "try {\n    console.log('Fetching main input...');\n    //const mainInput = await this.getInputConnectionData('main', 0);\n    const mainInput2 = await this.getInputData(0)\n    console.log('Main Input:', mainInput2);\n\n    \n    console.log('LOGGED');\n    return [{ json: { status: `Deleted records with ESGID` } }];\n} catch (error) {\n    console.log(`Failed to delete records: ${error.message}`);\n    throw new Error(`Failed to delete records: ${error.message}`);\n}"
+          }
+        },
+        "inputs": {
+          "input": [
+            {
+              "type": "main",
+              "maxConnections": 1,
+              "required": true
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "type": "main"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.code",
+      "typeVersion": 1,
+      "position": [
+        800,
+        -20
+      ],
+      "id": "fa151602-42e2-4fae-847a-9220c042a5f4",
+      "name": "LangChain Code",
+      "alwaysOutputData": false,
+      "disabled": true
     },
     {
       "parameters": {
@@ -187,13 +289,13 @@
             {
               "id": "1042e449-eddb-45b0-ba43-98ee951dcfd5",
               "name": "ESGID",
-              "value": "={{ $('When Executed by Another Workflow').item.json.ESGID }}",
+              "value": "={{ $json.ESGID }}",
               "type": "string"
             },
             {
               "id": "f1b0b502-0ebe-4eba-a800-7111e67b671f",
               "name": "ESGData",
-              "value": "={{ $('When Executed by Another Workflow').item.json.ESGData }}",
+              "value": "={{ $json.ESGData }}",
               "type": "string"
             }
           ]
@@ -203,10 +305,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        820,
+        500,
         -20
       ],
-      "id": "493f3893-9468-4582-bbbc-f27b6c6e80a7",
+      "id": "9117c838-7c77-4c32-b083-c23ca0c040eb",
       "name": "Edit Fields"
     },
     {
@@ -222,7 +324,7 @@
         460,
         -180
       ],
-      "id": "628e1ada-f996-47ab-94a5-6c127a2fb62f",
+      "id": "f1c3da13-6869-4bcc-94cd-5e35ae7080e1",
       "name": "Sticky Note1"
     },
     {
@@ -237,7 +339,7 @@
         1060,
         -180
       ],
-      "id": "288f7fa1-7ed8-44ba-9890-0e2fb847c18b",
+      "id": "89b75397-7a99-44ca-a234-0eb992c607b1",
       "name": "Sticky Note2"
     },
     {
@@ -253,130 +355,8 @@
         2400,
         -180
       ],
-      "id": "83f92fbf-b978-42b4-a260-e666e4b96091",
+      "id": "cfe05cd9-e603-43af-89e5-5423b4b4b7a2",
       "name": "Sticky Note3"
-    },
-    {
-      "parameters": {
-        "mode": "insert",
-        "tableName": {
-          "__rl": true,
-          "value": "esgdocuments",
-          "mode": "list",
-          "cachedResultName": "esgdocuments"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
-      "typeVersion": 1.1,
-      "position": [
-        1480,
-        -20
-      ],
-      "id": "63a2ba26-e57b-49c5-8803-84b833aac99e",
-      "name": "Supabase Vector Store",
-      "credentials": {
-        "supabaseApi": {
-          "id": "5ouwX4Dp3ZiBg6Ca",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "mode": "retrieve-as-tool",
-        "toolName": "ESGKBLookupCompany",
-        "toolDescription": "ESG KB Lookup Company Data",
-        "tableName": {
-          "__rl": true,
-          "value": "esgdocuments",
-          "mode": "list",
-          "cachedResultName": "esgdocuments"
-        },
-        "topK": 50,
-        "options": {
-          "queryName": "match_esgdocuments",
-          "metadata": {
-            "metadataValues": [
-              {
-                "name": "ESGID",
-                "value": "={{ $('When Executed by Another Workflow').item.json.ESGID }}"
-              }
-            ]
-          }
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
-      "typeVersion": 1.1,
-      "position": [
-        2620,
-        380
-      ],
-      "id": "12f8c8ad-15b5-4db0-ac2d-166b83225daa",
-      "name": "Supabase Vector Store For Query",
-      "credentials": {
-        "supabaseApi": {
-          "id": "5ouwX4Dp3ZiBg6Ca",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "delete",
-        "tableId": "esgdocuments",
-        "filterType": "string",
-        "filterString": "=metadata->>ESGID=eq.{{ $json.ESGID }}"
-      },
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [
-        520,
-        -20
-      ],
-      "id": "00891c51-e8bc-40e1-a9c2-07a9eac68228",
-      "name": "Supabase Delete",
-      "alwaysOutputData": true,
-      "credentials": {
-        "supabaseApi": {
-          "id": "5ouwX4Dp3ZiBg6Ca",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "cb852d10-fcd2-4830-8ca8-41478de11283",
-              "leftValue": "={{ $json.RefreshRAGData }}",
-              "rightValue": "",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        240,
-        300
-      ],
-      "id": "185a12b5-90cb-4e7e-8109-1134805735f2",
-      "name": "If"
     }
   ],
   "pinData": {
@@ -387,8 +367,7 @@
           "CompanyName": "Walt Disney Co/The",
           "ESGRating": 4,
           "ESGID": "US2546871060",
-          "SummaryLength": 350,
-          "RefreshRAGData": false
+          "SummaryLength": 350
         }
       }
     ]
@@ -414,13 +393,24 @@
       "ai_embedding": [
         [
           {
-            "node": "Supabase Vector Store",
+            "node": "Pinecone Save Data",
             "type": "ai_embedding",
             "index": 0
           },
           {
-            "node": "Supabase Vector Store For Query",
+            "node": "Pinecone Vector Store",
             "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
             "index": 0
           }
         ]
@@ -430,7 +420,7 @@
       "ai_document": [
         [
           {
-            "node": "Supabase Vector Store",
+            "node": "Pinecone Save Data",
             "type": "ai_document",
             "index": 0
           }
@@ -443,6 +433,17 @@
           {
             "node": "Default Data Loader",
             "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Save Data": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
             "index": 0
           }
         ]
@@ -463,7 +464,7 @@
       "main": [
         [
           {
-            "node": "If",
+            "node": "Edit Fields",
             "type": "main",
             "index": 0
           }
@@ -474,14 +475,14 @@
       "main": [
         [
           {
-            "node": "Supabase Vector Store",
+            "node": "Pinecone Save Data",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Edit Fields": {
+    "LangChain Code": {
       "main": [
         [
           {
@@ -492,51 +493,11 @@
         ]
       ]
     },
-    "Supabase Vector Store": {
+    "Edit Fields": {
       "main": [
         [
           {
-            "node": "Aggregate",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Supabase Vector Store For Query": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Supabase Delete": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If": {
-      "main": [
-        [
-          {
-            "node": "Supabase Delete",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "AI Agent",
+            "node": "LangChain Code",
             "type": "main",
             "index": 0
           }
@@ -549,12 +510,12 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "c790b18a-1874-470e-9db6-b9f4b96246e8",
+  "versionId": "ad7c8c2c-27b2-4fd9-ac3c-bc01ee740621",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0851186287984defd085dfa37fa9b8d6478c9a514d3d7e58c0f9581e228bdb0e"
   },
-  "id": "CB6zzj4HyUPPJE2o",
+  "id": "z91MNrJOhYd0jfLl",
   "tags": [
     {
       "createdAt": "2025-04-09T12:43:49.518Z",
