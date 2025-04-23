@@ -99,8 +99,8 @@ export class SummaryTabComponent implements OnChanges, OnDestroy, OnInit {
     const currentData = this.esgService.getCurrentCompanyData();
     const rawData = this.esgService.getRawCompanyData();
     
-    if (!currentData) {
-      this.error = 'No company data available';
+    if (!currentData || !rawData) {
+      this.error = 'No company data available. Please select a company first.';
       return;
     }
 
@@ -111,7 +111,9 @@ export class SummaryTabComponent implements OnChanges, OnDestroy, OnInit {
     const data = {
       ...rawData,
       useRAG: this.useRAG,
-      length: this.summaryLength
+      length: this.summaryLength,
+      company: currentData.name,
+      companyIsin: currentData.id
     };
 
     this.esgService.getSummary(data, this.refreshRAGData)
@@ -130,8 +132,6 @@ export class SummaryTabComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   refreshSummary(): void {
-    if (this.data) {
-      this.loadSummary();
-    }
+    this.loadSummary();
   }
 }

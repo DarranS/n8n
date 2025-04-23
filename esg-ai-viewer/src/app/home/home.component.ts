@@ -4,7 +4,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { RawTabComponent } from '../components/tabs/raw-tab/raw-tab.component';
 import { ReportTabComponent } from '../components/tabs/report-tab/report-tab.component';
 import { SummaryTabComponent } from '../components/tabs/summary-tab/summary-tab.component';
-import { ChatTabComponent } from '../components/tabs/chat-tab/chat-tab.component';
 import { Company, CompanyService } from '../services/company.service';
 import { EsgService } from '../services/esg.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -12,6 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { CompanySelectorComponent } from '../components/company-selector/company-selector.component';
 
 @Component({
   selector: 'app-home',
@@ -24,7 +24,7 @@ import { takeUntil } from 'rxjs/operators';
     RawTabComponent,
     ReportTabComponent,
     SummaryTabComponent,
-    ChatTabComponent
+    CompanySelectorComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -87,6 +87,8 @@ export class HomeComponent implements OnInit, OnDestroy {
             ...data,
             isin: companyId
           };
+          // Set the data in the ESG service
+          this.esgService.setCurrentCompanyData(this.selectedCompany);
           this.loading = false;
         },
         error: (err: HttpErrorResponse) => {

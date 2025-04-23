@@ -15,17 +15,30 @@ export class EsgService {
   constructor(private http: HttpClient) {}
 
   setCurrentCompanyData(data: any) {
+    if (!data) {
+      this.currentCompanyData = null;
+      this.rawCompanyData = null;
+      return;
+    }
+
     this.currentCompanyData = data;
     // When a company is selected, fetch its raw data
     if (data && data.id) {
       this.getRawData(data.id).subscribe(
         rawData => {
-          this.rawCompanyData = rawData;
+          this.rawCompanyData = {
+            ...rawData,
+            company: data.name,
+            companyIsin: data.id
+          };
         },
         error => {
           console.error('Error fetching raw data:', error);
+          this.rawCompanyData = null;
         }
       );
+    } else {
+      this.rawCompanyData = null;
     }
   }
 

@@ -1,7 +1,15 @@
 <div class="home-container">
+  <div class="company-selector-container">
+    <div class="selector-wrapper">
+      <div class="selector-row">
+        <app-company-selector></app-company-selector>
+      </div>
+    </div>
+  </div>
+
   <div *ngIf="!selectedCompany" class="no-selection-message">
     <h2>Select a company to view ESG data</h2>
-    <p>Use the dropdown in the header to select a company.</p>
+    <p>Use the dropdown above to select a company.</p>
   </div>
 
   <div *ngIf="loading" class="loading-container">

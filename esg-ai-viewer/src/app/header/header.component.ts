@@ -30,4 +30,8 @@ export class HeaderComponent implements OnInit {
     }
     return this.currentUrl.startsWith(route);
   }
-} 
+
+  isHomePage(): boolean {
+    return this.currentUrl === '/' || this.currentUrl === '';
+  }
+}

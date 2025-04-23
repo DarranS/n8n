@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: esg-ai-viewer:latest
     ports:
       - "8080:80"
     environment:

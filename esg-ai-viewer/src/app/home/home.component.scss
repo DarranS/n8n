@@ -1,9 +1,46 @@
 .home-container {
-  height: calc(100vh - 130px); // Account for header and company selection
+  height: calc(100vh - 64px); // Account for fixed header
+  margin-top: 64px; // Add margin for fixed header
   display: flex;
   flex-direction: column;
   padding: 20px;
   min-width: 800px; // Ensure minimum width
+}
+
+.company-selector-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  width: 100%;
+
+  .selector-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+
+    .selector-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+
+      h2 {
+        margin: 0;
+        color: #333;
+        font-size: 1.25rem;
+        white-space: nowrap;
+      }
+
+      app-company-selector {
+        flex: 1;
+      }
+    }
+  }
 }
 
 .tab-container {
