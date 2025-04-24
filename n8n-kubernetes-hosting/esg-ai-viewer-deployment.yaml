@@ -15,10 +15,22 @@ spec:
       labels:
         app: esg-ai-viewer
     spec:
+      serviceAccountName: esg-ai-viewer-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 3000
+        fsGroup: 2000
       containers:
       - name: esg-ai-viewer
         image: esgai.azurecr.io/esg-ai-viewer:latest
         imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
         env:
         - name: WEBHOOK_URL
           value: "https://n8n.sheltononline.com"

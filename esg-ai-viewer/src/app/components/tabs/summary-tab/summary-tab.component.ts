@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormsModule } from '@angular/forms';
-import { MarkdownModule } from 'ngx-markdown';
+import { MarkdownModule, MarkedOptions, MARKED_OPTIONS, MarkdownService, SECURITY_CONTEXT } from 'ngx-markdown';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,6 +25,23 @@ import { MatIconModule } from '@angular/material/icon';
     FormsModule,
     MarkdownModule,
     MatIconModule
+  ],
+  providers: [
+    MarkdownService,
+    {
+      provide: SECURITY_CONTEXT,
+      useValue: 0
+    },
+    {
+      provide: MARKED_OPTIONS,
+      useValue: {
+        gfm: true,
+        breaks: true,
+        pedantic: false,
+        smartLists: true,
+        smartypants: true
+      } as MarkedOptions,
+    }
   ],
   templateUrl: './summary-tab.component.html',
   styleUrl: './summary-tab.component.scss'
@@ -98,10 +115,7 @@ export class SummaryTabComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   loadSummary() {
-    const currentData = this.esgService.getCurrentCompanyData();
-    const rawData = this.esgService.getRawCompanyData();
-    
-    if (!currentData || !rawData) {
+    if (!this.data) {
       this.error = 'No company data available. Please select a company first.';
       return;
     }
@@ -111,11 +125,9 @@ export class SummaryTabComponent implements OnChanges, OnDestroy, OnInit {
     this.summaryContent = '';
 
     const data = {
-      ...rawData,
+      ...this.data,
       useRAG: this.useRAG,
-      length: this.summaryLength,
-      company: currentData.name,
-      companyIsin: currentData.id
+      length: this.summaryLength
     };
 
     this.esgService.getSummary(data, this.refreshRAGData)

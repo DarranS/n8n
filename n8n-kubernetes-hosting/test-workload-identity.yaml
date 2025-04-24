@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: workload-identity-test
+  namespace: n8n
+spec:
+  serviceAccountName: esg-ai-viewer-sa
+  containers:
+  - name: workload-identity-test
+    image: mcr.microsoft.com/azure-cli:latest
+    command: ["sleep", "3600"]
+    env:
+    - name: AZURE_CLIENT_ID
+      value: "7ae14255-f90e-4bb0-81c7-4ed298e95248"
+    - name: AZURE_TENANT_ID
+      value: "fcc16827-3d82-4edf-9dc2-5d034f97127e"
+    - name: AZURE_FEDERATED_TOKEN_FILE
+      value: "/var/run/secrets/azure/tokens/azure-identity-token"
+    volumeMounts:
+    - name: azure-identity-token
+      mountPath: "/var/run/secrets/azure/tokens"
+      readOnly: true
+  volumes:
+  - name: azure-identity-token
+    projected:
+      sources:
+      - serviceAccountToken:
+          path: azure-identity-token
+          expirationSeconds: 3600
+          audience: "api://AzureADTokenExchange" 

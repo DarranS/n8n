@@ -3,13 +3,36 @@ import { CommonModule } from '@angular/common';
 import { EsgService } from '../../../services/esg.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
-import { MarkdownModule } from 'ngx-markdown';
+import { MarkdownModule, MarkedOptions, MARKED_OPTIONS, MarkdownService, SECURITY_CONTEXT } from 'ngx-markdown';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-report-tab',
   standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule, MatButtonModule, MarkdownModule, MatIconModule],
+  imports: [
+    CommonModule, 
+    MatProgressSpinnerModule, 
+    MatButtonModule, 
+    MarkdownModule, 
+    MatIconModule
+  ],
+  providers: [
+    MarkdownService,
+    {
+      provide: SECURITY_CONTEXT,
+      useValue: 0
+    },
+    {
+      provide: MARKED_OPTIONS,
+      useValue: {
+        gfm: true,
+        breaks: true,
+        pedantic: false,
+        smartLists: true,
+        smartypants: true
+      } as MarkedOptions,
+    }
+  ],
   templateUrl: './report-tab.component.html',
   styleUrl: './report-tab.component.scss'
 })

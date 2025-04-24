@@ -110,6 +110,16 @@ export class EsgService {
         }
         return '';
       }),
+      catchError(error => {
+        console.error('Error fetching report:', error);
+        if (error.status === 502) {
+          throw new Error('The backend service is currently unavailable. Please try again later.');
+        } else if (error.status === 401) {
+          throw new Error('Authentication failed. Please log in again.');
+        } else {
+          throw new Error('Failed to fetch the report. Please try again later.');
+        }
+      }),
       tap({
         next: (processedResponse) => console.log('Processed response:', processedResponse),
         error: (error) => console.log('Full error details:', error)

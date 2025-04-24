@@ -3,6 +3,7 @@ import { provideRouter, withRouterConfig } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideMarkdown } from 'ngx-markdown';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { routes } from './app.routes';
 
@@ -14,6 +15,7 @@ export const appConfig: ApplicationConfig = {
     })),
     provideHttpClient(),
     provideAnimations(),
-    provideMarkdown()
+    provideMarkdown(),
+    importProvidersFrom(MatSnackBarModule)
   ]
 };

@@ -19,7 +19,16 @@ const debugProxy = {
         headers: proxyRes.headers,
         url: req.url
       });
-    }
+    },
+    onError: (err, req, res) => {
+      console.error('Proxy error:', err);
+      res.writeHead(500, {
+        'Content-Type': 'text/plain',
+      });
+      res.end('Something went wrong with the proxy request.');
+    },
+    proxyTimeout: 30000,
+    timeout: 30000
   }
 };
 

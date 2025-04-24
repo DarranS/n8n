@@ -7,72 +7,147 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <div class="links-container">
-      <h2 class="links-title">Useful Links</h2>
-      <table class="links-table">
-        <thead>
-          <tr>
-            <th>Service</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><a href="https://n8n.sheltononline.com/" target="_blank"><strong>N8N</strong></a></td>
-            <td>A powerful workflow automation platform that enables low-code/no-code integrations between various services and applications. N8N provides a visual interface for building complex workflows, handling data transformations, and automating business processes.</td>
-          </tr>
-          <tr>
-            <td><a href="https://platform.openai.com/docs/overview" target="_blank"><strong>OpenAI API</strong></a></td>
-            <td>The official API platform for OpenAI's suite of AI models, including GPT-4, GPT-3.5, and other advanced language models. Provides comprehensive documentation, API management tools, and resources for integrating AI capabilities into applications.</td>
-          </tr>
-          <tr>
-            <td><a href="https://supabase.com/" target="_blank"><strong>Supabase</strong></a></td>
-            <td>An open-source Firebase alternative that provides a complete backend solution, including a PostgreSQL database, authentication, real-time subscriptions, and vector storage capabilities. Particularly useful for building RAG (Retrieval-Augmented Generation) applications with its built-in vector similarity search.</td>
-          </tr>
-        </tbody>
-      </table>
+      <h1>ESG Resources & Links</h1>
+      <div class="content">
+        <section>
+          <h2>ESG Resources</h2>
+          <div class="link-grid">
+            <a href="https://www.msci.com/esg-ratings" target="_blank" class="link-card">
+              <h3>MSCI ESG Ratings</h3>
+              <p>Access comprehensive ESG ratings and research.</p>
+            </a>
+            <a href="https://www.sustainalytics.com/" target="_blank" class="link-card">
+              <h3>Sustainalytics</h3>
+              <p>Explore ESG risk ratings and research solutions.</p>
+            </a>
+            <a href="https://www.globalreporting.org/" target="_blank" class="link-card">
+              <h3>Global Reporting Initiative</h3>
+              <p>Learn about ESG reporting standards and guidelines.</p>
+            </a>
+            <a href="https://www.unpri.org/" target="_blank" class="link-card">
+              <h3>UN PRI</h3>
+              <p>Understand principles for responsible investment.</p>
+            </a>
+          </div>
+        </section>
+
+        <section>
+          <h2>Regulatory Framework</h2>
+          <div class="link-grid">
+            <a href="https://ec.europa.eu/info/business-economy-euro/banking-and-finance/sustainable-finance_en" target="_blank" class="link-card">
+              <h3>EU Sustainable Finance</h3>
+              <p>Access EU regulations and guidelines on sustainable finance.</p>
+            </a>
+            <a href="https://www.sec.gov/news/press-release/2022-46" target="_blank" class="link-card">
+              <h3>SEC Climate Disclosure</h3>
+              <p>Learn about proposed climate disclosure rules.</p>
+            </a>
+          </div>
+        </section>
+
+        <section>
+          <h2>ESG Data & Analytics</h2>
+          <div class="link-grid">
+            <a href="https://www.refinitiv.com/en/sustainable-finance/esg-investing" target="_blank" class="link-card">
+              <h3>Refinitiv ESG Data</h3>
+              <p>Comprehensive ESG data and scoring solutions.</p>
+            </a>
+            <a href="https://www.spglobal.com/esg/" target="_blank" class="link-card">
+              <h3>S&P Global ESG</h3>
+              <p>ESG indices, ratings, and analytics.</p>
+            </a>
+            <a href="https://www.bloomberg.com/professional/solution/sustainable-finance/" target="_blank" class="link-card">
+              <h3>Bloomberg ESG Data</h3>
+              <p>ESG data integration and analytics platform.</p>
+            </a>
+          </div>
+        </section>
+
+        <section>
+          <h2>Industry Standards</h2>
+          <div class="link-grid">
+            <a href="https://www.sasb.org/" target="_blank" class="link-card">
+              <h3>SASB Standards</h3>
+              <p>Industry-specific sustainability accounting standards.</p>
+            </a>
+            <a href="https://www.cdp.net/" target="_blank" class="link-card">
+              <h3>CDP</h3>
+              <p>Global environmental disclosure system.</p>
+            </a>
+            <a href="https://www.tcfdhub.org/" target="_blank" class="link-card">
+              <h3>TCFD Knowledge Hub</h3>
+              <p>Climate-related financial disclosure resources.</p>
+            </a>
+          </div>
+        </section>
+      </div>
     </div>
   `,
   styles: [`
     .links-container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0;
-    }
+      padding: 2rem;
 
-    .links-title {
-      margin: 0;
-      padding: 1rem;
-    }
+      h1 {
+        color: #1976d2;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
 
-    .links-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 0;
-    }
+      .content {
+        section {
+          margin-bottom: 3rem;
 
-    .links-table th,
-    .links-table td {
-      padding: 1rem;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
+          h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+          }
 
-    .links-table th {
-      background-color: #f5f5f5;
-      font-weight: bold;
-    }
+          .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
 
-    .links-table tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
+            .link-card {
+              background-color: #fff;
+              border-radius: 8px;
+              padding: 1.5rem;
+              text-decoration: none;
+              color: inherit;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              transition: transform 0.2s ease, box-shadow 0.2s ease;
 
-    .links-table a {
-      color: #007bff;
-      text-decoration: none;
-    }
+              &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+              }
 
-    .links-table a:hover {
-      text-decoration: underline;
+              h3 {
+                color: #1976d2;
+                margin: 0 0 0.5rem 0;
+                font-size: 1.2rem;
+              }
+
+              p {
+                color: #666;
+                margin: 0;
+                line-height: 1.4;
+              }
+            }
+          }
+        }
+      }
+
+      @media (max-width: 768px) {
+        padding: 1rem;
+
+        .link-grid {
+          grid-template-columns: 1fr !important;
+        }
+      }
     }
   `]
 })
