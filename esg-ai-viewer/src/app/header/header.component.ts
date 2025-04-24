@@ -29,15 +29,15 @@ import { EventMessage, EventType, AuthenticationResult } from '@azure/msal-brows
           </div>
         </a>
         <nav class="nav">
-          <a routerLink="/" [class.active]="isActive('/', true)" class="nav-link">
+          <a *ngIf="isLoggedIn" routerLink="/" [class.active]="isActive('/', true)" class="nav-link">
             <span class="nav-icon">🔍</span>
             <span class="nav-text">Research</span>
           </a>
-          <a routerLink="/chat" [class.active]="isActive('/chat')" class="nav-link">
+          <a *ngIf="isLoggedIn" routerLink="/chat" [class.active]="isActive('/chat')" class="nav-link">
             <span class="nav-icon">💬</span>
             <span class="nav-text">Chat</span>
           </a>
-          <a routerLink="/about" [class.active]="isActive('/about')" class="nav-link">
+          <a *ngIf="isLoggedIn" routerLink="/about" [class.active]="isActive('/about')" class="nav-link">
             <span class="nav-icon">ℹ️</span>
             <span class="nav-text">About</span>
           </a>
