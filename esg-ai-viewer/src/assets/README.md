@@ -9,6 +9,98 @@ A web application for interacting with ESG AI through a chat interface, integrat
 - Azure CLI
 - Azure subscription with AKS cluster access
 
+## Environment Configuration Management
+
+### Configuration Files
+
+The application uses environment-specific configuration files located in `src/assets/config/`:
+
+- `config.development.json` - Development environment
+- `config.staging.json` - Staging environment
+- `config.production.json` - Production environment
+
+Each environment has its own Azure AD client ID and redirect URIs:
+
+### Development Environment
+```json
+{
+  "auth": {
+    "clientId": "0b1db0b1-d35d-441b-aa4f-4cdcfeff0691",
+    "authority": "https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e",
+    "redirectUri": "http://localhost:8080",
+    "postLogoutRedirectUri": "http://localhost:8080"
+  }
+}
+```
+
+### Staging Environment
+```json
+{
+  "auth": {
+    "clientId": "7425393c-f84e-435c-83e5-c76aec2230c4",
+    "authority": "https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e",
+    "redirectUri": "https://stage-esgaiviewer.sheltononline.com",
+    "postLogoutRedirectUri": "https://stage-esgaiviewer.sheltononline.com"
+  }
+}
+```
+
+### Production Environment
+```json
+{
+  "auth": {
+    "clientId": "200b5caf-1971-4d5c-9d82-2a2b1dadc626",
+    "authority": "https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e",
+    "redirectUri": "https://esgaiviewer.sheltononline.com",
+    "postLogoutRedirectUri": "https://esgaiviewer.sheltononline.com"
+  }
+}
+```
+
+### Running Different Environments
+
+The application can be run in different environments using npm scripts:
+
+- Development: `npm start`
+- Staging: `npm run start:stage`
+- Production: `npm run start:prod`
+
+### Building for Deployment
+
+To build the application for different environments:
+
+- Development build: `npm run build`
+- Staging build: `npm run build:stage`
+- Production build: `npm run build:prod`
+
+### How Configuration Works
+
+The environment-specific configuration is managed through Angular's file replacement feature. During the build process, Angular will automatically replace the base `config.json` with the appropriate environment-specific version based on the build configuration.
+
+This is configured in `angular.json` using the `fileReplacements` property:
+
+```json
+{
+  "configurations": {
+    "production": {
+      "fileReplacements": [
+        {
+          "replace": "src/assets/config/config.json",
+          "with": "src/assets/config/config.production.json"
+        }
+      ]
+    }
+  }
+}
+```
+
+### Important Configuration Notes
+
+1. Always use the correct npm script for your target environment
+2. The configuration files contain sensitive information (client IDs) and should be handled securely
+3. Each environment has its own Azure AD application registration
+4. Make sure the redirect URIs are configured correctly in the Azure AD application registrations
+
 ## Azure AD App Registration Setup
 
 ### 1. Create App Registration
@@ -35,38 +127,6 @@ az ad app create --display-name "ESG AI Viewer" --web-redirect-uris "http://loca
 1. Under "API Permissions":
    - Add Microsoft Graph > User.Read
    - Grant admin consent
-
-## Environment Configuration
-
-### Development Environment (.env.dev)
-```
-NODE_ENV=development
-PORT=8080
-AZURE_CLIENT_ID=<your-client-id>
-AZURE_TENANT_ID=<your-tenant-id>
-AZURE_REDIRECT_URI=http://localhost:8080
-N8N_WEBHOOK_URL=https://n8n.sheltononline.com/webhook/
-```
-
-### Staging Environment (.env.stage)
-```
-NODE_ENV=staging
-PORT=8080
-AZURE_CLIENT_ID=<your-client-id>
-AZURE_TENANT_ID=<your-tenant-id>
-AZURE_REDIRECT_URI=http://localhost:8080
-N8N_WEBHOOK_URL=https://n8n.sheltononline.com/webhook/
-```
-
-### Production Environment (.env.prod)
-```
-NODE_ENV=production
-PORT=8080
-AZURE_CLIENT_ID=<your-client-id>
-AZURE_TENANT_ID=<your-tenant-id>
-AZURE_REDIRECT_URI=https://your-production-url
-N8N_WEBHOOK_URL=https://n8n.sheltononline.com/webhook/
-```
 
 ## Local Docker Development Setup
 
@@ -99,107 +159,28 @@ tail -f ./logs/access.log
 
 ## AKS Deployment
 
-### 1. Prepare Kubernetes Manifests
-Create the following files in the `k8s` directory:
-
-#### deployment.yaml
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: esg-ai-viewer
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: esg-ai-viewer
-  template:
-    metadata:
-      labels:
-        app: esg-ai-viewer
-    spec:
-      containers:
-      - name: esg-ai-viewer
-        image: your-registry.azurecr.io/esg-ai-viewer:latest
-        ports:
-        - containerPort: 80
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: AZURE_CLIENT_ID
-          valueFrom:
-            secretKeyRef:
-              name: esg-ai-secrets
-              key: azure-client-id
-        - name: AZURE_TENANT_ID
-          valueFrom:
-            secretKeyRef:
-              name: esg-ai-secrets
-              key: azure-tenant-id
-        - name: AZURE_REDIRECT_URI
-          value: "https://your-production-url"
-```
-
-#### service.yaml
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: esg-ai-viewer
-spec:
-  type: LoadBalancer
-  ports:
-  - port: 80
-    targetPort: 80
-  selector:
-    app: esg-ai-viewer
-```
-
-#### ingress.yaml
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: esg-ai-viewer
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-spec:
-  tls:
-  - hosts:
-    - your-production-url
-    secretName: esg-ai-viewer-tls
-  rules:
-  - host: your-production-url
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: esg-ai-viewer
-            port:
-              number: 80
-```
-
-### 2. Deploy to AKS
+### 1. Login to Azure and Container Registry
 ```bash
 # Login to Azure
 az login
 
-# Login to ACR
-az acr login --name your-registry
+# Login to Azure Container Registry
+az acr login --name esgai
 
-# Build and push image
-docker build -t your-registry.azurecr.io/esg-ai-viewer:latest .
-docker push your-registry.azurecr.io/esg-ai-viewer:latest
+# 1. Build the production image
+docker build -t esg-ai-viewer:latest .
 
-# Create secrets
-kubectl create secret generic esg-ai-secrets \
-  --from-literal=azure-client-id=<your-client-id> \
-  --from-literal=azure-tenant-id=<your-tenant-id>
+# 2. Tag the image with your Azure Container Registry
+docker tag esg-ai-viewer:latest esgai.azurecr.io/esg-ai-viewer:latest
 
-# Apply manifests
+# 3. Push to Azure Container Registry
+docker push esgai.azurecr.io/esg-ai-viewer:latest
+```
+
+### 2. Deploy to AKS
+```bash
+# Apply Kubernetes manifests
+kubectl apply -f k8s/config.yaml
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 kubectl apply -f k8s/ingress.yaml
@@ -221,21 +202,17 @@ kubectl logs -f deployment/esg-ai-viewer
 
 ### Common Issues
 
-1. **502 Bad Gateway**
-   - Check Nginx logs: `docker-compose logs -f`
-   - Verify n8n webhook URL is correct
-   - Check network connectivity
-
-2. **Authentication Issues**
+1. **Authentication Issues**
    - Verify Azure AD app registration settings
    - Check redirect URIs match exactly
    - Ensure proper CORS configuration
+   - Clear browser cache and cookies
+   - Try incognito/private window
 
-3. **Docker Issues**
-   - Clear Docker cache: `docker system prune -a`
-   - Rebuild images: `docker-compose build --no-cache`
-   - Check port conflicts
-
-## Support
+2. **Production Build Issues**
+   - Ensure logged in to Azure Container Registry
+   - Check image tag matches exactly
+   - Verify Docker Desktop is running
+   - Check network connectivity to Azure
 
 For support, please contact the development team or create an issue in the repository.

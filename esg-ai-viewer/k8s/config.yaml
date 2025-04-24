@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: esg-ai-viewer-config
+data:
+  config.json: |
+    {
+      "auth": {
+        "clientId": "0b1db0b1-d35d-441b-aa4f-4cdcfeff0691",
+        "authority": "https://login.microsoftonline.com/sheltononline.com",
+        "redirectUri": "https://esgaiviewer.sheltononline.com",
+        "postLogoutRedirectUri": "https://esgaiviewer.sheltononline.com",
+        "navigateToLoginRequestUrl": true,
+        "cacheLocation": "localStorage",
+        "scopes": ["user.read", "openid", "profile", "email"]
+      }
+    } 

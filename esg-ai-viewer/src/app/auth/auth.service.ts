@@ -6,6 +6,9 @@ import { map, catchError } from 'rxjs/operators';
 import { BrowserAuthError, PublicClientApplication, InteractionStatus } from '@azure/msal-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+const TENANT_ID = 'fcc16827-3d82-4edf-9dc2-5d034f97127e';
+const TENANT_AUTHORITY = `https://login.microsoftonline.com/${TENANT_ID}`;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -70,7 +73,14 @@ export class AuthService {
 
       // Start new login with a small delay to ensure previous interactions are cleared
       await new Promise(resolve => setTimeout(resolve, 500));
-      await this.msalService.loginRedirect(loginRequest).toPromise();
+      
+      // Use tenant-specific login request
+      const tenantSpecificRequest = {
+        ...loginRequest,
+        authority: TENANT_AUTHORITY
+      };
+      
+      await this.msalService.loginRedirect(tenantSpecificRequest).toPromise();
     } catch (error) {
       if (error instanceof BrowserAuthError) {
         if (error.errorCode === 'interaction_in_progress') {
@@ -112,7 +122,10 @@ export class AuthService {
 
     try {
       this.isAuthenticating = true;
-      await this.msalService.logoutRedirect().toPromise();
+      const logoutRequest = {
+        authority: TENANT_AUTHORITY
+      };
+      await this.msalService.logoutRedirect(logoutRequest).toPromise();
     } catch (error) {
       this.snackBar.open('Error during logout', 'Close', {
         duration: 3000,
@@ -136,7 +149,8 @@ export class AuthService {
 
   getAccessToken(): Observable<string | null> {
     const request = {
-      scopes: protectedResources.graphMe.scopes
+      ...protectedResources.graphMe,
+      authority: TENANT_AUTHORITY
     };
 
     return this.msalService.acquireTokenSilent(request).pipe(

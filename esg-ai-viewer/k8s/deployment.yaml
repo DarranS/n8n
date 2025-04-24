@@ -14,10 +14,19 @@ spec:
       labels:
         app: esg-ai-viewer
     spec:
+      volumes:
+      - name: config-volume
+        configMap:
+          name: esg-ai-viewer-config
       containers:
       - name: esg-ai-viewer
         image: esgai.azurecr.io/esg-ai-viewer:latest
+        volumeMounts:
+        - name: config-volume
+          mountPath: /usr/share/nginx/html/assets/config
         env:
+        - name: NODE_ENV
+          value: "production"
         - name: WEBHOOK_URL
           value: "http://n8n.sheltononline.com"
         ports:

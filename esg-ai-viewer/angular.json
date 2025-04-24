@@ -46,7 +46,34 @@
                   "maximumError": "5kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/assets/config/config.json",
+                  "with": "src/assets/config/config.production.json"
+                }
+              ]
+            },
+            "staging": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "3mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "3kb",
+                  "maximumError": "5kb"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/assets/config/config.json",
+                  "with": "src/assets/config/config.staging.json"
+                }
+              ]
             },
             "development": {
               "buildOptimizer": false,
@@ -54,7 +81,13 @@
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/assets/config/config.json",
+                  "with": "src/assets/config/config.development.json"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -62,12 +95,14 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "esg-ai-viewer:build",
-            "proxyConfig": "proxy.conf.json"
+            "buildTarget": "esg-ai-viewer:build"
           },
           "configurations": {
             "production": {
               "buildTarget": "esg-ai-viewer:build:production"
+            },
+            "staging": {
+              "buildTarget": "esg-ai-viewer:build:staging"
             },
             "development": {
               "buildTarget": "esg-ai-viewer:build:development"

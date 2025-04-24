@@ -5,7 +5,7 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 ENV NODE_ENV=production
-RUN npm run build --configuration=production
+RUN npm run build -- --configuration=production --aot=true
 
 # Serve stage
 FROM nginx:alpine
