@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { MarkdownModule } from 'ngx-markdown';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-summary-tab',
@@ -22,7 +23,8 @@ import { takeUntil } from 'rxjs/operators';
     MatInputModule,
     MatSlideToggleModule,
     FormsModule,
-    MarkdownModule
+    MarkdownModule,
+    MatIconModule
   ],
   templateUrl: './summary-tab.component.html',
   styleUrl: './summary-tab.component.scss'
@@ -133,5 +135,15 @@ export class SummaryTabComponent implements OnChanges, OnDestroy, OnInit {
 
   refreshSummary(): void {
     this.loadSummary();
+  }
+
+  copyToClipboard(): void {
+    navigator.clipboard.writeText(this.summaryContent)
+      .then(() => {
+        console.log('Content copied to clipboard');
+      })
+      .catch(err => {
+        console.error('Failed to copy content: ', err);
+      });
   }
 }

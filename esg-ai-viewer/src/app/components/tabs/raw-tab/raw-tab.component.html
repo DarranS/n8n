@@ -1,5 +1,10 @@
 <div class="raw-tab-container">
-  <h2>Raw ESG Data</h2>
+  <div class="tab-header">
+    <h2>Raw ESG Data</h2>
+    <button mat-icon-button (click)="copyToClipboard()" title="Copy to clipboard">
+      <mat-icon>content_copy</mat-icon>
+    </button>
+  </div>
   <div class="json-container">
     <pre>{{ formattedData }}</pre>
   </div>

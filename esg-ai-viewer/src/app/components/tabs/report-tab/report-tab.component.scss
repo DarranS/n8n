@@ -16,22 +16,40 @@
     color: #333;
   }
 
-  .refresh-button {
-    background-color: #f0f0f0;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.3s;
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
 
-    &:hover {
-      background-color: #e0e0e0;
+    button {
+      &.mat-icon-button {
+        color: #666;
+        &:hover {
+          color: #333;
+        }
+        &:disabled {
+          color: #ccc;
+        }
+      }
     }
 
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    .refresh-button {
+      background-color: #f0f0f0;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #e0e0e0;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
     }
   }
 }

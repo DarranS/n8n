@@ -1,10 +1,15 @@
 <div class="summary-tab-container">
   <div class="summary-header">
     <h2>ESG Summary</h2>
-    <button mat-raised-button color="primary" class="refresh-button" (click)="refreshSummary()" [disabled]="loading">
-      <span *ngIf="!loading">Generate Summary</span>
-      <span *ngIf="loading">Generating...</span>
-    </button>
+    <div class="header-actions">
+      <button mat-icon-button (click)="copyToClipboard()" title="Copy to clipboard" [disabled]="!summaryContent">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <button mat-raised-button color="primary" class="refresh-button" (click)="refreshSummary()" [disabled]="loading">
+        <span *ngIf="!loading">Generate Summary</span>
+        <span *ngIf="loading">Generating...</span>
+      </button>
+    </div>
   </div>
 
   <div class="summary-settings">

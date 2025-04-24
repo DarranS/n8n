@@ -1,9 +1,14 @@
 <div class="report-tab-container">
   <div class="report-header">
     <h2>ESG Report</h2>
-    <button class="refresh-button" (click)="refreshReport()" [disabled]="loading">
-      Refresh
-    </button>
+    <div class="header-actions">
+      <button mat-icon-button (click)="copyToClipboard()" title="Copy to clipboard" [disabled]="!reportContent">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <button class="refresh-button" (click)="refreshReport()" [disabled]="loading">
+        Refresh
+      </button>
+    </div>
   </div>
 
   <div *ngIf="loading" class="loading-container">

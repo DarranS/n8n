@@ -4,11 +4,12 @@ import { EsgService } from '../../../services/esg.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MarkdownModule } from 'ngx-markdown';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-report-tab',
   standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule, MatButtonModule, MarkdownModule],
+  imports: [CommonModule, MatProgressSpinnerModule, MatButtonModule, MarkdownModule, MatIconModule],
   templateUrl: './report-tab.component.html',
   styleUrl: './report-tab.component.scss'
 })
@@ -55,5 +56,15 @@ export class ReportTabComponent implements OnChanges {
     if (this.data) {
       this.loadReport();
     }
+  }
+
+  copyToClipboard(): void {
+    navigator.clipboard.writeText(this.reportContent)
+      .then(() => {
+        console.log('Content copied to clipboard');
+      })
+      .catch(err => {
+        console.error('Failed to copy content: ', err);
+      });
   }
 }
