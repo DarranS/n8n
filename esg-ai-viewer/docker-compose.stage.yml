@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  esg-ai-viewer:
+    build: .
+    ports:
+      - "8080:80"
+    env_file:
+      - .env.stage
+    environment:
+      - NODE_ENV=staging
+      - NGINX_DEBUG=true
+    volumes:
+      - ./logs:/var/log/nginx
+    networks:
+      - esg-network
+    restart: unless-stopped
+
+networks:
+  esg-network:
+    driver: bridge 

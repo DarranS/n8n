@@ -1,16 +1,13 @@
+version: '3.8'
+
 services:
   esg-ai-viewer:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: esg-ai-viewer:latest
+    build: .
     ports:
-      - "8080:80"
+      - "4200:80"
     environment:
-      # Change this URL to point to your n8n webhook endpoint
-      - WEBHOOK_URL=https://n8n.sheltononline.com
-      # Enable Nginx debug logging
-      - NGINX_DEBUG=true
-    volumes:
-      - ./logs:/var/log/nginx
+      - NODE_ENV=production
+      - AUTH_CLIENT_ID=${AUTH_CLIENT_ID}
+      - AUTH_AUTHORITY=${AUTH_AUTHORITY}
+      - AUTH_REDIRECT_URI=${AUTH_REDIRECT_URI}
     restart: unless-stopped 

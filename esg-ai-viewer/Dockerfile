@@ -1,16 +1,21 @@
 # Build stage
-FROM node:18 as build
+FROM node:18-alpine as build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build --prod
+ENV NODE_ENV=production
+RUN npm run build --configuration=production
 
-# Production stage
+# Serve stage
 FROM nginx:alpine
 COPY --from=build /app/dist/esg-ai-viewer /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
 
-# When the container starts, replace the env.js with values from environment variables
-CMD ["/bin/sh",  "-c",  "nginx -g 'daemon off;'"] 
+# Create log directories and set permissions
+RUN mkdir -p /var/log/nginx && \
+    touch /var/log/nginx/error.log /var/log/nginx/access.log /var/log/nginx/webhook_error.log /var/log/nginx/webhook_access.log && \
+    chown -R nginx:nginx /var/log/nginx
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"] 

@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  esg-ai-viewer:
+    build: .
+    ports:
+      - "80:80"
+    env_file:
+      - .env.prod
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped 
