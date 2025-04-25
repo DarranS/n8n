@@ -313,8 +313,12 @@ export class HomeComponent implements OnInit, OnDestroy {
         next: (data) => {
           this.esgData = {
             ...data,
-            isin: companyId
+            id: companyId
           };
+          this.esgService.setCurrentCompanyData({
+            ...this.selectedCompany,
+            ...this.esgData
+          });
           this.loading = false;
         },
         error: (err: HttpErrorResponse) => {

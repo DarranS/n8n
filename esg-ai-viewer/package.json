@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --configuration=development --port 8080",
-    "start:prod": "ng serve --configuration=production --port 8080",
-    "start:stage": "ng serve --configuration=staging --port 8080",
+    "start": "ng serve --configuration=development --port 4201 --proxy-config proxy.conf.json",
+    "start:prod": "ng serve --configuration=production --port 4201 --proxy-config proxy.conf.json",
+    "start:stage": "ng serve --configuration=staging --port 4201 --proxy-config proxy.conf.json",
     "build": "ng build",
     "build:prod": "ng build --configuration=production",
     "build:stage": "ng build --configuration=staging",

@@ -158,13 +158,27 @@ export class EsgService {
   }
 
   getSummary(data: any, refreshRagData: boolean = false): Observable<string> {
+    // Get the ISIN/ID from either the input data or current company data
+    const esgID = data?.id || this.currentCompanyData?.id;
+    
+    if (!esgID) {
+      console.error('No company ID available', {
+        inputData: data,
+        currentCompanyData: this.currentCompanyData
+      });
+    }
+    
     const requestBody = {
-      ESGCompanyData: data.useRAG && !refreshRagData ? null : data,
-      useRAG: data.useRAG ?? true,
-      summaryLength: data.length ?? 1000,
-      esgID: this.currentCompanyData?.id,
+      ESGCompanyData: data,
+      useRAG: data?.useRAG ?? true,
+      summaryLength: data?.length ?? 1000,
+      esgID: esgID,
       refreshRAGData: refreshRagData
     };
+
+    console.log('Current company data:', this.currentCompanyData);
+    console.log('ESG Data:', data);
+    console.log('Summary request body:', requestBody);
 
     return this.http.post<any>(`${this.baseUrl}/ESG/Company/Summary/Description`, requestBody).pipe(
       map(response => {
