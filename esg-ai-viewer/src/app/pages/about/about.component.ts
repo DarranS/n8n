@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MarkdownModule, MarkdownService, SECURITY_CONTEXT } from 'ngx-markdown';
 import { CommonModule } from '@angular/common';
+import { BuildInfoService } from '../../services/build-info.service';
 
 @Component({
   selector: 'app-about',
@@ -16,10 +17,6 @@ import { CommonModule } from '@angular/common';
         <div class="info-row">
           <span class="label">Environment:</span>
           <span class="value">{{ environment }}</span>
-        </div>
-        <div class="info-row">
-          <span class="label">Build Time:</span>
-          <span class="value">{{ buildTime }}</span>
         </div>
       </div>
 
@@ -134,20 +131,21 @@ export class AboutComponent implements OnInit {
   readmeContent: string = '';
   isLoading: boolean = true;
   error: string = '';
-  buildTag: string = window.__BUILD_TAG__ || 'Not available';
+  buildTag: string = 'Not available';
   environment: string = 'Development';
-  buildTime: string = new Date().toISOString();
 
   constructor(
     private http: HttpClient,
-    private markdownService: MarkdownService
+    private markdownService: MarkdownService,
+    private buildInfoService: BuildInfoService
   ) {
     console.log('About component constructor');
-    console.log('Build tag:', this.buildTag);
   }
 
   ngOnInit() {
     console.log('About component initializing...');
+    this.buildTag = this.buildInfoService.getBuildTag();
+    this.environment = this.buildInfoService.getEnvironment();
     this.loadReadme();
   }
 

@@ -20,13 +20,16 @@ spec:
           name: esg-ai-viewer-config
       containers:
       - name: esg-ai-viewer
-        image: esgai.azurecr.io/esg-ai-viewer:latest
+        image: esgai.azurecr.io/esg-ai-viewer:20250425-134855
+        imagePullPolicy: Always
         volumeMounts:
         - name: config-volume
           mountPath: /usr/share/nginx/html/assets/config
         env:
         - name: NODE_ENV
           value: "production"
+        - name: BUILD_TAG
+          value: "20250425-134855"
         - name: WEBHOOK_URL
           value: "http://n8n.sheltononline.com"
         ports:

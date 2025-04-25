@@ -30,15 +30,15 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
           </div>
         </a>
         <nav class="nav">
-          <a *ngIf="isLoggedIn" routerLink="/" [class.active]="isActive('/', true)" class="nav-link">
+          <a *ngIf="isLoggedIn" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
             <span class="nav-icon">🔍</span>
             <span class="nav-text">Research</span>
           </a>
-          <a *ngIf="isLoggedIn" routerLink="/chat" [class.active]="isActive('/chat')" class="nav-link">
+          <a *ngIf="isLoggedIn" routerLink="/chat" routerLinkActive="active" class="nav-link">
             <span class="nav-icon">💬</span>
             <span class="nav-text">Chat</span>
           </a>
-          <a *ngIf="isLoggedIn" routerLink="/about" [class.active]="isActive('/about')" class="nav-link">
+          <a *ngIf="isLoggedIn" routerLink="/about" routerLinkActive="active" class="nav-link">
             <span class="nav-icon">ℹ️</span>
             <span class="nav-text">About</span>
           </a>
@@ -299,13 +299,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroying$.next(undefined);
     this.destroying$.complete();
-  }
-
-  isActive(route: string, exact: boolean = false): boolean {
-    if (exact) {
-      return this.currentUrl === route;
-    }
-    return this.currentUrl.startsWith(route);
   }
 
   login() {

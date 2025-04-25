@@ -1,69 +1,69 @@
 @echo off
-setlocal
+setlocal enabledelayedexpansion
 
-echo Checking required tools...
+REM Set variables
+set IMAGE_NAME=esg-ai-viewer
+set BUILD_TAG=%date:~10,4%%date:~4,2%%date:~7,2%-%time:~0,2%%time:~3,2%%time:~6,2%
+set BUILD_TAG=%BUILD_TAG: =0%
+set BUILD_TAG=%BUILD_TAG:/=-%
 
-where node >nul 2>nul
+REM Wait for Docker to be ready
+echo Waiting for Docker to be ready...
+:DOCKER_WAIT_LOOP
+docker ps >nul 2>&1
 if errorlevel 1 (
-    echo Error: Node.js is not installed or not in PATH
+    echo Docker not ready, waiting...
+    timeout /t 2 /nobreak >nul
+    goto DOCKER_WAIT_LOOP
+)
+echo Docker is ready
+
+REM Change to the project directory
+cd /d C:\DIF\AI\n8n\esg-ai-viewer
+
+REM Build the Docker image with build information
+echo Building Docker image with tag: %BUILD_TAG%
+docker build ^
+    --build-arg BUILD_TAG=%BUILD_TAG% ^
+    --build-arg ENVIRONMENT=Staging ^
+    -t %IMAGE_NAME%:latest ^
+    -t %IMAGE_NAME%:%BUILD_TAG% ^
+    -f Dockerfile .
+
+REM Stop any existing container
+echo Stopping existing container if running...
+docker stop %IMAGE_NAME% 2>nul
+docker rm %IMAGE_NAME% 2>nul
+
+REM Check if port 4202 is in use
+netstat -ano | findstr :4202 > nul
+if not errorlevel 1 (
+    echo Error: Port 4202 is already in use
+    echo Please free up port 4202 and try again
     exit /b 1
 )
 
-where npm >nul 2>nul
+REM Run the container locally
+echo Starting container locally...
+docker run -d ^
+    --name %IMAGE_NAME% ^
+    -p 4202:80 ^
+    -e BUILD_TAG=%BUILD_TAG% ^
+    -e ENVIRONMENT=Staging ^
+    %IMAGE_NAME%:latest
+
 if errorlevel 1 (
-    echo Error: npm is not installed or not in PATH
+    echo Error: Failed to start container
+    echo Please ensure port 4202 is available and try again
     exit /b 1
 )
 
-where docker >nul 2>nul
-if errorlevel 1 (
-    echo Error: Docker is not installed or not in PATH
-    exit /b 1
-)
+echo Stage deployment completed successfully
+echo Build Tag: %BUILD_TAG%
+echo Environment: Staging
+echo Application is running at http://localhost:4202
 
-where docker-compose >nul 2>nul
-if errorlevel 1 (
-    echo Error: Docker Compose is not installed or not in PATH
-    exit /b 1
-)
+REM Return to original directory
+cd /d %~dp0
 
-where az >nul 2>nul
-if errorlevel 1 (
-    echo Error: Azure CLI is not installed or not in PATH
-    exit /b 1
-)
-
-echo All tools are available.
-
-:: Change to esg-ai-viewer directory
-cd ..
-if not exist esg-ai-viewer (
-    echo Error: esg-ai-viewer directory not found
-    exit /b 1
-)
-cd esg-ai-viewer
-
-:: Install dependencies and build
-echo Installing dependencies and building...
-call npm install
-if errorlevel 1 (
-    echo Error: npm install failed
-    exit /b 1
-)
-
-call npm run build:stage
-if errorlevel 1 (
-    echo Error: npm build failed
-    exit /b 1
-)
-
-:: Build and deploy using docker-compose
-echo Building and deploying with docker-compose...
-docker-compose -f docker-compose.stage.yml up --build -d
-if errorlevel 1 (
-    echo Error: Docker deployment failed
-    exit /b 1
-)
-
-echo Stage deployment completed successfully!
-endlocal 
+endlocal

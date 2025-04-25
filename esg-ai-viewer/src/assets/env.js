@@ -1,7 +1,1 @@
-(function(window) {
-  window.__env = {
-    production: false,
-    apiUrl: 'http://localhost:3000',
-    buildTag: 'local-development'
-  };
-})(this); 
+window.__BUILD_TAG__ = '20250425-174938'; 
