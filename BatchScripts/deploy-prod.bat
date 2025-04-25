@@ -117,6 +117,14 @@ if exist k8s/config.yaml (
     )
 )
 
+:: Force restart of pods to pick up ConfigMap changes
+echo [INFO] Restarting pods to apply ConfigMap changes...
+kubectl rollout restart deployment esg-ai-viewer
+if errorlevel 1 (
+    echo [ERROR] Failed to restart deployment
+    exit /b 1
+)
+
 if exist k8s/deployment.yaml (
     echo [INFO] Applying deployment...
     kubectl apply -f k8s/deployment.yaml
@@ -142,6 +150,14 @@ if exist k8s/ingress.yaml (
         echo [ERROR] Kubernetes ingress deployment failed
         exit /b 1
     )
+)
+
+:: Wait for rollout to complete
+echo [INFO] Waiting for deployment rollout to complete...
+kubectl rollout status deployment/esg-ai-viewer --timeout=120s
+if errorlevel 1 (
+    echo [ERROR] Deployment rollout failed
+    exit /b 1
 )
 
 :: Verify deployment
