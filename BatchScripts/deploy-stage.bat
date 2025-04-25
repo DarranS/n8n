@@ -36,9 +36,8 @@ docker stop %IMAGE_NAME% 2>nul
 docker rm %IMAGE_NAME% 2>nul
 
 REM Check if port 4202 is in use
-netstat -ano | findstr :4202 > nul
-if not errorlevel 1 (
-    echo Error: Port 4202 is already in use
+for /f "tokens=5" %%a in ('netstat -aon ^| find ":4202" ^| find "LISTENING"') do (
+    echo [ERROR] Port 4202 is already in use
     echo Please free up port 4202 and try again
     exit /b 1
 )

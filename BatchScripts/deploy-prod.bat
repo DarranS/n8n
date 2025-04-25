@@ -23,8 +23,17 @@ if "%IMAGE_ID%"=="" (
     exit /b 1
 )
 
-:: Use the latest tag from staging (4-02-183110)
-set "STAGED_BUILD_TAG=4-02-183110"
+:: Get the latest tag from staging (excluding 'latest')
+for /f %%i in ('docker images esg-ai-viewer --format "{{.Tag}}" ^| findstr /v "latest" ^| findstr /r "^4-" ^| sort /r ^| findstr /b /v "prod-" ^| findstr . 2^>nul') do (
+    set "STAGED_BUILD_TAG=%%i"
+    goto :found_tag
+)
+:found_tag
+
+if "!STAGED_BUILD_TAG!"=="" (
+    echo [ERROR] Could not find tag for staged image
+    exit /b 1
+)
 
 echo [INFO] Using Build Tag from staging: !STAGED_BUILD_TAG!
 
