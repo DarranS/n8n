@@ -1,8 +1,21 @@
 @echo off
 setlocal enabledelayedexpansion
 
+:: Get current timestamp for unique tag
+for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /value') do set datetime=%%I
+set timestamp=%datetime:~0,8%-%datetime:~8,6%
+
 echo [INFO] Starting production deployment...
+echo [INFO] Using tag: %timestamp%
 echo [INFO] Checking required tools...
+
+:: Create a temporary environment file with the build tag
+echo [INFO] Creating environment file with build tag...
+echo window.__BUILD_TAG__ = '%timestamp%'; > src/assets/env.js
+if errorlevel 1 (
+    echo [ERROR] Failed to create environment file
+    exit /b 1
+)
 
 where node >nul 2>nul
 if errorlevel 1 (
@@ -84,17 +97,33 @@ if errorlevel 1 (
 
 :: Build and push Docker image
 echo [INFO] Building Docker image...
-docker build --progress=plain -t esg-ai-viewer:prod .
+docker build --progress=plain --build-arg BUILD_TAG=%timestamp% -t esg-ai-viewer:%timestamp% .
 if errorlevel 1 (
     echo [ERROR] Docker build failed
     exit /b 1
 )
 
 echo [INFO] Tagging and pushing Docker image...
-docker tag esg-ai-viewer:prod esgai.azurecr.io/esg-ai-viewer:prod
-docker push esgai.azurecr.io/esg-ai-viewer:prod
+docker tag esg-ai-viewer:%timestamp% esgai.azurecr.io/esg-ai-viewer:%timestamp%
+docker push esgai.azurecr.io/esg-ai-viewer:%timestamp%
 if errorlevel 1 (
     echo [ERROR] Docker push failed
+    exit /b 1
+)
+
+:: Update deployment image
+echo [INFO] Updating deployment image...
+kubectl set image deployment/esg-ai-viewer esg-ai-viewer=esgai.azurecr.io/esg-ai-viewer:%timestamp% --record
+if errorlevel 1 (
+    echo [ERROR] Failed to update deployment image
+    exit /b 1
+)
+
+:: Force pull new image by patching imagePullPolicy
+echo [INFO] Forcing new image pull...
+kubectl patch deployment esg-ai-viewer -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"esg-ai-viewer\",\"imagePullPolicy\":\"Always\"}]}}}}"
+if errorlevel 1 (
+    echo [ERROR] Failed to patch deployment
     exit /b 1
 )
 

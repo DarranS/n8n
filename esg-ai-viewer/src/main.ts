@@ -1,3 +1,5 @@
+/// <reference path="./types/global.d.ts" />
+
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import { provideRouter } from '@angular/router';
@@ -9,6 +11,9 @@ import { initializeMsalConfig } from './app/auth/auth-config';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 const tenantAuthority = 'https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e';
+
+// Initialize build info
+window.__BUILD_TAG__ = 'local-development';
 
 export async function MSALInstanceFactory(): Promise<IPublicClientApplication> {
   const config = await initializeMsalConfig();

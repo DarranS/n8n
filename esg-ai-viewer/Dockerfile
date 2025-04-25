@@ -1,10 +1,19 @@
 # Build stage
 FROM node:18-alpine as build
 WORKDIR /app
+
+# Add build argument
+ARG BUILD_TAG=development
+ENV BUILD_TAG=${BUILD_TAG}
+
 COPY package*.json ./
 RUN npm install
 COPY . .
 ENV NODE_ENV=production
+
+# Create the environment file with build tag
+RUN echo "window.__BUILD_TAG__ = '${BUILD_TAG}';" > src/assets/env.js
+
 RUN npm run build -- --configuration=production --aot=true
 
 # Serve stage

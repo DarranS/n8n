@@ -185,7 +185,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     }
 
     .logged-in-container {
-      padding: 1rem;
+      padding: 2rem;
+      margin-top: 1rem;
       
       ::ng-deep .mat-tab-group {
         margin-top: 1rem;

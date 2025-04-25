@@ -24,7 +24,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
       margin: 0 auto;
       padding: 2rem;
       height: calc(100vh - 120px);
-
+      
       h1 {
         color: #1976d2;
         margin-bottom: 2rem;

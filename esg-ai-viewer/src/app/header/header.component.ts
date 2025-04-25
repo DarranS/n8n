@@ -6,11 +6,12 @@ import { AuthService } from '../auth/auth.service';
 import { Subject } from 'rxjs';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { EventMessage, EventType, AuthenticationResult } from '@azure/msal-browser';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule, RouterLink, RouterLinkActive],
   template: `
     <header class="header">
       <div class="header-background"></div>

@@ -5,6 +5,7 @@ import { Observable, from } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { BrowserAuthError, PublicClientApplication, InteractionStatus } from '@azure/msal-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthenticationResult } from '@azure/msal-browser';
 
 const TENANT_ID = 'fcc16827-3d82-4edf-9dc2-5d034f97127e';
 const TENANT_AUTHORITY = `https://login.microsoftonline.com/${TENANT_ID}`;
@@ -53,88 +54,20 @@ export class AuthService {
 
   async login() {
     try {
-      const msalInstance = this.msalService.instance as PublicClientApplication;
-
-      // Try to clear any stuck interactions
-      try {
-        await msalInstance.handleRedirectPromise().catch(() => {
-          // Ignore any errors here as we're just trying to clear previous interactions
-        });
-      } catch (e) {
-        // Ignore any errors from clearing interactions
+      const result = await this.msalService.loginPopup().toPromise();
+      if (result) {
+        this.msalService.instance.setActiveAccount(result.account);
       }
-
-      // Check if there's an active account
-      if (msalInstance.getActiveAccount() === null && 
-          msalInstance.getAllAccounts().length > 0) {
-        // Set the first account as active if available
-        msalInstance.setActiveAccount(msalInstance.getAllAccounts()[0]);
-      }
-
-      // Start new login with a small delay to ensure previous interactions are cleared
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Use tenant-specific login request
-      const tenantSpecificRequest = {
-        ...loginRequest,
-        authority: TENANT_AUTHORITY
-      };
-      
-      await this.msalService.loginRedirect(tenantSpecificRequest).toPromise();
     } catch (error) {
-      if (error instanceof BrowserAuthError) {
-        if (error.errorCode === 'interaction_in_progress') {
-          this.snackBar.open('Login in progress, please wait a moment and try again', 'Clear Login', {
-            duration: 5000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom',
-          }).onAction().subscribe(() => {
-            this.clearLoginState();
-          });
-        } else {
-          this.snackBar.open(`Login error: ${error.errorMessage}`, 'Close', {
-            duration: 5000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom'
-          });
-          console.error('MSAL error:', error.errorCode, error.errorMessage);
-        }
-      } else {
-        this.snackBar.open('An unexpected error occurred during login', 'Close', {
-          duration: 5000,
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom'
-        });
-        console.error('Login error:', error);
-      }
+      console.error('Login failed:', error);
     }
   }
 
   async logout() {
-    if (this.isAuthenticating) {
-      this.snackBar.open('Logout in progress, please wait...', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom'
-      });
-      return;
-    }
-
     try {
-      this.isAuthenticating = true;
-      const logoutRequest = {
-        authority: TENANT_AUTHORITY
-      };
-      await this.msalService.logoutRedirect(logoutRequest).toPromise();
+      await this.msalService.logout().toPromise();
     } catch (error) {
-      this.snackBar.open('Error during logout', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom'
-      });
-      console.error('Logout error:', error);
-    } finally {
-      this.isAuthenticating = false;
+      console.error('Logout failed:', error);
     }
   }
 
@@ -142,9 +75,8 @@ export class AuthService {
     return this.msalService.instance.getAllAccounts().length > 0;
   }
 
-  getCurrentUser() {
-    const accounts = this.msalService.instance.getAllAccounts();
-    return accounts.length > 0 ? accounts[0] : null;
+  getActiveAccount() {
+    return this.msalService.instance.getActiveAccount();
   }
 
   getAccessToken(): Observable<string | null> {
