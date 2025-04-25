@@ -8,6 +8,7 @@ A web application for interacting with ESG AI through a chat interface, integrat
 - Docker and Docker Compose
 - Azure CLI
 - Azure subscription with AKS cluster access
+- kubectl configured with AKS cluster access
 
 ## Environment Configuration Management
 
@@ -159,6 +160,70 @@ tail -f ./logs/access.log
 
 ## AKS Deployment
 
+The ESG AI Viewer can be deployed using the automated batch scripts or manually following the steps below.
+
+### Automated Deployment
+
+#### Stage Deployment
+1. **Navigate to BatchScripts Directory**
+```bash
+cd BatchScripts
+```
+
+2. **Run Stage Deployment Script**
+```bash
+# This will deploy only to the Stage environment
+deploy-stage.bat
+```
+
+The stage deployment script will:
+- Check for required tools (Node.js, npm, Docker, Azure CLI, kubectl)
+- Login to Azure and Container Registry
+- Build the application for the stage environment
+- Create and push Docker image
+- Deploy to AKS
+- Verify the deployment
+
+#### Production Deployment
+1. **Navigate to BatchScripts Directory**
+```bash
+cd BatchScripts
+```
+
+2. **Run Production Deployment Script**
+```bash
+# This will deploy to the Production environment
+deploy-prod.bat
+```
+
+The production deployment script will:
+- Check for required tools (Node.js, npm, Docker, Azure CLI, kubectl)
+- Verify Kubernetes configuration
+- Login to Azure and Container Registry
+- Build the application for production
+- Create and push Docker image
+- Deploy to AKS with the following steps:
+  - Apply ConfigMap
+  - Apply Deployment
+  - Apply Service
+  - Apply Ingress
+- Verify the deployment with:
+  - Deployment status
+  - Pod status
+  - Service status
+  - Ingress status
+  - TLS certificate status
+  - Pod readiness check
+  - Application health check
+
+#### Full Deployment (Stage and Production)
+```bash
+# This will deploy to both Stage and Production environments
+deploy-web.bat
+```
+
+### Manual Deployment
+
 ### 1. Login to Azure and Container Registry
 ```bash
 # Login to Azure
@@ -194,9 +259,70 @@ kubectl get pods
 kubectl get services
 kubectl get ingress
 
+# Check TLS certificate status
+kubectl get certificate esg-ai-viewer-tls-prod
+
+# Wait for pods to be ready
+kubectl wait --for=condition=ready pod -l app=esg-ai-viewer --timeout=60s
+
 # View logs
 kubectl logs -f deployment/esg-ai-viewer
 ```
+
+## Python Deployment
+
+The Python components of the ESG AI system can be deployed using batch scripts located in the `BatchScripts` directory.
+
+### Prerequisites
+- Python 3.x installed and in PATH
+- pip package manager
+- requirements.txt file in the Python project directory
+
+### Deployment Process
+
+1. **Navigate to BatchScripts Directory**
+```bash
+cd BatchScripts
+```
+
+2. **Run Deployment Script**
+```bash
+# This will deploy to both Stage and Production environments
+deploy.bat
+```
+
+The deployment script will:
+- Create deployment directories for Stage and Production
+- Copy source files from PythonCode/ESGFlat/Python
+- Install dependencies from requirements.txt
+- Run tests to verify the deployment
+- Create the following directory structure:
+  ```
+  deploy/
+  ├── stage/
+  │   └── [Python files and dependencies]
+  └── production/
+      └── [Python files and dependencies]
+  ```
+
+### Environment-Specific Deployment
+
+The deployment script handles both Stage and Production environments automatically. Each environment gets its own isolated directory with all necessary files and dependencies.
+
+### Verification
+
+After deployment, you can verify the installation by:
+1. Checking the created directories in the `deploy` folder
+2. Verifying that all dependencies are installed
+3. Running the ESGCompanyWorkflow.py script in each environment
+
+### Troubleshooting
+
+If you encounter issues during deployment:
+1. Check that Python and pip are properly installed and in PATH
+2. Verify the requirements.txt file exists and is valid
+3. Ensure the source directory structure matches the expected paths
+4. Check for any error messages in the deployment output
 
 ## Troubleshooting
 
@@ -214,5 +340,14 @@ kubectl logs -f deployment/esg-ai-viewer
    - Check image tag matches exactly
    - Verify Docker Desktop is running
    - Check network connectivity to Azure
+   - Verify kubectl is properly configured with AKS
+   - Check TLS certificate status if HTTPS issues occur
+
+3. **Deployment Verification Issues**
+   - Check pod status and logs for errors
+   - Verify ingress configuration matches environment
+   - Ensure TLS certificate is properly configured
+   - Check network policies if connectivity issues occur
+   - Verify health check endpoint is accessible
 
 For support, please contact the development team or create an issue in the repository.

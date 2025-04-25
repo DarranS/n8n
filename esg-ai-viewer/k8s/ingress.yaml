@@ -9,10 +9,10 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - stage-esgaiviewer.sheltononline.com
-    secretName: esg-ai-viewer-tls-stage
+    - esgaiviewer.sheltononline.com
+    secretName: esg-ai-viewer-tls-prod
   rules:
-  - host: stage-esgaiviewer.sheltononline.com
+  - host: esgaiviewer.sheltononline.com
     http:
       paths:
       - path: /
