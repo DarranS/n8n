@@ -1,0 +1,32 @@
+@use '@angular/material' as mat;
+
+// Include the common styles for Angular Material
+@include mat.core();
+
+// Define custom palettes - Deep Purple and Amber
+$custom-primary: mat.define-palette(mat.$deep-purple-palette);
+$custom-accent: mat.define-palette(mat.$amber-palette, A200, A100, A400);
+$custom-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object
+$custom-theme: mat.define-light-theme((
+  color: (
+    primary: $custom-primary,
+    accent: $custom-accent,
+    warn: $custom-warn,
+  )
+));
+
+// Apply the theme to all Angular Material components
+@include mat.all-component-themes($custom-theme);
+
+// Custom styles
+.mat-toolbar {
+  background-color: #d32f2f !important;
+  color: white !important;
+}
+
+.mat-mdc-card {
+  background-color: white;
+  border: 1px solid #ffcdd2;
+} 
