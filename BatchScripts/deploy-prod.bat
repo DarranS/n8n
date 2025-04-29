@@ -1,30 +1,24 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: Get current timestamp for unique tag
-for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /value') do set datetime=%%I
-set timestamp=%datetime:~0,8%-%datetime:~8,6%
+:: Set the base directory
+set "BASE_DIR=%~dp0..\n8n-kubernetes-hosting"
+set "REGISTRY=esgai.azurecr.io"
+set "IMAGE_NAME=esg-ai-viewer"
 
 echo [INFO] Starting production deployment...
 echo [INFO] Using staged image...
 
 :: Login to Azure Container Registry
 echo [INFO] Logging in to Azure Container Registry...
-call az acr login --name esgai
+call az acr login -n esgai --expose-token
 if errorlevel 1 (
     echo [ERROR] Failed to login to Azure Container Registry
     exit /b 1
 )
 
-:: Get the latest staged image tag
-for /f %%i in ('docker images esg-ai-viewer:latest --format "{{.ID}}"') do set "IMAGE_ID=%%i"
-if "%IMAGE_ID%"=="" (
-    echo [ERROR] No staged image found
-    exit /b 1
-)
-
-:: Get the latest tag from staging (excluding 'latest')
-for /f %%i in ('docker images esg-ai-viewer --format "{{.Tag}}" ^| findstr /v "latest" ^| findstr /r "^4-" ^| sort /r ^| findstr /b /v "prod-" ^| findstr . 2^>nul') do (
+:: Get the latest staged image tag (excluding 'latest' and 'prod-')
+for /f %%i in ('docker images %REGISTRY%/%IMAGE_NAME% --format "{{.Tag}}" ^| findstr /v "latest" ^| findstr /r "^[0-9]" ^| sort /r ^| findstr /b /v "prod-" ^| findstr . 2^>nul') do (
     set "STAGED_BUILD_TAG=%%i"
     goto :found_tag
 )
@@ -37,27 +31,14 @@ if "!STAGED_BUILD_TAG!"=="" (
 
 echo [INFO] Using Build Tag from staging: !STAGED_BUILD_TAG!
 
-:: Tag the staged image for production
-echo [INFO] Tagging staged image for production...
-call docker tag esg-ai-viewer:latest esgai.azurecr.io/esg-ai-viewer:prod-%timestamp%
-if errorlevel 1 (
-    echo [ERROR] Failed to tag image
-    exit /b 1
-)
+:: Image is already tagged with registry name, no need to tag again
+echo [INFO] Using already tagged image...
 
 :: Push to Azure Container Registry
 echo [INFO] Pushing to Azure Container Registry...
-call docker push esgai.azurecr.io/esg-ai-viewer:prod-%timestamp%
+call docker push %REGISTRY%/%IMAGE_NAME%:!STAGED_BUILD_TAG!
 if errorlevel 1 (
     echo [ERROR] Failed to push image
-    exit /b 1
-)
-
-:: Update deployment with new tag and preserve BUILD_TAG
-echo [INFO] Updating deployment with new tag...
-call kubectl set image deployment/esg-ai-viewer esg-ai-viewer=esgai.azurecr.io/esg-ai-viewer:prod-%timestamp%
-if errorlevel 1 (
-    echo [ERROR] Failed to update deployment image
     exit /b 1
 )
 
@@ -67,56 +48,62 @@ echo [INFO] Deploying to AKS...
 :: Apply Kubernetes configurations
 echo [INFO] Applying Kubernetes configurations...
 
-:: Apply config
-echo [INFO] Applying config...
-call kubectl apply -f ..\esg-ai-viewer\k8s\config.yaml
+:: Apply namespace
+echo [INFO] Applying namespace...
+call kubectl apply -f "%BASE_DIR%\namespace.yaml"
 if errorlevel 1 (
-    echo [ERROR] Failed to apply config
+    echo [ERROR] Failed to apply namespace
     exit /b 1
 )
 
-:: Restart pods to apply ConfigMap changes
-echo [INFO] Restarting pods to apply ConfigMap changes...
-call kubectl rollout restart deployment esg-ai-viewer
+:: Apply cluster issuer
+echo [INFO] Applying cluster issuer...
+call kubectl apply -f "%BASE_DIR%\cluster-issuer.yaml"
 if errorlevel 1 (
-    echo [ERROR] Failed to restart deployment
+    echo [ERROR] Failed to apply cluster issuer
     exit /b 1
 )
 
-:: Apply deployment with production environment and preserve BUILD_TAG
-echo [INFO] Applying deployment...
-call kubectl set env deployment/esg-ai-viewer ENVIRONMENT=Production BUILD_TAG=!STAGED_BUILD_TAG!
-if errorlevel 1 (
-    echo [ERROR] Failed to set environment variables
-    exit /b 1
-)
+:: Apply postgres configurations
+echo [INFO] Applying postgres configurations...
+call kubectl apply -f "%BASE_DIR%\postgres-configmap.yaml"
+call kubectl apply -f "%BASE_DIR%\postgres-secret.yaml"
+call kubectl apply -f "%BASE_DIR%\postgres-claim0-persistentvolumeclaim.yaml"
+call kubectl apply -f "%BASE_DIR%\postgres-deployment.yaml"
+call kubectl apply -f "%BASE_DIR%\postgres-service.yaml"
 
-:: Apply service
-echo [INFO] Applying service...
-call kubectl apply -f ..\esg-ai-viewer\k8s\service.yaml
-if errorlevel 1 (
-    echo [ERROR] Failed to apply service
-    exit /b 1
-)
+:: Apply n8n configurations
+echo [INFO] Applying n8n configurations...
+call kubectl apply -f "%BASE_DIR%\n8n-claim0-persistentvolumeclaim.yaml"
+call kubectl apply -f "%BASE_DIR%\n8n-service.yaml"
+call kubectl apply -f "%BASE_DIR%\n8n-deployment.yaml"
+call kubectl apply -f "%BASE_DIR%\n8n-ingress.yaml"
 
-:: Apply ingress
-echo [INFO] Applying ingress...
-call kubectl apply -f ..\esg-ai-viewer\k8s\ingress.yaml
+:: Apply ESG AI Viewer configurations
+echo [INFO] Applying ESG AI Viewer configurations...
+call kubectl apply -f "%BASE_DIR%\esg-ai-viewer-service-account.yaml"
+call kubectl apply -f "%BASE_DIR%\esg-ai-viewer-deployment.yaml"
+call kubectl apply -f "%BASE_DIR%\esg-ai-viewer-service.yaml"
+call kubectl apply -f "%BASE_DIR%\esg-ai-viewer-ingress.yaml"
+
+:: Update deployment with new tag
+echo [INFO] Updating deployment with new tag...
+call kubectl set image deployment/esg-ai-viewer -n n8n esg-ai-viewer=%REGISTRY%/%IMAGE_NAME%:!STAGED_BUILD_TAG!
 if errorlevel 1 (
-    echo [ERROR] Failed to apply ingress
+    echo [ERROR] Failed to update deployment image
     exit /b 1
 )
 
 :: Wait for rollout to complete
 echo [INFO] Waiting for deployment rollout to complete...
-call kubectl rollout status deployment/esg-ai-viewer --timeout=300s
+call kubectl rollout status deployment/esg-ai-viewer -n n8n --timeout=300s
 if errorlevel 1 (
     echo [ERROR] Deployment rollout failed
     exit /b 1
 )
 
 echo [INFO] Production deployment completed successfully!
-echo [INFO] Image: esgai.azurecr.io/esg-ai-viewer:prod-%timestamp%
+echo [INFO] Image: %REGISTRY%/%IMAGE_NAME%:!STAGED_BUILD_TAG!
 echo [INFO] Build Tag: !STAGED_BUILD_TAG!
 
 endlocal 

@@ -6,13 +6,16 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_headers "Content-Security-Policy: frame-ancestors 'self' http://localhost:4200 https://your-app-domain.com";
-      more_set_headers "X-Frame-Options: ALLOW-FROM http://localhost:4200 https://your-app-domain.com";
+    nginx.ingress.kubernetes.io/proxy-body-size: "200m"
+    # Use a safer annotation to set Content-Security-Policy
+    nginx.ingress.kubernetes.io/csp: "frame-ancestors 'self' http://localhost:4200"
+    # Add other recommended security headers
+    nginx.ingress.kubernetes.io/add-header-X-Content-Type-Options: "nosniff"
+    nginx.ingress.kubernetes.io/add-header-Referrer-Policy: "strict-origin-when-cross-origin"
 spec:
   ingressClassName: nginx
   rules:
-  - host: n8n.sheltononline.com  # Replace with your domain from Step 1
+  - host: n8n.sheltononline.com
     http:
       paths:
       - path: /
@@ -21,8 +24,8 @@ spec:
           service:
             name: n8n
             port:
-              number: 80
+              number: 5678
   tls:
   - hosts:
-    - n8n.sheltononline.com  # Replace with your domain
+    - n8n.sheltononline.com
     secretName: n8n-tls

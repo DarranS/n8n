@@ -20,6 +20,7 @@ ARG BUILD_TAG
 ARG ENVIRONMENT
 ENV BUILD_TAG=${BUILD_TAG:-"not set"}
 ENV ENVIRONMENT=${ENVIRONMENT:-"Development"}
+ENV PORT=8080
 
 # Copy the built app and configuration
 COPY --from=build /app/dist/esg-ai-viewer /usr/share/nginx/html
@@ -34,7 +35,7 @@ RUN mkdir -p /var/log/nginx && \
     touch /var/log/nginx/error.log /var/log/nginx/access.log /var/log/nginx/webhook_error.log /var/log/nginx/webhook_access.log && \
     chown -R nginx:nginx /var/log/nginx
 
-EXPOSE 80
+EXPOSE 8080
 
 # Use our custom entrypoint script
 ENTRYPOINT ["/docker-entrypoint.sh"] 

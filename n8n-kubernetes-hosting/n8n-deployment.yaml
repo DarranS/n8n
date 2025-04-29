@@ -53,6 +53,8 @@ spec:
               value: https # Changed from http to https
             - name: N8N_PORT
               value: "5678"
+            - name: N8N_PAYLOAD_SIZE_MAX
+              value: "200"
             - name: WEBHOOK_URL
               value: "https://n8n.sheltononline.com/" # Added for webhook URL fix
           #image: n8nio/n8n:latest # Changed to latest version

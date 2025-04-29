@@ -1,9 +1,9 @@
 {
   "auth": {
-    "clientId": "0b1db0b1-d35d-441b-aa4f-4cdcfeff0691",
+    "clientId": "7425393c-f84e-435c-83e5-c76aec2230c4",
     "authority": "https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e",
-    "redirectUri": "http://localhost:8080",
-    "postLogoutRedirectUri": "http://localhost:8080",
+    "redirectUri": "http://localhost:4202",
+    "postLogoutRedirectUri": "http://localhost:4202",
     "navigateToLoginRequestUrl": true,
     "cacheLocation": "localStorage",
     "scopes": ["user.read", "openid", "profile", "email"]

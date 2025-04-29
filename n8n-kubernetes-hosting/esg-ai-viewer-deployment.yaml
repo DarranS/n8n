@@ -18,13 +18,13 @@ spec:
       serviceAccountName: esg-ai-viewer-sa
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 3000
-        fsGroup: 2000
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
       containers:
       - name: esg-ai-viewer
-        image: esgai.azurecr.io/esg-ai-viewer:latest
-        imagePullPolicy: Always
+        image: esgai.azurecr.io/esg-ai-viewer:20250429-003332
+        imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
@@ -34,8 +34,10 @@ spec:
         env:
         - name: WEBHOOK_URL
           value: "https://n8n.sheltononline.com"
+        - name: PORT
+          value: "8080"
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         resources:
           requests:
             memory: "256Mi"
@@ -43,15 +45,37 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
+        volumeMounts:
+        - name: nginx-tmp
+          mountPath: /tmp
+        - name: nginx-cache
+          mountPath: /var/cache/nginx
+        - name: nginx-run
+          mountPath: /var/run
+        - name: nginx-logs
+          mountPath: /var/log/nginx
+        - name: assets
+          mountPath: /usr/share/nginx/html/assets
         livenessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 8080
           initialDelaySeconds: 5
-          periodSeconds: 5 
+          periodSeconds: 5
+      volumes:
+      - name: nginx-tmp
+        emptyDir: {}
+      - name: nginx-cache
+        emptyDir: {}
+      - name: nginx-run
+        emptyDir: {}
+      - name: nginx-logs
+        emptyDir: {}
+      - name: assets
+        emptyDir: {} 
