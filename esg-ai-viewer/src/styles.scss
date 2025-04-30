@@ -1,7 +1,38 @@
 /* You can add global styles to this file, and also import other style files */
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+// Include the common styles for Angular Material. We're using a prebuilt theme
+// configured in angular.json, so we only need the core styles.
+@use '@angular/material' as mat;
+@include mat.core();
 
 /* Global Styles */
+:root {
+  --background-color: #fafafa;
+  --text-color: rgba(0, 0, 0, 0.87);
+  --header-gradient-start: #1a5f7a;
+  --header-gradient-end: #2e7d32;
+  --header-hover-opacity: 0.1;
+  --header-active-opacity: 0.2;
+  --button-background: rgba(255, 255, 255, 0.2);
+  --button-hover-background: rgba(255, 255, 255, 0.3);
+  --card-background: #ffffff;
+  --border-color: rgba(0, 0, 0, 0.12);
+}
+
+// Dark theme styles
+.dark-theme {
+  --background-color: #303030;
+  --text-color: #ffffff;
+  --header-gradient-start: #0d2d3a;
+  --header-gradient-end: #1b5e20;
+  --header-hover-opacity: 0.15;
+  --header-active-opacity: 0.25;
+  --button-background: rgba(255, 255, 255, 0.25);
+  --button-hover-background: rgba(255, 255, 255, 0.35);
+  --card-background: #424242;
+  --border-color: rgba(255, 255, 255, 0.12);
+}
+
 html, body {
   height: 100%;
   margin: 0;
@@ -9,8 +40,9 @@ html, body {
 }
 
 body {
-  background-color: #fafafa;
-  color: #333;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Custom Material Overrides */

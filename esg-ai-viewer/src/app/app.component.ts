@@ -1,11 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
+import { ThemeService } from './services/theme.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, HeaderComponent],
   template: `
-    <div class="app-container">
+    <div class="app-container" [class.dark-theme]="isDarkTheme$ | async" [class.light-theme]="!(isDarkTheme$ | async)">
       <app-header></app-header>
       <main>
         <router-outlet></router-outlet>
@@ -13,23 +18,32 @@ import { HeaderComponent } from './header/header.component';
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      min-height: 100vh;
+    }
+
     .app-container {
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      min-height: 100vh;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     main {
-      flex: 1;
-      overflow: auto;
-      margin-top: 64px; /* Height of the header */
+      padding: 20px;
+      margin-top: 80px;
     }
-  `],
-  standalone: true,
-  imports: [RouterOutlet, HeaderComponent]
+  `]
 })
-export class AppComponent {
-  title = 'ESG AI Viewer';
+export class AppComponent implements OnInit {
+  isDarkTheme$: Observable<boolean>;
+
+  constructor(private themeService: ThemeService) {
+    this.isDarkTheme$ = this.themeService.isDarkTheme$;
+  }
+
+  ngOnInit() {
+    // Theme service will automatically initialize based on user preferences
+  }
 }

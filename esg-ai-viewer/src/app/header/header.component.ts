@@ -7,11 +7,24 @@ import { Subject } from 'rxjs';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { EventMessage, EventType, AuthenticationResult } from '@azure/msal-browser';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { ThemeService } from '../services/theme.service';
+import { Observable } from 'rxjs';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule, CommonModule, RouterLink, RouterLinkActive],
+  imports: [
+    RouterModule,
+    CommonModule,
+    RouterLink,
+    RouterLinkActive,
+    MatToolbarModule,
+    MatIconModule,
+    MatSlideToggleModule
+  ],
   template: `
     <header class="header">
       <div class="header-background"></div>
@@ -42,6 +55,15 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
             <span class="nav-icon">ℹ️</span>
             <span class="nav-text">About</span>
           </a>
+          <div class="theme-toggle">
+            <mat-icon>light_mode</mat-icon>
+            <mat-slide-toggle
+              [checked]="isDarkTheme$ | async"
+              (change)="toggleTheme()"
+              color="accent"
+            ></mat-slide-toggle>
+            <mat-icon>dark_mode</mat-icon>
+          </div>
           <button *ngIf="!isLoggedIn" (click)="login()" class="auth-button">
             <span class="button-icon">🔑</span>
             <span class="button-text">Login</span>
@@ -175,6 +197,22 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
             }
           }
 
+          .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+
+            mat-icon {
+              font-size: 20px;
+              width: 20px;
+              height: 20px;
+              color: white;
+            }
+          }
+
           .auth-button {
             padding: 0.5rem 1rem;
             border: none;
@@ -240,6 +278,10 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
               padding: 0.5rem;
               font-size: 0.9rem;
             }
+
+            .theme-toggle {
+              padding: 0.25rem;
+            }
           }
         }
       }
@@ -251,13 +293,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   currentUrl = '';
   isLoggedIn = false;
   private readonly destroying$ = new Subject<void>();
+  isDarkTheme$: Observable<boolean>;
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private msalService: MsalService,
-    private msalBroadcastService: MsalBroadcastService
-  ) {}
+    private msalBroadcastService: MsalBroadcastService,
+    private themeService: ThemeService
+  ) {
+    this.isDarkTheme$ = this.themeService.isDarkTheme$;
+  }
 
   async ngOnInit() {
     // Subscribe to route changes
@@ -307,5 +353,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   logout() {
     this.authService.logout();
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 }
