@@ -17,20 +17,321 @@
   --button-hover-background: rgba(255, 255, 255, 0.3);
   --card-background: #ffffff;
   --border-color: rgba(0, 0, 0, 0.12);
+  --surface-background: #ffffff;
+  --input-background: #ffffff;
+  --code-background: #f8f9fa;
+  --scrollbar-track: #f1f1f1;
+  --scrollbar-thumb: #888;
+  --scrollbar-thumb-hover: #555;
+  --placeholder-color: rgba(0, 0, 0, 0.6);
 }
 
 // Dark theme styles
 .dark-theme {
-  --background-color: #303030;
-  --text-color: #ffffff;
+  --background-color: #121212;
+  --text-color: rgba(255, 255, 255, 0.87);
   --header-gradient-start: #0d2d3a;
   --header-gradient-end: #1b5e20;
   --header-hover-opacity: 0.15;
   --header-active-opacity: 0.25;
-  --button-background: rgba(255, 255, 255, 0.25);
-  --button-hover-background: rgba(255, 255, 255, 0.35);
-  --card-background: #424242;
+  --button-background: rgba(255, 255, 255, 0.1);
+  --button-hover-background: rgba(255, 255, 255, 0.15);
+  --card-background: #1e1e1e;
   --border-color: rgba(255, 255, 255, 0.12);
+  --surface-background: #1e1e1e;
+  --input-background: #2d2d2d;
+  --code-background: #2d2d2d;
+  --scrollbar-track: #1e1e1e;
+  --scrollbar-thumb: #666;
+  --scrollbar-thumb-hover: #888;
+  --placeholder-color: rgba(255, 255, 255, 0.6);
+
+  // Override Material styles for dark theme
+  background-color: var(--background-color) !important;
+  color: var(--text-color) !important;
+
+  // Company picker styles
+  .mat-mdc-form-field {
+    .mat-mdc-form-field-flex {
+      background-color: var(--input-background) !important;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      background-color: var(--input-background) !important;
+    }
+
+    input.mat-mdc-input-element {
+      color: var(--text-color) !important;
+
+      &::placeholder {
+        color: var(--placeholder-color) !important;
+      }
+    }
+
+    .mat-mdc-form-field-label {
+      color: var(--placeholder-color) !important;
+    }
+  }
+
+  // No selection message
+  .no-selection-message {
+    background-color: var(--card-background) !important;
+    
+    h2 {
+      color: var(--text-color) !important;
+    }
+    
+    p {
+      color: var(--placeholder-color) !important;
+    }
+  }
+
+  // Tab components styles
+  .raw-tab-container,
+  .report-tab-container,
+  .summary-tab-container {
+    background-color: var(--card-background) !important;
+    color: var(--text-color) !important;
+    padding: 1.5rem !important;
+
+    .tab-header,
+    .report-header,
+    .summary-header {
+      h2 {
+        color: var(--text-color) !important;
+      }
+
+      button {
+        color: rgba(255, 255, 255, 0.7) !important;
+        &:hover {
+          color: var(--text-color) !important;
+        }
+        &:disabled {
+          color: rgba(255, 255, 255, 0.3) !important;
+        }
+      }
+
+      .refresh-button {
+        background-color: var(--input-background) !important;
+        color: var(--text-color) !important;
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        &:disabled {
+          opacity: 0.5;
+        }
+      }
+    }
+
+    .json-container {
+      background-color: var(--code-background) !important;
+      color: var(--text-color) !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+      border-radius: 8px !important;
+      padding: 1.5rem !important;
+      margin-top: 1rem !important;
+
+      pre {
+        color: var(--text-color) !important;
+        background-color: transparent !important;
+        margin: 0 !important;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+      }
+    }
+
+    .report-content,
+    .summary-content {
+      background-color: var(--code-background) !important;
+      color: var(--text-color) !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+
+      pre, code {
+        color: var(--text-color) !important;
+        background-color: var(--code-background) !important;
+      }
+    }
+
+    .summary-settings {
+      background-color: var(--input-background) !important;
+      color: var(--text-color) !important;
+
+      .mat-mdc-form-field {
+        .mat-mdc-text-field-wrapper {
+          background-color: var(--card-background) !important;
+        }
+      }
+    }
+
+    .loading-container {
+      p {
+        color: var(--text-color) !important;
+      }
+    }
+
+    .error-container {
+      background-color: #2c1515 !important;
+      color: #ff8080 !important;
+
+      button {
+        background-color: #d32f2f !important;
+        color: white !important;
+        &:hover {
+          background-color: #b71c1c !important;
+        }
+      }
+    }
+
+    .empty-state {
+      background-color: var(--card-background) !important;
+      color: var(--text-color) !important;
+
+      p {
+        color: var(--text-color) !important;
+        &.hint {
+          color: rgba(255, 255, 255, 0.6) !important;
+        }
+      }
+    }
+
+    // Custom scrollbar styles
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--scrollbar-track) !important;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb) !important;
+      border-radius: 4px;
+      &:hover {
+        background: var(--scrollbar-thumb-hover) !important;
+      }
+    }
+  }
+
+  // Research page specific styles
+  .logged-in-container {
+    background-color: var(--background-color) !important;
+    color: var(--text-color) !important;
+
+    .mat-mdc-form-field {
+      background-color: var(--input-background) !important;
+      border-radius: 4px;
+      
+      .mat-mdc-text-field-wrapper {
+        background-color: var(--input-background) !important;
+      }
+
+      .mat-mdc-form-field-flex {
+        background-color: var(--input-background) !important;
+      }
+
+      input {
+        color: var(--text-color) !important;
+      }
+    }
+
+    .no-selection-message {
+      background-color: var(--card-background) !important;
+      color: var(--text-color) !important;
+    }
+
+    .tab-container {
+      background-color: var(--card-background) !important;
+      color: var(--text-color) !important;
+
+      .mat-mdc-tab-body-content {
+        background-color: var(--card-background) !important;
+        color: var(--text-color) !important;
+      }
+    }
+
+    .loading-container {
+      background-color: var(--card-background) !important;
+      color: var(--text-color) !important;
+    }
+
+    .error-container {
+      background-color: #2c1515 !important;
+      color: #ff8080 !important;
+    }
+  }
+
+  // About page specific styles
+  .about-container {
+    background-color: var(--background-color) !important;
+    color: var(--text-color) !important;
+
+    .build-info {
+      background-color: var(--card-background) !important;
+      color: var(--text-color) !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+
+      h3 {
+        color: var(--text-color) !important;
+      }
+
+      .info-row {
+        .label {
+          color: rgba(255, 255, 255, 0.7) !important;
+        }
+        .value {
+          color: var(--text-color) !important;
+        }
+      }
+    }
+
+    .markdown-content {
+      background-color: var(--card-background) !important;
+      color: var(--text-color) !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    }
+  }
+
+  // Material components overrides
+  .mat-mdc-card,
+  .mdc-card,
+  .mat-app-background,
+  .mat-drawer-container,
+  .mat-sidenav-container {
+    background-color: var(--background-color) !important;
+    color: var(--text-color) !important;
+  }
+
+  // Surface elements
+  .mat-mdc-menu-panel,
+  .mat-mdc-select-panel,
+  .mat-mdc-dialog-container,
+  .mdc-dialog__surface,
+  .mat-mdc-autocomplete-panel {
+    background-color: var(--surface-background) !important;
+    color: var(--text-color) !important;
+
+    .mat-mdc-option {
+      color: var(--text-color) !important;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      &.mat-mdc-option-active {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+      }
+    }
+  }
+
+  // Text elements
+  h1, h2, h3, h4, h5, h6,
+  p,
+  span,
+  div {
+    color: var(--text-color) !important;
+  }
 }
 
 html, body {

@@ -1,0 +1,81 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.company-selector {
+  width: 100%;
+  background-color: var(--surface-container);
+  border-radius: 4px;
+
+  ::ng-deep {
+    // Override Material's label styles with high specificity
+    .mdc-floating-label,
+    .mdc-floating-label.mdc-floating-label,
+    .mat-mdc-floating-label,
+    .mat-mdc-form-field-label {
+      color: var(--text-primary) !important;
+    }
+
+    // Ensure the label stays visible when floating
+    .mdc-floating-label--float-above {
+      color: var(--text-primary) !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      background-color: var(--surface-container) !important;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      background-color: var(--surface-container) !important;
+    }
+
+    .mat-mdc-form-field-infix {
+      min-height: 40px !important;
+    }
+
+    // Fix input text color in dark mode
+    input.mat-mdc-input-element {
+      color: var(--text-primary) !important;
+
+      &::placeholder {
+        color: var(--text-secondary) !important;
+      }
+    }
+
+    // Fix dropdown option colors in dark mode
+    .mat-mdc-option {
+      font-size: 14px;
+      height: 36px;
+      color: var(--text-primary);
+      
+      &:hover {
+        background-color: var(--surface-container-highest);
+      }
+    }
+
+    // Fix outline color
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--text-secondary) !important;
+    }
+
+    .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+    .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+    .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+      border-color: var(--text-primary) !important;
+    }
+
+    // Additional label overrides for Material 3
+    .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label,
+    .mat-mdc-form-field.mat-focused .mdc-floating-label {
+      color: var(--text-primary) !important;
+    }
+
+    // Override for the filled state
+    .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-floating-label {
+      color: var(--text-primary) !important;
+    }
+  }
+} 

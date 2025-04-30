@@ -37,37 +37,7 @@ import { Company, CompanyService } from '../../services/company.service';
       </mat-autocomplete>
     </mat-form-field>
   `,
-  styles: [`
-    :host {
-      display: block;
-      width: 100%;
-    }
-    
-    .company-selector {
-      width: 100%;
-      background-color: white;
-      border-radius: 4px;
-    }
-
-    ::ng-deep {
-      .mat-mdc-form-field-flex {
-        background-color: white !important;
-      }
-
-      .mat-mdc-text-field-wrapper {
-        background-color: white !important;
-      }
-
-      .mat-mdc-form-field-infix {
-        min-height: 40px !important;
-      }
-
-      .mat-mdc-option {
-        font-size: 14px;
-        height: 36px;
-      }
-    }
-  `]
+  styleUrls: ['./company-selector.component.scss']
 })
 export class CompanySelectorComponent implements OnInit {
   companyCtrl = new FormControl<Company | string>('');

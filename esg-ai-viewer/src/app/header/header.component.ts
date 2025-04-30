@@ -26,7 +26,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatSlideToggleModule
   ],
   template: `
-    <header class="header">
+    <header class="header" [class.dark-mode]="isDarkTheme$ | async">
       <div class="header-background"></div>
       <div class="header-content">
         <a routerLink="/" class="logo">
@@ -90,6 +90,10 @@ import { MatIconModule } from '@angular/material/icon';
       display: flex;
       align-items: center;
       color: white;
+
+      &.dark-mode {
+        background: #121212;
+      }
 
       .header-background {
         position: absolute;

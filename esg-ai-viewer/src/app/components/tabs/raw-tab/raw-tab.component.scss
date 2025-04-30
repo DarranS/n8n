@@ -14,20 +14,20 @@
 
     h2 {
       margin: 0;
-      color: #333;
+      color: var(--text-primary);
     }
 
     button {
-      color: #666;
+      color: var(--text-secondary);
       &:hover {
-        color: #333;
+        color: var(--text-primary);
       }
     }
   }
 }
 
 .json-container {
-  background-color: #f8f9fa;
+  background-color: var(--surface-container);
   border-radius: 8px;
   padding: 1.5rem;
   overflow-y: auto;
@@ -39,7 +39,7 @@
     font-family: 'Courier New', Courier, monospace;
     font-size: 14px;
     line-height: 1.5;
-    color: #333;
+    color: var(--text-primary);
     white-space: pre-wrap;
   }
 }
