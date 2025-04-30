@@ -1,18 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { ThemeService } from '../../services/theme.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="chat-container">
+    <div class="chat-container" [class.dark-mode]="isDarkTheme$ | async">
       <h1>ESG AI Chat</h1>
       <div class="content">
         <div class="chat-interface">
           <div class="chat-frame">
-            <iframe [src]="chatUrl" class="chat-iframe" title="ESG Chatbot"></iframe>
+            <iframe [src]="chatUrl$ | async" class="chat-iframe" title="ESG Chatbot"></iframe>
           </div>
         </div>
       </div>
@@ -26,9 +28,23 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
       height: calc(100vh - 120px);
       
       h1 {
-        color: #1976d2;
+        color: var(--text-primary);
         margin-bottom: 2rem;
         text-align: center;
+      }
+
+      &.dark-mode {
+        h1 {
+          color: var(--text-primary);
+        }
+
+        .chat-interface {
+          background: var(--surface-container) !important;
+
+          .chat-frame {
+            background: var(--surface-container) !important;
+          }
+        }
       }
 
       .content {
@@ -122,14 +138,26 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   `]
 })
 export class ChatPageComponent implements OnInit {
-  chatUrl: SafeResourceUrl;
+  chatUrl$: any;
+  isDarkTheme$;
 
-  constructor(private sanitizer: DomSanitizer) {
-    const chatEndpoint = 'https://n8n.sheltononline.com/webhook/047eecfa-1a30-4d08-a9fa-ab0271c4409a/chat';
-    this.chatUrl = this.sanitizer.bypassSecurityTrustResourceUrl(chatEndpoint);
+  constructor(
+    private sanitizer: DomSanitizer,
+    private themeService: ThemeService
+  ) {
+    this.isDarkTheme$ = this.themeService.isDarkTheme$;
+    
+    // Create an observable that combines the theme state with the URL
+    this.chatUrl$ = this.isDarkTheme$.pipe(
+      map(isDark => {
+        const baseUrl = 'https://n8n.sheltononline.com/webhook/047eecfa-1a30-4d08-a9fa-ab0271c4409a/chat';
+        const url = isDark ? `${baseUrl}?theme=dark` : baseUrl;
+        return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+      })
+    );
   }
 
   ngOnInit() {
-    // No need to subscribe to company changes anymore
+    // No initialization needed
   }
 } 
