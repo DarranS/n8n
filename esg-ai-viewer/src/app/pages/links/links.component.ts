@@ -1,14 +1,33 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-links',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="links-container">
+    <div class="links-container" [class.dark-mode]="isDarkTheme$ | async">
       <h1>ESG Resources & Links</h1>
       <div class="content">
+        <section>
+          <h2>Development Tools</h2>
+          <div class="link-grid">
+            <a href="https://n8n.io/" target="_blank" class="link-card">
+              <h3>N8N</h3>
+              <p>Workflow automation platform for connecting different services and applications.</p>
+            </a>
+            <a href="https://azure.microsoft.com/" target="_blank" class="link-card">
+              <h3>Microsoft Azure</h3>
+              <p>Cloud computing platform and services for building, testing, and managing applications.</p>
+            </a>
+            <a href="https://lgt.com/" target="_blank" class="link-card">
+              <h3>LGT</h3>
+              <p>Private banking and asset management services.</p>
+            </a>
+          </div>
+        </section>
+
         <section>
           <h2>ESG Resources</h2>
           <div class="link-grid">
@@ -88,6 +107,50 @@ import { CommonModule } from '@angular/common';
       max-width: 1200px;
       margin: 0 auto;
       padding: 2rem;
+      min-height: 100vh;
+      transition: background-color 0.3s ease;
+
+      &.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+
+        h1 {
+          color: #64b5f6;
+        }
+
+        h2 {
+          color: #e0e0e0;
+          border-bottom-color: #333;
+        }
+
+        .content {
+          section {
+            .link-grid {
+              .link-card {
+                background-color: #1e1e1e;
+                color: #ffffff;
+                border: 1px solid #333;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+                &:hover {
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 12px rgba(100, 181, 246, 0.2);
+                  border-color: #64b5f6;
+                  background-color: #2a2a2a;
+                }
+
+                h3 {
+                  color: #64b5f6;
+                }
+
+                p {
+                  color: #b0b0b0;
+                }
+              }
+            }
+          }
+        }
+      }
 
       h1 {
         color: #1976d2;
@@ -118,7 +181,7 @@ import { CommonModule } from '@angular/common';
               text-decoration: none;
               color: inherit;
               box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-              transition: transform 0.2s ease, box-shadow 0.2s ease;
+              transition: all 0.2s ease;
 
               &:hover {
                 transform: translateY(-2px);
@@ -151,4 +214,10 @@ import { CommonModule } from '@angular/common';
     }
   `]
 })
-export class LinksComponent {} 
+export class LinksComponent {
+  isDarkTheme$;
+
+  constructor(private themeService: ThemeService) {
+    this.isDarkTheme$ = this.themeService.isDarkTheme$;
+  }
+} 

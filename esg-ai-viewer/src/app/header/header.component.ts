@@ -51,6 +51,10 @@ import { MatIconModule } from '@angular/material/icon';
             <span class="nav-icon">💬</span>
             <span class="nav-text">Chat</span>
           </a>
+          <a *ngIf="isLoggedIn" routerLink="/links" routerLinkActive="active" class="nav-link">
+            <span class="nav-icon">🔗</span>
+            <span class="nav-text">Links</span>
+          </a>
           <a *ngIf="isLoggedIn" routerLink="/about" routerLinkActive="active" class="nav-link">
             <span class="nav-icon">ℹ️</span>
             <span class="nav-text">About</span>
