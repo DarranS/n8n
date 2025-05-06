@@ -1,15 +1,17 @@
 @echo off
 setlocal enabledelayedexpansion
 
+REM Remove existing container if it exists
+docker rm -f esg-ai-viewer 2>nul
+
 REM Set variables
 set REGISTRY=esgai.azurecr.io
 set IMAGE_NAME=esg-ai-viewer
 for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /value') do set datetime=%%I
 set BUILD_TAG=%datetime:~0,8%-%datetime:~8,6%
 
-REM Copy staging config
-echo Copying staging configuration
-copy /Y src\assets\config\config.staging.json src\assets\config\config.json
+REM Copy production config
+copy /Y src\assets\config\config.production.json src\assets\config\config.json
 
 REM Build the Docker image with build information
 echo Building Docker image with tag: %BUILD_TAG%

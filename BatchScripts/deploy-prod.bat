@@ -18,7 +18,7 @@ if errorlevel 1 (
 )
 
 :: Get the latest staged image tag (excluding 'latest' and 'prod-')
-for /f %%i in ('docker images %REGISTRY%/%IMAGE_NAME% --format "{{.Tag}}" ^| findstr /v "latest" ^| findstr /r "^[0-9]" ^| sort /r ^| findstr /b /v "prod-" ^| findstr . 2^>nul') do (
+for /f %%i in ('docker images esg-ai-viewer --format "{{.Tag}}" ^| findstr /v "latest" ^| findstr /r "^[0-9]" ^| sort /r ^| findstr . 2^>nul') do (
     set "STAGED_BUILD_TAG=%%i"
     goto :found_tag
 )
@@ -30,6 +30,13 @@ if "!STAGED_BUILD_TAG!"=="" (
 )
 
 echo [INFO] Using Build Tag from staging: !STAGED_BUILD_TAG!
+
+:: Tag the latest local image with the registry prefix
+docker tag esg-ai-viewer:!STAGED_BUILD_TAG! %REGISTRY%/%IMAGE_NAME%:!STAGED_BUILD_TAG!
+if errorlevel 1 (
+    echo [ERROR] Failed to tag image for registry
+    exit /b 1
+)
 
 :: Image is already tagged with registry name, no need to tag again
 echo [INFO] Using already tagged image...

@@ -24,6 +24,7 @@ ENV PORT=8080
 
 # Copy the built app and configuration
 COPY --from=build /app/dist/esg-ai-viewer /usr/share/nginx/html
+RUN mkdir -p /usr/share/nginx/html/assets/config/
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 

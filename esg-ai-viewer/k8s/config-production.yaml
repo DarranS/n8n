@@ -16,7 +16,7 @@ data:
         "scopes": ["user.read", "openid", "profile", "email"]
       },
       "buildInfo": {
-        "buildTag": "20250429-011608",
+        "buildTag": "20250506-084838",
         "environment": "Production"
       }
     } 

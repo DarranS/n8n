@@ -8,6 +8,7 @@ import { CompanySelectorComponent } from '../components/company-selector/company
 import { AuthService } from '../auth/auth.service';
 import { CompanyService } from '../services/company.service';
 import { EsgService } from '../services/esg.service';
+import { ThemeService } from '../services/theme.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -28,7 +29,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   template: `
     <ng-container *ngIf="!isLoggedIn; else loggedInContent">
       <!-- Welcome page for non-logged in users -->
-      <div class="home-container">
+      <div class="home-container" [class.dark-mode]="isDarkTheme$ | async">
         <h1>Welcome to ESG AI Viewer</h1>
         <div class="content">
           <section class="hero">
@@ -110,6 +111,47 @@ import { HttpErrorResponse } from '@angular/common/http';
       max-width: 1200px;
       margin: 0 auto;
       padding: 2rem;
+      min-height: 100vh;
+      transition: background-color 0.3s ease;
+
+      &.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+
+        h1 {
+          color: #64b5f6;
+        }
+
+        h2 {
+          color: #e0e0e0;
+        }
+
+        p {
+          color: #b0b0b0;
+        }
+
+        .feature-card {
+          background-color: #1e1e1e;
+          color: #ffffff;
+          border: 1px solid #333;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(100, 181, 246, 0.2);
+            border-color: #64b5f6;
+            background-color: #2a2a2a;
+          }
+
+          h3 {
+            color: #64b5f6 !important;
+          }
+
+          p {
+            color: #b0b0b0 !important;
+          }
+        }
+      }
 
       h1 {
         color: #1976d2;
@@ -152,7 +194,7 @@ import { HttpErrorResponse } from '@angular/common/http';
             border-radius: 8px;
             padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.2s ease;
 
             &:hover {
               transform: translateY(-2px);
@@ -271,12 +313,16 @@ export class HomeComponent implements OnInit, OnDestroy {
   error: string | null = null;
   errorDetails: string | null = null;
   private destroy$ = new Subject<void>();
+  isDarkTheme$;
 
   constructor(
     private authService: AuthService,
     private companyService: CompanyService,
-    private esgService: EsgService
-  ) {}
+    private esgService: EsgService,
+    private themeService: ThemeService
+  ) {
+    this.isDarkTheme$ = this.themeService.isDarkTheme$;
+  }
 
   ngOnInit() {
     this.isLoggedIn = this.authService.isLoggedIn();

@@ -1,4 +1,5 @@
 {
+  "environment": "Production",
   "auth": {
     "clientId": "200b5caf-1971-4d5c-9d82-2a2b1dadc626",
     "authority": "https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e",

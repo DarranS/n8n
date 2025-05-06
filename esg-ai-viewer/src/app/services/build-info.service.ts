@@ -7,6 +7,7 @@ declare global {
 }
 
 import { Injectable } from '@angular/core';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,30 +16,22 @@ export class BuildInfoService {
   private buildTag: string;
   private environment: string = 'Development';
 
-  constructor() {
-    this.buildTag = window.__BUILD_TAG__ || 'unknown';
-
-    // Wait for window to be available and then initialize
-    if (typeof window !== 'undefined') {
-      this.initializeBuildInfo();
-    } else {
-      // In SSR context, wait for window
-      setTimeout(() => this.initializeBuildInfo(), 0);
-    }
+  constructor(private configService: ConfigService) {
+    this.buildTag = (window as any).__BUILD_TAG__ || 'unknown';
+    this.initializeBuildInfo();
   }
 
   private initializeBuildInfo(): void {
     try {
-      // Get build info from window (set by env.js)
-      const tag = window.__BUILD_TAG__;
-      const env = window.__ENVIRONMENT__;
-
-      if (tag) {
-        this.buildTag = tag;
-      }
-      
-      if (env) {
+      // Prefer configService environment if loaded
+      const env = this.configService.environment;
+      if (env && env !== 'Unknown') {
         this.environment = env;
+      } else if (typeof window !== 'undefined') {
+        const winEnv = (window as any).__ENVIRONMENT__;
+        if (winEnv) {
+          this.environment = winEnv;
+        }
       }
     } catch (error) {
       console.error('Error initializing build info:', error);

@@ -12,6 +12,7 @@ services:
       - NGINX_DEBUG=true
     volumes:
       - ./logs:/var/log/nginx
+      - ./src/assets/config/config.staging.json:/usr/share/nginx/html/assets/config/config.json
     networks:
       - esg-network
     restart: unless-stopped
