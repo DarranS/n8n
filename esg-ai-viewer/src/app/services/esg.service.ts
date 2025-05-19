@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
+import { timeout } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -92,6 +93,7 @@ export class EsgService {
     });
 
     return this.http.post<any>(`${this.baseUrl}/ESG/Company/Summary/Report`, requestBody).pipe(
+      timeout(600000), // 10 minutes
       map(response => {
         // Extract the relevant data from the response
         const reportData = response?.CompanyESGReport || response;
@@ -181,6 +183,7 @@ export class EsgService {
     console.log('Summary request body:', requestBody);
 
     return this.http.post<any>(`${this.baseUrl}/ESG/Company/Summary/Description`, requestBody).pipe(
+      timeout(600000), // 10 minutes
       map(response => {
         // Extract the relevant data from the response
         const summaryData = response?.CompanyESGSummary || response;

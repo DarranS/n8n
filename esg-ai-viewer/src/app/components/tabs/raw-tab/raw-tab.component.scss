@@ -1,4 +1,5 @@
 .raw-tab-container {
+  background-color: var(--surface-container);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -33,6 +34,7 @@
   overflow-y: auto;
   flex: 1;
   box-sizing: border-box;
+  color: var(--text-primary);
 
   pre {
     margin: 0;

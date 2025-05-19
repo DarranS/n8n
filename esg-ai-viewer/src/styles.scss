@@ -24,6 +24,7 @@
   --scrollbar-thumb: #888;
   --scrollbar-thumb-hover: #555;
   --placeholder-color: rgba(0, 0, 0, 0.6);
+  --surface-container: #fff;
 }
 
 // Dark theme styles
@@ -45,6 +46,7 @@
   --scrollbar-thumb: #666;
   --scrollbar-thumb-hover: #888;
   --placeholder-color: rgba(255, 255, 255, 0.6);
+  --surface-container: #181818;
 
   // Override Material styles for dark theme
   background-color: var(--background-color) !important;
@@ -418,4 +420,27 @@ body {
 
 .mdc-text-field--outlined {
   --mdc-outlined-text-field-container-height: 48px !important;
+}
+
+.company-selector-container {
+  background-color: var(--surface-container) !important;
+}
+
+/* Dark theme: main content and tab controls */
+.dark-theme .main-content,
+.dark-theme .content-container,
+.dark-theme .page-container {
+  background-color: var(--background-color) !important;
+}
+
+.dark-theme .mat-mdc-tab-group,
+.dark-theme .mat-mdc-tab-header {
+  background-color: var(--surface-container) !important;
+}
+
+.dark-theme textarea.mat-input-element, .dark-theme textarea[matinput] {
+  color: var(--text-color) !important;
+  background-color: var(--input-background) !important;
+  border-color: var(--text-color) !important;
+  caret-color: var(--text-color) !important;
 }

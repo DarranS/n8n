@@ -2,7 +2,7 @@
   max-width: 600px;
   margin: 2rem auto;
   padding: 2rem;
-  background: #fff;
+  background-color: var(--surface-container);
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.08);
 }
@@ -22,7 +22,7 @@
   margin: 1rem 0;
 }
 .error-container {
-  color: #d32f2f;
+  color: var(--error-color, #ff5252);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -30,4 +30,40 @@
 }
 .answer-container {
   margin-top: 2rem;
+}
+
+.dark-theme .question-tab-container, .dark-theme .question-tab-container * {
+  color: var(--text-color) !important;
+}
+
+.dark-theme .question-tab-container .mat-form-field,
+.dark-theme .question-tab-container .mat-label,
+.dark-theme .question-tab-container textarea,
+.dark-theme .question-tab-container input {
+  color: var(--text-color) !important;
+  background-color: var(--input-background) !important;
+}
+
+.dark-theme .question-tab-container .mat-form-field-label {
+  color: var(--text-color) !important;
+}
+
+.dark-theme .question-tab-container .mat-form-field textarea.mat-input-element,
+.dark-theme .question-tab-container textarea.mat-input-element {
+  color: var(--text-color) !important;
+  background-color: var(--input-background) !important;
+}
+
+.dark-theme .question-tab-container .mat-form-field textarea.mat-input-element::placeholder,
+.dark-theme .question-tab-container textarea.mat-input-element::placeholder {
+  color: var(--text-color) !important;
+  opacity: 0.7;
+}
+
+.dark-theme .question-form textarea[matinput],
+.dark-theme .question-form textarea.mat-input-element {
+  color: var(--text-color) !important;
+  background-color: var(--input-background) !important;
+  border-color: var(--text-color) !important;
+  caret-color: var(--text-color) !important;
 } 
