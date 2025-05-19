@@ -9,22 +9,27 @@ import { IPublicClientApplication, PublicClientApplication, InteractionType, Bro
 import { initializeMsalConfig } from './auth/auth-config';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { environment } from '../environments/environment';
+import { inject } from '@angular/core';
 
 const tenantAuthority = 'https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
-  const config = {
+  const configService = inject(ConfigService);
+  const config = configService.getConfig();
+  if (!config) {
+    throw new Error('Config not loaded!');
+  }
+  return new PublicClientApplication({
     auth: {
-      clientId: '0b1db0b1-d35d-441b-aa4f-4cdcfeff0691',
-      authority: 'https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e',
-      redirectUri: 'http://localhost:4201',
-      postLogoutRedirectUri: 'http://localhost:4201',
-      navigateToLoginRequestUrl: true,
-      cacheLocation: 'localStorage',
-      scopes: ['user.read', 'openid', 'profile', 'email']
+      clientId: config.auth.clientId,
+      authority: config.auth.authority,
+      redirectUri: config.auth.redirectUri,
+      postLogoutRedirectUri: config.auth.postLogoutRedirectUri,
+      navigateToLoginRequestUrl: config.auth.navigateToLoginRequestUrl,
+      knownAuthorities: ['login.microsoftonline.com']
     },
     cache: {
-      cacheLocation: BrowserCacheLocation.LocalStorage,
+      cacheLocation: config.auth.cacheLocation || 'localStorage',
       storeAuthStateInCookie: false,
       claimsBasedCachingEnabled: true
     },
@@ -37,8 +42,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
         piiLoggingEnabled: false
       }
     }
-  };
-  return new PublicClientApplication(config);
+  });
 }
 
 export function MSALGuardConfigFactory() {

@@ -1,6 +1,21 @@
 @echo off
 setlocal enabledelayedexpansion
 
+echo [INFO] Updating production config ConfigMap...
+kubectl create configmap esg-ai-viewer-config --from-file=config.json=..\esg-ai-viewer\src\assets\config\config.production.json -n n8n --dry-run=client -o yaml > ..\esg-ai-viewer\k8s\esg-ai-viewer-configmap.yaml
+kubectl apply -f ..\esg-ai-viewer\k8s\esg-ai-viewer-configmap.yaml
+if errorlevel 1 (
+    echo [ERROR] Failed to update config ConfigMap
+    exit /b 1
+)
+
+echo [INFO] Copying production configuration...
+copy /Y ..\esg-ai-viewer\src\assets\config\config.production.json ..\esg-ai-viewer\src\assets\config\config.json
+if errorlevel 1 (
+    echo [ERROR] Failed to copy production config
+    exit /b 1
+)
+
 :: Set the base directory
 set "BASE_DIR=%~dp0..\n8n-kubernetes-hosting"
 set "REGISTRY=esgai.azurecr.io"

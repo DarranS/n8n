@@ -3,6 +3,11 @@
 # Start the development environment
 echo "Starting ESG AI Viewer in development mode..."
 
+# Copy development config to runtime config
+cp ../config.development.json ../config.json
+
+echo "Development config copied to config.json."
+
 # Check if Docker is running
 if ! docker info > /dev/null 2>&1; then
     echo "Docker is not running. Please start Docker and try again."

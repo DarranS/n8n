@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { PublicClientApplication, Configuration, AuthenticationResult, InteractionRequiredAuthError, AccountInfo, LogLevel } from '@azure/msal-browser';
-import { environment } from '../../environments/environment';
 import { BehaviorSubject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { ConfigService } from '../services/config.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -14,19 +14,24 @@ export class AuthService {
 
   constructor(
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private configService: ConfigService
   ) {
-    const config: Configuration = {
+    const config = this.configService.getConfig();
+    if (!config) {
+      throw new Error('Config not loaded!');
+    }
+    this.msalInstance = new PublicClientApplication({
       auth: {
-        clientId: environment.auth.clientId,
-        authority: environment.auth.authority,
-        redirectUri: environment.auth.redirectUri,
-        postLogoutRedirectUri: environment.auth.postLogoutRedirectUri,
-        navigateToLoginRequestUrl: environment.auth.navigateToLoginRequestUrl,
+        clientId: config.auth.clientId,
+        authority: config.auth.authority,
+        redirectUri: config.auth.redirectUri,
+        postLogoutRedirectUri: config.auth.postLogoutRedirectUri,
+        navigateToLoginRequestUrl: config.auth.navigateToLoginRequestUrl,
         knownAuthorities: ['login.microsoftonline.com'],
       },
       cache: {
-        cacheLocation: 'localStorage',
+        cacheLocation: config.auth.cacheLocation || 'localStorage',
         storeAuthStateInCookie: false,
       },
       system: {
@@ -40,8 +45,7 @@ export class AuthService {
           piiLoggingEnabled: false,
         },
       },
-    };
-    this.msalInstance = new PublicClientApplication(config);
+    });
     this.initializeMsal().catch(error => console.error('Failed to initialize MSAL:', error));
   }
 
@@ -69,9 +73,13 @@ export class AuthService {
 
   async login(): Promise<void> {
     await this.initializeMsal();
+    const config = this.configService.getConfig();
+    if (!config) {
+      throw new Error('Config not loaded!');
+    }
     try {
       const loginResponse = await this.msalInstance.loginPopup({
-        scopes: environment.auth.scopes,
+        scopes: config.auth.scopes,
         prompt: 'select_account',
       });
       console.log('[MSAL] Login response:', loginResponse);
@@ -122,6 +130,10 @@ export class AuthService {
   async getToken(): Promise<string | null> {
     await this.initializeMsal();
     const account = this.msalInstance.getActiveAccount() || this.msalInstance.getAllAccounts()[0];
+    const config = this.configService.getConfig();
+    if (!config) {
+      throw new Error('Config not loaded!');
+    }
     console.log('[MSAL] getToken - active account:', account);
     if (!account) {
       await this.login();
@@ -130,7 +142,7 @@ export class AuthService {
     try {
       const tokenResponse = await this.msalInstance.acquireTokenSilent({
         account,
-        scopes: environment.auth.scopes,
+        scopes: config.auth.scopes,
       });
       console.log('[MSAL] Token acquired:', tokenResponse);
       return tokenResponse.accessToken;

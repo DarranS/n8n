@@ -1,10 +1,10 @@
 {
-  "environment": "Staging",
+  "environment": "Production",
   "auth": {
-    "clientId": "7425393c-f84e-435c-83e5-c76aec2230c4",
+    "clientId": "200b5caf-1971-4d5c-9d82-2a2b1dadc626",
     "authority": "https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e",
-    "redirectUri": "http://localhost:4202",
-    "postLogoutRedirectUri": "http://localhost:4202",
+    "redirectUri": "https://esgaiviewer.sheltononline.com",
+    "postLogoutRedirectUri": "https://esgaiviewer.sheltononline.com",
     "navigateToLoginRequestUrl": true,
     "cacheLocation": "localStorage",
     "scopes": ["user.read", "openid", "profile", "email"]

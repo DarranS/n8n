@@ -1,3 +1,5 @@
+// This file is now redundant as config is loaded via ConfigService and used in MSALInstanceFactory and AuthService.
+
 import { Configuration, BrowserCacheLocation, LogLevel } from '@azure/msal-browser';
 import { environment } from '../../environments/environment';
 
@@ -32,8 +34,7 @@ export async function initializeMsalConfig(): Promise<Configuration> {
         redirectUri: config.auth.redirectUri,
         postLogoutRedirectUri: config.auth.postLogoutRedirectUri,
         navigateToLoginRequestUrl: config.auth.navigateToLoginRequestUrl,
-        knownAuthorities: ['login.microsoftonline.com'],
-        protocolMode: 'AAD'
+        knownAuthorities: ['login.microsoftonline.com']
       },
       cache: {
         cacheLocation: BrowserCacheLocation.LocalStorage,
@@ -60,8 +61,7 @@ export async function initializeMsalConfig(): Promise<Configuration> {
         redirectUri: environment.auth.redirectUri,
         postLogoutRedirectUri: environment.auth.postLogoutRedirectUri,
         navigateToLoginRequestUrl: true,
-        knownAuthorities: ['login.microsoftonline.com'],
-        protocolMode: 'AAD'
+        knownAuthorities: ['login.microsoftonline.com']
       },
       cache: {
         cacheLocation: BrowserCacheLocation.LocalStorage,
