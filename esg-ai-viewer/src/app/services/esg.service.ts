@@ -273,4 +273,12 @@ export class EsgService {
   private generateReportFromData(data: any): string {
     return "TBD";
   }
+
+  askQuestion(prompt: string): Observable<string> {
+    // Always use the remote endpoint
+    const url = 'https://n8n.sheltononline.com/webhook/Question';
+    const body = { Prompt: prompt };
+    const headers = { 'Content-Type': 'application/json' };
+    return this.http.post(url, body, { headers, responseType: 'text' });
+  }
 } 

@@ -25,7 +25,7 @@
       <p>{{ errorDetails }}</p>
       <p class="note">You may need to check network connectivity or ensure the API endpoint is accessible.</p>
     </div>
-    <button mat-raised-button color="primary" (click)="fetchESGData(selectedCompany?.id || '')" class="retry-button">
+    <button mat-raised-button color="primary" (click)="retryLoad()" class="retry-button">
       Retry
     </button>
   </div>
@@ -40,6 +40,9 @@
       </mat-tab>
       <mat-tab label="Summary">
         <app-summary-tab [data]="esgData"></app-summary-tab>
+      </mat-tab>
+      <mat-tab label="Question">
+        <app-question-tab [companyName]="selectedCompany?.name"></app-question-tab>
       </mat-tab>
     </mat-tab-group>
   </div>
