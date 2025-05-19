@@ -1,0 +1,49 @@
+<div class="home-container">
+  <div class="company-selector-container">
+    <div class="selector-wrapper">
+      <div class="selector-row">
+        <app-company-selector></app-company-selector>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!selectedCompany" class="no-selection-message">
+    <h2>Select a company to view ESG data</h2>
+    <p>Use the dropdown above to select a company.</p>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading ESG data...</p>
+  </div>
+
+  <div *ngIf="error" class="error-container">
+    <h3>Error</h3>
+    <p>{{ error }}</p>
+    <div *ngIf="errorDetails" class="error-details">
+      <h4>Details:</h4>
+      <p>{{ errorDetails }}</p>
+      <p class="note">You may need to check network connectivity or ensure the API endpoint is accessible.</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="retryLoad()" class="retry-button">
+      Retry
+    </button>
+  </div>
+
+  <div *ngIf="selectedCompany && esgData && !loading && !error" class="tab-container">
+    <mat-tab-group>
+      <mat-tab label="Raw">
+        <app-raw-tab [data]="esgData"></app-raw-tab>
+      </mat-tab>
+      <mat-tab label="Report">
+        <app-report-tab [data]="esgData"></app-report-tab>
+      </mat-tab>
+      <mat-tab label="Summary">
+        <app-summary-tab [data]="esgData"></app-summary-tab>
+      </mat-tab>
+      <mat-tab label="Question">
+        <app-question-tab [companyName]="selectedCompany.name"></app-question-tab>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div> 

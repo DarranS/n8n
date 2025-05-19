@@ -1,0 +1,34 @@
+<div class="public-landing" *ngIf="!isLoggedIn">
+  <div class="welcome-section">
+    <h2 class="welcome-title">Welcome to ESG AI Viewer</h2>
+    <h3 class="welcome-subtitle">Intelligent ESG Analysis</h3>
+    <p class="welcome-description">
+      Leverage the power of artificial intelligence to gain deeper insights into Environmental, Social, and Governance (ESG) data. Our platform helps you make informed decisions about corporate sustainability and responsibility.
+    </p>
+  </div>
+  <div class="features-section">
+    <h3>Key Features</h3>
+    <div class="features-grid">
+      <div class="feature-card">
+        <h4 class="feature-title">AI-Powered Analysis</h4>
+        <p>Advanced algorithms analyze ESG data to provide meaningful insights and trends.</p>
+      </div>
+      <div class="feature-card">
+        <h4 class="feature-title">Interactive Chat</h4>
+        <p>Ask questions and get instant answers about company ESG performance.</p>
+      </div>
+      <div class="feature-card">
+        <h4 class="feature-title">Comprehensive Data</h4>
+        <p>Access detailed ESG metrics and reports from multiple reliable sources.</p>
+      </div>
+      <div class="feature-card">
+        <h4 class="feature-title">Real-time Updates</h4>
+        <p>Stay informed with the latest ESG developments and company updates.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Existing content for logged-in users remains below, wrapped in *ngIf="isLoggedIn" -->
+<div *ngIf="isLoggedIn">
+  <!-- ... existing company selector, tabs, etc ... -->
+</div> 

@@ -9,6 +9,7 @@ import { MSAL_INSTANCE, MSAL_GUARD_CONFIG, MSAL_INTERCEPTOR_CONFIG, MsalGuard, M
 import { IPublicClientApplication, PublicClientApplication, InteractionType, BrowserCacheLocation } from '@azure/msal-browser';
 import { initializeMsalConfig } from './app/auth/auth-config';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { appConfig } from './app/app.config';
 
 const tenantAuthority = 'https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e';
 
@@ -59,34 +60,7 @@ export function MSALInterceptorConfigFactory() {
 
 async function bootstrap() {
   try {
-    const msalInstance = await MSALInstanceFactory();
-    
-    await bootstrapApplication(AppComponent, {
-      providers: [
-        provideRouter(routes),
-        provideHttpClient(),
-        {
-          provide: MSAL_INSTANCE,
-          useValue: msalInstance
-        },
-        {
-          provide: MSAL_GUARD_CONFIG,
-          useFactory: MSALGuardConfigFactory
-        },
-        {
-          provide: MSAL_INTERCEPTOR_CONFIG,
-          useFactory: MSALInterceptorConfigFactory
-        },
-        MsalService,
-        MsalGuard,
-        MsalBroadcastService,
-        {
-          provide: HTTP_INTERCEPTORS,
-          useClass: MsalInterceptor,
-          multi: true
-        }
-      ]
-    });
+    await bootstrapApplication(AppComponent, appConfig);
   } catch (error) {
     console.error('Error bootstrapping application:', error);
   }

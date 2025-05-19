@@ -4,8 +4,6 @@ import { CommonModule } from '@angular/common';
 import { filter, takeUntil } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { Subject } from 'rxjs';
-import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
-import { EventMessage, EventType, AuthenticationResult } from '@azure/msal-browser';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
 import { Observable } from 'rxjs';
@@ -43,7 +41,7 @@ import { MatIconModule } from '@angular/material/icon';
           </div>
         </a>
         <nav class="nav">
-          <a *ngIf="isLoggedIn" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+          <a *ngIf="isLoggedIn" routerLink="/research" routerLinkActive="active" class="nav-link">
             <span class="nav-icon">🔍</span>
             <span class="nav-text">Research</span>
           </a>
@@ -306,14 +304,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private msalService: MsalService,
-    private msalBroadcastService: MsalBroadcastService,
     private themeService: ThemeService
   ) {
     this.isDarkTheme$ = this.themeService.isDarkTheme$;
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     // Subscribe to route changes
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
@@ -323,31 +319,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
 
     // Subscribe to auth state changes
-    this.msalBroadcastService.msalSubject$
-      .pipe(
-        filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS || 
-                                    msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS),
-        takeUntil(this.destroying$)
-      )
-      .subscribe((result: EventMessage) => {
-        if (result.payload) {
-          const payload = result.payload as AuthenticationResult;
-          this.msalService.instance.setActiveAccount(payload.account);
-          this.isLoggedIn = true;
-        }
+    this.authService.getLoggedInStatus()
+      .pipe(takeUntil(this.destroying$))
+      .subscribe(isLoggedIn => {
+        this.isLoggedIn = isLoggedIn;
       });
-
-    this.msalBroadcastService.msalSubject$
-      .pipe(
-        filter((msg: EventMessage) => msg.eventType === EventType.LOGOUT_SUCCESS),
-        takeUntil(this.destroying$)
-      )
-      .subscribe(() => {
-        this.isLoggedIn = false;
-      });
-
-    // Initialize login state
-    this.isLoggedIn = this.authService.isLoggedIn();
   }
 
   ngOnDestroy() {

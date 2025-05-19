@@ -41,13 +41,13 @@
 
       a {
         text-decoration: none;
-        color: #666;
+        color: var(--text-color);
         font-weight: 500;
         transition: color 0.2s ease;
         white-space: nowrap;
 
         &:hover {
-          color: #333;
+          color: #1976d2;
         }
 
         &.active {
@@ -76,4 +76,14 @@
       }
     }
   }
+}
+
+.dark-theme .header {
+  background-color: var(--card-background) !important;
+}
+.dark-theme .header .nav a {
+  color: var(--text-color) !important;
+}
+.dark-theme .header .nav a.active {
+  color: #90caf9 !important;
 } 

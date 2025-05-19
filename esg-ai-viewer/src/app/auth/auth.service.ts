@@ -1,129 +1,147 @@
 import { Injectable } from '@angular/core';
-import { MsalService } from '@azure/msal-angular';
-import { protectedResources, loginRequest } from './auth-config';
-import { BehaviorSubject, Observable, from } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
-import { BrowserAuthError, PublicClientApplication, InteractionStatus, AuthenticationResult } from '@azure/msal-browser';
+import { PublicClientApplication, Configuration, AuthenticationResult, InteractionRequiredAuthError, AccountInfo, LogLevel } from '@azure/msal-browser';
+import { environment } from '../../environments/environment';
+import { BehaviorSubject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
-const TENANT_ID = 'fcc16827-3d82-4edf-9dc2-5d034f97127e';
-const TENANT_AUTHORITY = `https://login.microsoftonline.com/${TENANT_ID}`;
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private isLoggingIn = false;
+  private msalInstance: PublicClientApplication;
+  private initialized = false;
   private loggedIn = new BehaviorSubject<boolean>(false);
-  private userInfo = new BehaviorSubject<any>(null);
+  private userInfo = new BehaviorSubject<AccountInfo | null>(null);
 
   constructor(
-    private msalService: MsalService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {
-    this.initializeAuth();
+    const config: Configuration = {
+      auth: {
+        clientId: environment.auth.clientId,
+        authority: environment.auth.authority,
+        redirectUri: environment.auth.redirectUri,
+        postLogoutRedirectUri: environment.auth.postLogoutRedirectUri,
+        navigateToLoginRequestUrl: environment.auth.navigateToLoginRequestUrl,
+        knownAuthorities: ['login.microsoftonline.com'],
+      },
+      cache: {
+        cacheLocation: 'localStorage',
+        storeAuthStateInCookie: false,
+      },
+      system: {
+        loggerOptions: {
+          loggerCallback: (level: LogLevel, message: string) => {
+            if (level <= LogLevel.Warning) {
+              console.warn(message);
+            }
+          },
+          logLevel: LogLevel.Warning,
+          piiLoggingEnabled: false,
+        },
+      },
+    };
+    this.msalInstance = new PublicClientApplication(config);
+    this.initializeMsal().catch(error => console.error('Failed to initialize MSAL:', error));
   }
 
-  private initializeAuth() {
-    const accounts = this.msalService.instance.getAllAccounts();
-    if (accounts.length > 0) {
-      this.loggedIn.next(true);
-      this.userInfo.next(accounts[0]);
-      this.msalService.instance.setActiveAccount(accounts[0]);
-    }
-  }
-
-  private async cleanupInteractions(): Promise<void> {
-    try {
-      await this.msalService.instance.handleRedirectPromise();
-      const accounts = this.msalService.instance.getAllAccounts();
-      if (accounts.length === 0) {
-        this.msalService.instance.setActiveAccount(null);
+  async initializeMsal(): Promise<void> {
+    if (!this.initialized) {
+      await this.msalInstance.initialize();
+      this.initialized = true;
+      const accounts = this.msalInstance.getAllAccounts();
+      console.log('[MSAL] Initialized. Accounts:', accounts);
+      if (accounts.length > 0) {
+        this.msalInstance.setActiveAccount(accounts[0]);
+        this.loggedIn.next(true);
+        this.userInfo.next(accounts[0]);
+        console.log('[MSAL] Active account set after init:', accounts[0]);
+        // Navigate to research page if on home page
+        if (window.location.pathname === '/') {
+          this.router.navigate(['/research']);
+        }
+      } else {
+        this.loggedIn.next(false);
+        this.userInfo.next(null);
       }
-    } catch (error) {
-      console.log('Cleanup completed with:', error);
     }
   }
 
   async login(): Promise<void> {
-    if (this.isLoggingIn) {
-      this.snackBar.open('Login already in progress, please wait...', 'Close', { duration: 3000 });
-      return;
-    }
-
+    await this.initializeMsal();
     try {
-      this.isLoggingIn = true;
-      await this.cleanupInteractions();
-
-      const result = await this.msalService.loginPopup({
-        ...loginRequest,
-        authority: TENANT_AUTHORITY,
-        prompt: 'select_account'
-      }).toPromise();
-
-      if (result) {
-        this.msalService.instance.setActiveAccount(result.account);
-        this.loggedIn.next(true);
-        this.userInfo.next(result.account);
-      }
-    } catch (error: unknown) {
-      if (error instanceof BrowserAuthError && error.errorCode === 'interaction_in_progress') {
-        await this.clearLoginState();
-      }
-      console.error('Login error:', error);
-      this.snackBar.open('Login failed. Please try again.', 'Close', { duration: 5000 });
-      throw error;
-    } finally {
-      this.isLoggingIn = false;
-    }
-  }
-
-  async clearLoginState() {
-    try {
-      await this.msalService.instance.handleRedirectPromise();
-      this.msalService.instance.setActiveAccount(null);
-      this.loggedIn.next(false);
-      this.userInfo.next(null);
+      const loginResponse = await this.msalInstance.loginPopup({
+        scopes: environment.auth.scopes,
+        prompt: 'select_account',
+      });
+      console.log('[MSAL] Login response:', loginResponse);
+      this.msalInstance.setActiveAccount(loginResponse.account);
+      this.loggedIn.next(true);
+      this.userInfo.next(loginResponse.account);
+      console.log('[MSAL] Active account after login:', loginResponse.account);
+      // Navigate to research page after successful login
+      this.router.navigate(['/research']);
     } catch (error) {
-      console.error('Error clearing login state:', error);
+      console.error('[MSAL] Login error:', error);
+      this.loggedIn.next(false);
+      this.userInfo.next(null);
+      throw error;
     }
   }
 
-  logout(): void {
-    this.msalService.logout().subscribe(() => {
-      this.loggedIn.next(false);
-      this.userInfo.next(null);
-    });
+  async logout(): Promise<void> {
+    await this.initializeMsal();
+    await this.msalInstance.logoutPopup();
+    this.loggedIn.next(false);
+    this.userInfo.next(null);
+    console.log('[MSAL] Logged out');
+    // Navigate to home page after logout
+    this.router.navigate(['/']);
   }
 
   isLoggedIn(): boolean {
     return this.loggedIn.value;
   }
 
-  getLoggedInStatus(): Observable<boolean> {
-    return this.loggedIn.asObservable();
+  getLoggedInStatus() {
+    const obs = this.loggedIn.asObservable();
+    obs.subscribe(val => console.log('[MSAL] loggedIn status changed:', val));
+    return obs;
   }
 
-  getUserInfo(): Observable<any> {
-    return this.userInfo.asObservable();
+  getUserInfo() {
+    const obs = this.userInfo.asObservable();
+    obs.subscribe(val => console.log('[MSAL] userInfo changed:', val));
+    return obs;
   }
 
   getActiveAccount() {
-    return this.msalService.instance.getActiveAccount();
+    return this.msalInstance.getActiveAccount();
   }
 
-  getAccessToken(): Observable<string | null> {
-    const request = {
-      ...protectedResources.graphMe,
-      authority: TENANT_AUTHORITY
-    };
-
-    return this.msalService.acquireTokenSilent(request).pipe(
-      map(response => response.accessToken),
-      catchError(error => {
-        console.error('Error acquiring token:', error);
-        return from([null]);
-      })
-    );
+  async getToken(): Promise<string | null> {
+    await this.initializeMsal();
+    const account = this.msalInstance.getActiveAccount() || this.msalInstance.getAllAccounts()[0];
+    console.log('[MSAL] getToken - active account:', account);
+    if (!account) {
+      await this.login();
+      return this.getToken();
+    }
+    try {
+      const tokenResponse = await this.msalInstance.acquireTokenSilent({
+        account,
+        scopes: environment.auth.scopes,
+      });
+      console.log('[MSAL] Token acquired:', tokenResponse);
+      return tokenResponse.accessToken;
+    } catch (error) {
+      if (error instanceof InteractionRequiredAuthError) {
+        console.warn('[MSAL] Interaction required for token, logging in again.');
+        await this.login();
+        return this.getToken();
+      }
+      console.error('[MSAL] Token acquisition error:', error);
+      return null;
+    }
   }
 } 

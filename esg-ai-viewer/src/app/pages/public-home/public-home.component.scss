@@ -1,0 +1,75 @@
+.public-landing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 2rem 1rem;
+  background: var(--background-color);
+  color: var(--text-color);
+}
+.welcome-section {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+.welcome-title {
+  color: #1976d2;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.welcome-subtitle {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.welcome-description {
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.features-section {
+  width: 100%;
+  max-width: 1200px;
+}
+.features-section h3 {
+  text-align: left;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+}
+.features-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+.feature-card {
+  background: var(--card-background);
+  color: var(--text-color);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 1.5rem 1.2rem;
+  min-width: 220px;
+  max-width: 260px;
+  flex: 1 1 220px;
+  text-align: left;
+  transition: box-shadow 0.2s;
+}
+.feature-card:hover {
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.12);
+}
+.feature-title {
+  color: #1976d2;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+@media (max-width: 900px) {
+  .features-grid {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .feature-card {
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+  }
+} 

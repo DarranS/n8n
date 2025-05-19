@@ -4,6 +4,71 @@ import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { BuildInfoService } from './services/build-info.service';
 import { ConfigService } from './services/config.service';
+import { MSAL_INSTANCE, MSAL_GUARD_CONFIG, MSAL_INTERCEPTOR_CONFIG, MsalGuard, MsalInterceptor, MsalService, MsalBroadcastService } from '@azure/msal-angular';
+import { IPublicClientApplication, PublicClientApplication, InteractionType, BrowserCacheLocation, ProtocolMode } from '@azure/msal-browser';
+import { initializeMsalConfig } from './auth/auth-config';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { environment } from '../environments/environment';
+
+const tenantAuthority = 'https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e';
+
+export function MSALInstanceFactory(): IPublicClientApplication {
+  const config = {
+    auth: {
+      clientId: '0b1db0b1-d35d-441b-aa4f-4cdcfeff0691',
+      authority: 'https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e',
+      redirectUri: 'http://localhost:4201',
+      postLogoutRedirectUri: 'http://localhost:4201',
+      navigateToLoginRequestUrl: true,
+      cacheLocation: 'localStorage',
+      scopes: ['user.read', 'openid', 'profile', 'email']
+    },
+    cache: {
+      cacheLocation: BrowserCacheLocation.LocalStorage,
+      storeAuthStateInCookie: false,
+      claimsBasedCachingEnabled: true
+    },
+    system: {
+      loggerOptions: {
+        loggerCallback: (level: any, message: string) => {
+          console.log(message);
+        },
+        logLevel: 2, // LogLevel.Verbose
+        piiLoggingEnabled: false
+      }
+    }
+  };
+  return new PublicClientApplication(config);
+}
+
+export function MSALGuardConfigFactory() {
+  return {
+    interactionType: InteractionType.Redirect,
+    authRequest: {
+      scopes: ['User.Read', 'openid', 'profile', 'email'],
+      authority: tenantAuthority,
+      redirectUri: window.location.origin,
+      extraQueryParameters: {
+        domain_hint: 'sheltononline.com'
+      }
+    }
+  };
+}
+
+export function MSALInterceptorConfigFactory() {
+  return {
+    interactionType: InteractionType.Redirect,
+    protectedResourceMap: new Map([
+      ['https://graph.microsoft.com/v1.0/me', {
+        scopes: ['User.Read'],
+        authority: tenantAuthority,
+        extraQueryParameters: {
+          domain_hint: 'sheltononline.com'
+        }
+      }]
+    ])
+  };
+}
 
 export function loadAppConfig(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -19,6 +84,26 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: loadAppConfig,
       deps: [ConfigService],
+      multi: true
+    },
+    {
+      provide: MSAL_INSTANCE,
+      useFactory: MSALInstanceFactory
+    },
+    {
+      provide: MSAL_GUARD_CONFIG,
+      useFactory: MSALGuardConfigFactory
+    },
+    {
+      provide: MSAL_INTERCEPTOR_CONFIG,
+      useFactory: MSALInterceptorConfigFactory
+    },
+    MsalService,
+    MsalGuard,
+    MsalBroadcastService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MsalInterceptor,
       multi: true
     }
   ]

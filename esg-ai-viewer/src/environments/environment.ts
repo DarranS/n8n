@@ -2,10 +2,10 @@ export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000', // Your API URL for development
   auth: {
-    clientId: '200b5caf-1971-4d5c-9d82-2a2b1dadc626',
+    clientId: '0b1db0b1-d35d-441b-aa4f-4cdcfeff0691',
     authority: 'https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e',
-    redirectUri: 'http://localhost:4200',
-    postLogoutRedirectUri: 'http://localhost:4200',
+    redirectUri: 'http://localhost:4201',
+    postLogoutRedirectUri: 'http://localhost:4201',
     navigateToLoginRequestUrl: true,
     cacheLocation: 'localStorage',
     scopes: ['user.read', 'openid', 'profile', 'email']
