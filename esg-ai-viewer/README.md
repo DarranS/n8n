@@ -2,12 +2,136 @@
 
 A web application for interacting with ESG AI through a chat interface, integrated with n8n workflows.
 
+---
+
 ## Prerequisites
 
-- Node.js 18.x
-- Docker and Docker Compose
-- Azure CLI
-- Azure subscription with AKS cluster access
+- **Node.js 18.x** (recommended for compatibility with Angular 19)
+- **npm** (comes with Node.js)
+- **Docker and Docker Compose**
+- **Azure CLI**
+- **Azure subscription with AKS cluster access**
+
+---
+
+## Project Structure
+
+- `src/app/` — Main Angular application code
+  - `components/` — Reusable UI components (tabs, chat, company-selector, header)
+  - `pages/` — Main application pages (about, chat, links, public-home, research-home, weather)
+  - `services/` — Angular services for business logic and API calls
+  - `auth/` — Authentication logic and guards
+  - `header/` — Header component
+  - `home/` — Home page
+- `src/assets/config/` — Environment-specific JSON config files
+- `src/environments/` — Angular environment files
+- `src/types/` — TypeScript type definitions
+
+---
+
+## Environment Configuration
+
+The app uses both `.env` files (for backend/deployment) and JSON config files in `src/assets/config/` (for frontend runtime config). Update these as needed for your environment.
+
+### Example: Development Environment (`src/assets/config/config.development.json`)
+```json
+{
+  "apiBaseUrl": "http://localhost:3000/api",
+  "n8nWebhookUrl": "https://n8n.sheltononline.com/webhook/"
+}
+```
+
+---
+
+## Installing Dependencies
+
+```bash
+cd esg-ai-viewer
+npm install
+```
+
+---
+
+## Running the Application
+
+### Development
+```bash
+npm start
+# or
+ng serve --configuration=development --port 4201 --proxy-config proxy.conf.json
+```
+
+### Staging
+```bash
+npm run start:stage
+```
+
+### Production
+```bash
+npm run start:prod
+```
+
+---
+
+## Building the Application
+
+- **Development:** `npm run build`
+- **Staging:** `npm run build:stage`
+- **Production:** `npm run build:prod`
+
+---
+
+## Running Tests
+
+```bash
+npm test
+```
+
+---
+
+## NPM Scripts
+
+- `start` — Start dev server (development config)
+- `start:prod` — Start dev server (production config)
+- `start:stage` — Start dev server (staging config)
+- `build` — Build app (development)
+- `build:prod` — Build app (production)
+- `build:stage` — Build app (staging)
+- `test` — Run unit tests
+
+---
+
+## Code Quality & Refactoring
+
+- **Component Size:** Large components (e.g., header, links) should be split into smaller subcomponents if possible.
+- **Service Size:** Large services (e.g., esg.service.ts) should be split by domain.
+- **Type Safety:** Centralize and expand TypeScript types in `src/types/`.
+- **Duplication:** Abstract repeated logic in tabs/components into base classes or utilities.
+- **SCSS:** Modularize large SCSS files and use Angular's style encapsulation.
+- **Error Handling:** Ensure robust error handling for all API calls.
+- **Accessibility:** Use ARIA labels, keyboard navigation, and check color contrast.
+- **Performance:** Use OnPush change detection where possible.
+
+---
+
+## Updating Dependencies
+
+Periodically run:
+```bash
+npm outdated
+npm update
+```
+
+---
+
+## Contributing
+
+- Follow Angular and TypeScript best practices.
+- Use consistent code style (see `.editorconfig` or project conventions).
+- Write unit tests for new features/components.
+- Document complex logic with inline comments.
+
+---
 
 ## Azure AD App Registration Setup
 

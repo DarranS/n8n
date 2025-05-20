@@ -8,5 +8,12 @@
     <p class="error-message">{{ error }}</p>
   </div>
 
-  <div class="markdown-content" markdown [data]="readmeContent" *ngIf="!isLoading && !error"></div>
+  <div class="about-tabs">
+    <button [class.active]="selectedTab === 'readme'" (click)="selectTab('readme')">Technical Detail (README.md)</button>
+    <button [class.active]="selectedTab === 'spec'" (click)="selectTab('spec')">Specification (ProductSpec.md)</button>
+  </div>
+
+  <div *ngIf="docContent">
+    <markdown [data]="docContent"></markdown>
+  </div>
 </div> 

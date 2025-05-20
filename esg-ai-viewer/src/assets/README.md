@@ -2,105 +2,136 @@
 
 A web application for interacting with ESG AI through a chat interface, integrated with n8n workflows.
 
+---
+
 ## Prerequisites
 
-- Node.js 18.x
-- Docker and Docker Compose
-- Azure CLI
-- Azure subscription with AKS cluster access
-- kubectl configured with AKS cluster access
+- **Node.js 18.x** (recommended for compatibility with Angular 19)
+- **npm** (comes with Node.js)
+- **Docker and Docker Compose**
+- **Azure CLI**
+- **Azure subscription with AKS cluster access**
 
-## Environment Configuration Management
+---
 
-### Configuration Files
+## Project Structure
 
-The application uses environment-specific configuration files located in `src/assets/config/`:
+- `src/app/` — Main Angular application code
+  - `components/` — Reusable UI components (tabs, chat, company-selector, header)
+  - `pages/` — Main application pages (about, chat, links, public-home, research-home, weather)
+  - `services/` — Angular services for business logic and API calls
+  - `auth/` — Authentication logic and guards
+  - `header/` — Header component
+  - `home/` — Home page
+- `src/assets/config/` — Environment-specific JSON config files
+- `src/environments/` — Angular environment files
+- `src/types/` — TypeScript type definitions
 
-- `config.development.json` - Development environment
-- `config.staging.json` - Staging environment
-- `config.production.json` - Production environment
+---
 
-Each environment has its own Azure AD client ID and redirect URIs:
+## Environment Configuration
 
-### Development Environment
+The app uses both `.env` files (for backend/deployment) and JSON config files in `src/assets/config/` (for frontend runtime config). Update these as needed for your environment.
+
+### Example: Development Environment (`src/assets/config/config.development.json`)
 ```json
 {
-  "auth": {
-    "clientId": "0b1db0b1-d35d-441b-aa4f-4cdcfeff0691",
-    "authority": "https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e",
-    "redirectUri": "http://localhost:8080",
-    "postLogoutRedirectUri": "http://localhost:8080"
-  }
+  "apiBaseUrl": "http://localhost:3000/api",
+  "n8nWebhookUrl": "https://n8n.sheltononline.com/webhook/"
 }
 ```
 
-### Staging Environment
-```json
-{
-  "auth": {
-    "clientId": "7425393c-f84e-435c-83e5-c76aec2230c4",
-    "authority": "https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e",
-    "redirectUri": "https://stage-esgaiviewer.sheltononline.com",
-    "postLogoutRedirectUri": "https://stage-esgaiviewer.sheltononline.com"
-  }
-}
+---
+
+## Installing Dependencies
+
+```bash
+cd esg-ai-viewer
+npm install
 ```
 
-### Production Environment
-```json
-{
-  "auth": {
-    "clientId": "200b5caf-1971-4d5c-9d82-2a2b1dadc626",
-    "authority": "https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e",
-    "redirectUri": "https://esgaiviewer.sheltononline.com",
-    "postLogoutRedirectUri": "https://esgaiviewer.sheltononline.com"
-  }
-}
+---
+
+## Running the Application
+
+### Development
+```bash
+npm start
+# or
+ng serve --configuration=development --port 4201 --proxy-config proxy.conf.json
 ```
 
-### Running Different Environments
-
-The application can be run in different environments using npm scripts:
-
-- Development: `npm start`
-- Staging: `npm run start:stage`
-- Production: `npm run start:prod`
-
-### Building for Deployment
-
-To build the application for different environments:
-
-- Development build: `npm run build`
-- Staging build: `npm run build:stage`
-- Production build: `npm run build:prod`
-
-### How Configuration Works
-
-The environment-specific configuration is managed through Angular's file replacement feature. During the build process, Angular will automatically replace the base `config.json` with the appropriate environment-specific version based on the build configuration.
-
-This is configured in `angular.json` using the `fileReplacements` property:
-
-```json
-{
-  "configurations": {
-    "production": {
-      "fileReplacements": [
-        {
-          "replace": "src/assets/config/config.json",
-          "with": "src/assets/config/config.production.json"
-        }
-      ]
-    }
-  }
-}
+### Staging
+```bash
+npm run start:stage
 ```
 
-### Important Configuration Notes
+### Production
+```bash
+npm run start:prod
+```
 
-1. Always use the correct npm script for your target environment
-2. The configuration files contain sensitive information (client IDs) and should be handled securely
-3. Each environment has its own Azure AD application registration
-4. Make sure the redirect URIs are configured correctly in the Azure AD application registrations
+---
+
+## Building the Application
+
+- **Development:** `npm run build`
+- **Staging:** `npm run build:stage`
+- **Production:** `npm run build:prod`
+
+---
+
+## Running Tests
+
+```bash
+npm test
+```
+
+---
+
+## NPM Scripts
+
+- `start` — Start dev server (development config)
+- `start:prod` — Start dev server (production config)
+- `start:stage` — Start dev server (staging config)
+- `build` — Build app (development)
+- `build:prod` — Build app (production)
+- `build:stage` — Build app (staging)
+- `test` — Run unit tests
+
+---
+
+## Code Quality & Refactoring
+
+- **Component Size:** Large components (e.g., header, links) should be split into smaller subcomponents if possible.
+- **Service Size:** Large services (e.g., esg.service.ts) should be split by domain.
+- **Type Safety:** Centralize and expand TypeScript types in `src/types/`.
+- **Duplication:** Abstract repeated logic in tabs/components into base classes or utilities.
+- **SCSS:** Modularize large SCSS files and use Angular's style encapsulation.
+- **Error Handling:** Ensure robust error handling for all API calls.
+- **Accessibility:** Use ARIA labels, keyboard navigation, and check color contrast.
+- **Performance:** Use OnPush change detection where possible.
+
+---
+
+## Updating Dependencies
+
+Periodically run:
+```bash
+npm outdated
+npm update
+```
+
+---
+
+## Contributing
+
+- Follow Angular and TypeScript best practices.
+- Use consistent code style (see `.editorconfig` or project conventions).
+- Write unit tests for new features/components.
+- Document complex logic with inline comments.
+
+---
 
 ## Azure AD App Registration Setup
 
@@ -129,9 +160,41 @@ az ad app create --display-name "ESG AI Viewer" --web-redirect-uris "http://loca
    - Add Microsoft Graph > User.Read
    - Grant admin consent
 
-## Local Docker Development Setup
+## Environment Configuration
 
-### 1. Build and Run (Make Sure Docker Desktop is running)
+### Development Environment (.env.dev)
+```
+NODE_ENV=development
+PORT=8080
+AZURE_CLIENT_ID=<your-client-id>
+AZURE_TENANT_ID=<your-tenant-id>
+AZURE_REDIRECT_URI=http://localhost:8080
+N8N_WEBHOOK_URL=https://n8n.sheltononline.com/webhook/
+```
+
+### Staging Environment (.env.stage)
+```
+NODE_ENV=staging
+PORT=8080
+AZURE_CLIENT_ID=<your-client-id>
+AZURE_TENANT_ID=<your-tenant-id>
+AZURE_REDIRECT_URI=http://localhost:8080
+N8N_WEBHOOK_URL=https://n8n.sheltononline.com/webhook/
+```
+
+### Production Environment (.env.prod)
+```
+NODE_ENV=production
+PORT=8080
+AZURE_CLIENT_ID=<your-client-id>
+AZURE_TENANT_ID=<your-tenant-id>
+AZURE_REDIRECT_URI=https://your-production-url
+N8N_WEBHOOK_URL=https://n8n.sheltononline.com/webhook/
+```
+
+## Docker Development and Deployment
+
+### Local Development
 ```bash
 # For development
 docker-compose -f docker-compose.dev.yml up --build
@@ -139,16 +202,34 @@ docker-compose -f docker-compose.dev.yml up --build
 # For staging
 docker-compose -f docker-compose.stage.yml up --build
 
-# For production
+# For production testing
 docker-compose -f docker-compose.prod.yml up --build
 ```
 
-### 2. Access the Application
+### Production Deployment to Azure Container Registry
+```bash
+# Login to Azure
+az login
+
+# Login to Azure Container Registry
+az acr login --name your-registry
+
+# 1. Build the production image
+docker build -t esg-ai-viewer:latest .
+
+# 2. Tag the image with your Azure Container Registry
+docker tag esg-ai-viewer:latest your-registry.azurecr.io/esg-ai-viewer:latest
+
+# 3. Push to Azure Container Registry
+docker push your-registry.azurecr.io/esg-ai-viewer:latest
+```
+
+### Access the Application
 - Development: http://localhost:8080
 - Staging: http://localhost:8080
-- Production: http://localhost:8080
+- Production: https://your-production-url
 
-### 3. View Logs
+### View Logs
 ```bash
 # View container logs
 docker-compose -f docker-compose.<env>.yml logs -f
@@ -160,92 +241,107 @@ tail -f ./logs/access.log
 
 ## AKS Deployment
 
-The ESG AI Viewer can be deployed using the automated batch scripts or manually following the steps below.
+### 1. Prepare Kubernetes Manifests
+Create the following files in the `k8s` directory:
 
-### Automated Deployment
-
-#### Stage Deployment
-1. **Navigate to BatchScripts Directory**
-```bash
-cd BatchScripts
+#### deployment.yaml
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esg-ai-viewer
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: esg-ai-viewer
+  template:
+    metadata:
+      labels:
+        app: esg-ai-viewer
+    spec:
+      containers:
+      - name: esg-ai-viewer
+        image: your-registry.azurecr.io/esg-ai-viewer:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: AZURE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: esg-ai-secrets
+              key: azure-client-id
+        - name: AZURE_TENANT_ID
+          valueFrom:
+            secretKeyRef:
+              name: esg-ai-secrets
+              key: azure-tenant-id
+        - name: AZURE_REDIRECT_URI
+          value: "https://your-production-url"
 ```
 
-2. **Run Stage Deployment Script**
-```bash
-# This will deploy only to the Stage environment
-deploy-stage.bat
+#### service.yaml
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: esg-ai-viewer
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: esg-ai-viewer
 ```
 
-The stage deployment script will:
-- Check for required tools (Node.js, npm, Docker, Azure CLI, kubectl)
-- Login to Azure and Container Registry
-- Build the application for the stage environment
-- Create and push Docker image
-- Deploy to AKS
-- Verify the deployment
-
-#### Production Deployment
-1. **Navigate to BatchScripts Directory**
-```bash
-cd BatchScripts
-```
-
-2. **Run Production Deployment Script**
-```bash
-# This will deploy to the Production environment
-deploy-prod.bat
-```
-
-The production deployment script will:
-- Check for required tools (Node.js, npm, Docker, Azure CLI, kubectl)
-- Verify Kubernetes configuration
-- Login to Azure and Container Registry
-- Build the application for production
-- Create and push Docker image
-- Deploy to AKS with the following steps:
-  - Apply ConfigMap
-  - Apply Deployment
-  - Apply Service
-  - Apply Ingress
-- Verify the deployment with:
-  - Deployment status
-  - Pod status
-  - Service status
-  - Ingress status
-  - TLS certificate status
-  - Pod readiness check
-  - Application health check
-
-#### Full Deployment (Stage and Production)
-```bash
-# This will deploy to both Stage and Production environments
-deploy-web.bat
-```
-
-### Manual Deployment
-
-### 1. Login to Azure and Container Registry
-```bash
-# Login to Azure
-az login
-
-# Login to Azure Container Registry
-az acr login --name esgai
-
-# 1. Build the production image
-docker build -t esg-ai-viewer:latest .
-
-# 2. Tag the image with your Azure Container Registry
-docker tag esg-ai-viewer:latest esgai.azurecr.io/esg-ai-viewer:latest
-
-# 3. Push to Azure Container Registry
-docker push esgai.azurecr.io/esg-ai-viewer:latest
+#### ingress.yaml
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: esg-ai-viewer
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+    - your-production-url
+    secretName: esg-ai-viewer-tls
+  rules:
+  - host: your-production-url
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: esg-ai-viewer
+            port:
+              number: 80
 ```
 
 ### 2. Deploy to AKS
 ```bash
-# Apply Kubernetes manifests
-kubectl apply -f k8s/config.yaml
+# Login to Azure
+az login
+
+# Login to ACR
+az acr login --name your-registry
+
+# Build and push image
+docker build -t your-registry.azurecr.io/esg-ai-viewer:latest .
+docker push your-registry.azurecr.io/esg-ai-viewer:latest
+
+# Create secrets
+kubectl create secret generic esg-ai-secrets \
+  --from-literal=azure-client-id=<your-client-id> \
+  --from-literal=azure-tenant-id=<your-tenant-id>
+
+# Apply manifests
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 kubectl apply -f k8s/ingress.yaml
@@ -259,95 +355,35 @@ kubectl get pods
 kubectl get services
 kubectl get ingress
 
-# Check TLS certificate status
-kubectl get certificate esg-ai-viewer-tls-prod
-
-# Wait for pods to be ready
-kubectl wait --for=condition=ready pod -l app=esg-ai-viewer --timeout=60s
-
 # View logs
 kubectl logs -f deployment/esg-ai-viewer
 ```
-
-## Python Deployment
-
-The Python components of the ESG AI system can be deployed using batch scripts located in the `BatchScripts` directory.
-
-### Prerequisites
-- Python 3.x installed and in PATH
-- pip package manager
-- requirements.txt file in the Python project directory
-
-### Deployment Process
-
-1. **Navigate to BatchScripts Directory**
-```bash
-cd BatchScripts
-```
-
-2. **Run Deployment Script**
-```bash
-# This will deploy to both Stage and Production environments
-deploy.bat
-```
-
-The deployment script will:
-- Create deployment directories for Stage and Production
-- Copy source files from PythonCode/ESGFlat/Python
-- Install dependencies from requirements.txt
-- Run tests to verify the deployment
-- Create the following directory structure:
-  ```
-  deploy/
-  ├── stage/
-  │   └── [Python files and dependencies]
-  └── production/
-      └── [Python files and dependencies]
-  ```
-
-### Environment-Specific Deployment
-
-The deployment script handles both Stage and Production environments automatically. Each environment gets its own isolated directory with all necessary files and dependencies.
-
-### Verification
-
-After deployment, you can verify the installation by:
-1. Checking the created directories in the `deploy` folder
-2. Verifying that all dependencies are installed
-3. Running the ESGCompanyWorkflow.py script in each environment
-
-### Troubleshooting
-
-If you encounter issues during deployment:
-1. Check that Python and pip are properly installed and in PATH
-2. Verify the requirements.txt file exists and is valid
-3. Ensure the source directory structure matches the expected paths
-4. Check for any error messages in the deployment output
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Authentication Issues**
+1. **502 Bad Gateway**
+   - Check Nginx logs: `docker-compose logs -f`
+   - Verify n8n webhook URL is correct
+   - Check network connectivity
+
+2. **Authentication Issues**
    - Verify Azure AD app registration settings
    - Check redirect URIs match exactly
    - Ensure proper CORS configuration
-   - Clear browser cache and cookies
-   - Try incognito/private window
 
-2. **Production Build Issues**
-   - Ensure logged in to Azure Container Registry
-   - Check image tag matches exactly
+3. **Docker Issues**
+   - Clear Docker cache: `docker system prune -a`
+   - Rebuild images: `docker-compose build --no-cache`
+   - Check port conflicts
+
+4. **Production Build Issues**
+   - Make sure you're logged into Azure Container Registry
+   - Check image tags match exactly
    - Verify Docker Desktop is running
    - Check network connectivity to Azure
-   - Verify kubectl is properly configured with AKS
-   - Check TLS certificate status if HTTPS issues occur
 
-3. **Deployment Verification Issues**
-   - Check pod status and logs for errors
-   - Verify ingress configuration matches environment
-   - Ensure TLS certificate is properly configured
-   - Check network policies if connectivity issues occur
-   - Verify health check endpoint is accessible
+## Support
 
-For support, please contact the development team or create an issue in the repository.
+For support, please contact the development team or create an issue in the repository. 
