@@ -57,6 +57,10 @@ import { MatIconModule } from '@angular/material/icon';
             <span class="nav-icon">ℹ️</span>
             <span class="nav-text">About</span>
           </a>
+          <a *ngIf="isLoggedIn" routerLink="/import" routerLinkActive="active" class="nav-link">
+            <span class="nav-icon">⬆️</span>
+            <span class="nav-text">Import</span>
+          </a>
           <div class="theme-toggle">
             <mat-icon>light_mode</mat-icon>
             <mat-slide-toggle

@@ -1,9 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
-// Include the common styles for Angular Material. We're using a prebuilt theme
-// configured in angular.json, so we only need the core styles.
 @use '@angular/material' as mat;
 @include mat.core();
+
+// @import 'ag-grid-community/styles/ag-grid.css'; // Removed for AG Grid v33+ Theming API
+@import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 /* Global Styles */
 :root {

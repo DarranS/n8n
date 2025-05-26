@@ -13,5 +13,6 @@ export const routes: Routes = [
   },
   { path: 'about', loadComponent: () => import('./pages/about/about.component').then(m => m.AboutComponent) },
   { path: 'chat', loadComponent: () => import('./pages/chat/chat.component').then(m => m.ChatPageComponent) },
-  { path: 'links', loadComponent: () => import('./pages/links/links.component').then(m => m.LinksComponent) }
+  { path: 'links', loadComponent: () => import('./pages/links/links.component').then(m => m.LinksComponent) },
+  { path: 'import', loadComponent: () => import('./components/tabs/import-tab/import-tab.component').then(m => m.ImportTabComponent) }
 ];

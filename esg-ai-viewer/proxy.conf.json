@@ -4,5 +4,11 @@
     "secure": true,
     "changeOrigin": true,
     "logLevel": "debug"
+  },
+  "/esgscores/companies/companies": {
+    "target": "https://esgnavigator-service.lgt-dif-esgnavigator-dv.svc.cluster.local/bff",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   }
 } 
