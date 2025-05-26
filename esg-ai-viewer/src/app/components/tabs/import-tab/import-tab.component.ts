@@ -22,8 +22,14 @@ export class ImportTabComponent {
   bearerToken = '';
   companies: any[] = [];
   isinInput = '';
+  isLoading = false;
   columnDefs: ColDef[] = [
-    { headerName: 'Selected', field: 'selected', filter: true, floatingFilter: true, valueGetter: (params: ValueGetterParams) => params.node && params.node.isSelected() ? 'Yes' : 'No' },
+    { 
+      headerName: 'Selected',
+      filter: 'agTextColumnFilter',
+      floatingFilter: true, 
+      valueGetter: (params: ValueGetterParams) => params.node && params.node.isSelected() ? 'Yes' : 'No'
+    },
     { headerName: 'Id', field: 'objectId', checkboxSelection: true, filter: true, floatingFilter: true },
     { headerName: 'Company Name', field: 'objectName', filter: true, floatingFilter: true },
     { headerName: 'ISIN', field: 'isin', filter: true, floatingFilter: true },
@@ -33,6 +39,9 @@ export class ImportTabComponent {
     { headerName: 'LGT Sustainability Rating', field: 'lgtSustainabilityRating', filter: true, floatingFilter: true }
   ];
   private gridApi!: GridApi;
+  private manifestIsins: Set<string> = new Set();
+  private gridReady = false;
+  private companiesLoaded = false;
   fetchError: string | null = null;
   noData: boolean = false;
 
@@ -60,6 +69,7 @@ export class ImportTabComponent {
       'Content-Type': 'application/json'
     });
 
+    this.isLoading = true;
     this.http.get<any[]>(url, { headers }).subscribe({
       next: (data) => {
         console.log('Data fetch successful:', {
@@ -95,6 +105,7 @@ export class ImportTabComponent {
         this.showTokenInput = false;
         this.noData = Array.isArray(data) && data.length === 0;
         this.fetchError = null;
+        this.companiesLoaded = true;
         this.cdr.detectChanges();
         
         console.log('Component state after update:', {
@@ -102,6 +113,13 @@ export class ImportTabComponent {
           noData: this.noData,
           error: this.fetchError
         });
+
+        // Load manifest.json and select rows if grid is ready
+        this.loadManifestAndSelect();
+        this.isLoading = false;
+        if (this.gridApi) {
+          this.gridApi.hideOverlay();
+        }
       },
       error: (err) => {
         console.error('Fetch companies error:', {
@@ -111,13 +129,33 @@ export class ImportTabComponent {
         });
         this.fetchError = `Failed to fetch companies: ${err.message}`;
         this.noData = false;
+        this.isLoading = false;
+        if (this.gridApi) {
+          this.gridApi.hideOverlay();
+        }
       }
     });
+  }
+
+  private async loadManifestAndSelect() {
+    try {
+      const manifest = await this.http.get<string[]>('assets/data/manifest.json').toPromise();
+      const files: string[] = Array.isArray(manifest) ? manifest : [];
+      this.manifestIsins = new Set(files.map(f => f.replace('.json', '').toUpperCase()));
+      this.trySelectManifestRows();
+    } catch (err) {
+      console.error('Failed to load manifest.json', err);
+    }
   }
 
   onGridReady(params: any) {
     console.log('Grid ready event triggered');
     this.gridApi = params.api;
+    this.gridReady = true;
+    if (this.isLoading && this.gridApi) {
+      this.gridApi.showLoadingOverlay();
+    }
+    this.trySelectManifestRows();
     
     // Log grid API initialization
     if (this.gridApi) {
@@ -149,6 +187,19 @@ export class ImportTabComponent {
         dataSize: this.companies?.length
       });
     });
+  }
+
+  private trySelectManifestRows() {
+    if (!this.gridApi || !this.manifestIsins.size || !this.companies?.length) return;
+    this.gridApi.deselectAll();
+    this.gridApi.forEachNode((node) => {
+      const isin = (node.data.isin || '').toUpperCase();
+      const id = (node.data.objectId || '').toString().toUpperCase();
+      if (this.manifestIsins.has(isin) || this.manifestIsins.has(id)) {
+        node.setSelected(true);
+      }
+    });
+    this.cdr.detectChanges();
   }
 
   onIsinInput() {

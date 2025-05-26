@@ -1,7 +1,7 @@
 <div class="import-tab-container">
   <div *ngIf="showTokenInput">
     <label for="bearerToken">Bearer Token:</label>
-    <input id="bearerToken" type="text" [(ngModel)]="bearerToken" placeholder="Paste Bearer Token here" />
+    <input id="bearerToken" type="text" [(ngModel)]="bearerToken" placeholder="Paste Bearer Token here" (keyup.enter)="fetchCompanies()" />
     <button (click)="fetchCompanies()">Fetch Companies</button>
     <div *ngIf="fetchError" class="error-message">{{ fetchError }}</div>
     <div *ngIf="noData" class="no-data-message">No companies found.</div>
@@ -21,6 +21,9 @@
       [rowMultiSelectWithClick]="true"
       (gridReady)="onGridReady($event)">
     </ag-grid-angular>
+    <div *ngIf="isLoading" class="loading-overlay">
+      <div class="spinner"></div>
+    </div>
     <div class="row-count">
       Row count: {{ companies.length }}<br>
       Selected: {{ selectedCount }}
