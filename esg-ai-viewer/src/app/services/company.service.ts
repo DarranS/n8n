@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 export interface Company {
-  id: string;
+  id: string; // ISIN
   name: string;
 }
 
@@ -10,26 +11,43 @@ export interface Company {
   providedIn: 'root'
 })
 export class CompanyService {
-  // Actual companies with their ISINs
-  private companies: Company[] = [
-    { id: 'US2546871060', name: 'Walt Disney Co/The' },
-    { id: 'US0378331005', name: 'APPLE' },
-    { id: 'US67066G1040', name: 'NVIDIA' },
-    { id: 'US5949181045', name: 'MICROSOFT CORP' },
-    { id: 'US0231351067', name: 'AMAZON.COM' },
-    { id: 'US30303M1027', name: 'META PLATFORMS A' },
-    { id: 'US02079K3059', name: 'ALPHABET A' },
-    { id: 'US02079K1079', name: 'ALPHABET C' },
-    { id: 'US88160R1014', name: 'TESLA' },
-    { id: 'US11135F1012', name: 'BROADCOM' },
-    { id: 'US0846707026', name: 'BERKSHIRE HATHAWAY B' },
-    { id: 'US46625H1005', name: 'JPMORGAN CHASE & CO' }
-  ];
-
+  private companies: Company[] = [];
   private selectedCompanySubject = new BehaviorSubject<Company | null>(null);
   selectedCompany$ = this.selectedCompanySubject.asObservable();
+  private companiesLoaded = false;
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
+
+  // Loads companies from JSON files in assets/data using a manifest
+  async loadCompanies(): Promise<Company[]> {
+    if (this.companiesLoaded) return this.companies;
+    // Load manifest.json first
+    let files: string[] = [];
+    try {
+      const manifest = await this.http.get<string[]>('assets/data/manifest.json').toPromise();
+      files = Array.isArray(manifest) ? manifest : [];
+      console.log('[CompanyService] Loaded manifest.json:', files);
+    } catch (err) {
+      console.error('[CompanyService] Failed to load manifest.json', err);
+      return [];
+    }
+    const promises = files.map(file =>
+      this.http.get<any>(`assets/data/${file}`).toPromise()
+        .then(json => {
+          console.log(`[CompanyService] Loaded file: ${file} (Company: ${json.name})`);
+          return { id: file.replace('.json', ''), name: json.name };
+        })
+        .catch((err) => {
+          console.warn(`[CompanyService] Failed to load file: ${file}`, err);
+          return null;
+        })
+    );
+    const results = await Promise.all(promises);
+    this.companies = results.filter(Boolean) as Company[];
+    this.companiesLoaded = true;
+    console.log('[CompanyService] Loaded companies:', this.companies);
+    return this.companies;
+  }
 
   getCompanies(): Company[] {
     return this.companies;

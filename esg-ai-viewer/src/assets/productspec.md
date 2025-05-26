@@ -271,4 +271,89 @@ ESG AI Viewer is a web application for interacting with ESG AI through a chat in
 
 ---
 
+## Company Data Management (Manifest-based Loading)
+
+### Overview
+- The application dynamically loads company data files for the company picker and related features using a manifest file (`assets/data/manifest.json`).
+- This manifest lists all available company JSON files in the `assets/data` directory.
+- The manifest is generated and updated using a PowerShell script: `BatchScripts/generate-manifest.ps1`.
+
+### How it Works
+- On startup, the app loads `manifest.json` to get the list of company data files.
+- Each file listed is loaded and made available in the company picker and research features.
+- This allows you to add or remove company files without changing the code—just update the manifest.
+
+### Maintaining the Manifest
+- **Whenever you add or remove company data files in `assets/data`, you must update the manifest.**
+- Run the following command from the `BatchScripts` directory:
+  ```powershell
+  ./generate-manifest.ps1
+  ```
+- This script scans all `.json` files (except `manifest.json` itself) and writes the updated list to `manifest.json`.
+- The company picker and related features will now reflect the new set of companies.
+
+### User Instructions
+- If you do not see a new company in the picker, ensure its file is present in `assets/data` and that you have regenerated the manifest.
+
+### Developer Notes
+- The manifest approach is required because Angular apps cannot list files in the assets directory at runtime.
+- The script can be adapted for other platforms (e.g., Node.js) if needed.
+
+---
+
+## Import Tab — Data Import & Download Process
+
+### Overview
+- The Import Tab allows users to import company data from the Base ESG application.
+- Users authenticate with a Bearer Token, fetch company data, select companies in a grid, filter by ISIN, and download company data as JSON files.
+
+### UI & User Flow
+1. **Bearer Token Entry**
+   - User is prompted to enter a Bearer Token for authentication.
+   - The token is required to fetch company data from the ESG API.
+   - If the token is missing or invalid, an error is shown.
+
+2. **Fetch Companies**
+   - After entering the token, the user clicks "Fetch Companies".
+   - The app calls the `/esgscores/companies/companies` endpoint (proxied if needed).
+   - On success, a grid is populated with company data (Id, Name, ISIN, ESG Score, Country, Sector, LGT Rating, etc.).
+   - If no data is returned, a message is shown.
+
+3. **Grid Features**
+   - The grid supports:
+     - **Column filtering** (by ISIN, Name, etc.)
+     - **Checkbox selection** (select one or multiple companies)
+     - **Select All / Clear Selection** buttons
+     - **ISIN/ID input filter**: User can enter a comma-separated list of ISINs or IDs to quickly select companies
+     - **Row count and selected count** display
+
+4. **Import Process**
+   - User clicks the "Import" button to download data for selected companies.
+   - The app fetches detailed data for each selected company (by objectId/ISIN) from the API.
+   - Each company's data is downloaded as a separate JSON file (named by ISIN).
+   - A status dialog shows progress and errors (if any).
+   - Companies without ISINs are excluded from import (with a warning prompt).
+   - The process supports concurrent downloads for efficiency.
+
+5. **Manifest Reminder**
+   - A message reminds users to run `BatchScripts/generate-manifest.ps1` if they add/remove company data files, to keep the manifest up to date for the company picker.
+
+### Technical Details
+- **AG Grid** is used for the data grid, with Alpine theme and multi-select enabled.
+- **Bearer Token** is sent as an Authorization header for all API requests.
+- **Proxy Configuration** is used in development to avoid CORS issues.
+- **Detailed Logging** is present throughout the process for debugging (fetching, grid events, import status).
+- **Error Handling**: All API errors and missing data are surfaced to the user.
+- **Download Helper**: Uses Blob and anchor element to trigger JSON downloads in the browser.
+- **Concurrency**: Import/download process uses a concurrency limit for parallel requests.
+
+### User Instructions
+- Enter a valid Bearer Token and click "Fetch Companies".
+- Use the grid to filter, search, and select companies.
+- Use the ISIN/ID input for quick selection.
+- Click "Import" to download selected companies' data as JSON files.
+- If you add/remove company files, run the manifest script as instructed.
+
+---
+
 *This document provides a high-level product specification and wireframe model for the ESG AI Viewer, ensuring all features, pages, and components are clearly defined for design, development, and stakeholder review.* 

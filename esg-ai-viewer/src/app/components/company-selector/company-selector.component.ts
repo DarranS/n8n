@@ -41,11 +41,14 @@ import { Company, CompanyService } from '../../services/company.service';
 })
 export class CompanySelectorComponent implements OnInit {
   companyCtrl = new FormControl<Company | string>('');
-  filteredCompanies: Observable<Company[]>;
+  filteredCompanies: Observable<Company[]> = new Observable<Company[]>();
   companies: Company[] = [];
 
-  constructor(private companyService: CompanyService) {
-    this.companies = this.companyService.getCompanies();
+  constructor(private companyService: CompanyService) {}
+
+  async ngOnInit(): Promise<void> {
+    // Load companies from JSON files
+    this.companies = await this.companyService.loadCompanies();
     this.filteredCompanies = this.companyCtrl.valueChanges.pipe(
       startWith(''),
       map(value => {
@@ -54,9 +57,6 @@ export class CompanySelectorComponent implements OnInit {
         return this._filter(name || '');
       }),
     );
-  }
-
-  ngOnInit(): void {
     // Set initial value if there's a selected company
     const currentCompany = this.companyService.getSelectedCompany();
     if (currentCompany) {

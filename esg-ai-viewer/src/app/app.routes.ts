@@ -3,8 +3,13 @@ import { AuthGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
   {
-    path: '',
+    path: 'public',
     loadComponent: () => import('./pages/public-home/public-home.component').then(m => m.PublicHomeComponent)
+  },
+  {
+    path: '',
+    redirectTo: 'public',
+    pathMatch: 'full'
   },
   {
     path: 'research',

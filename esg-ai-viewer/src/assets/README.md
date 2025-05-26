@@ -386,4 +386,33 @@ kubectl logs -f deployment/esg-ai-viewer
 
 ## Support
 
-For support, please contact the development team or create an issue in the repository. 
+For support, please contact the development team or create an issue in the repository.
+
+---
+
+## Company Data Manifest Process
+
+### Dynamic Company Picker
+- The company picker and related features dynamically load company data files based on a manifest file: `src/assets/data/manifest.json`.
+- This manifest lists all available company JSON files in the `src/assets/data` directory.
+
+### Keeping the Manifest Up to Date
+- **Whenever you add or remove company data files, you must update the manifest.**
+- Use the provided PowerShell script to regenerate the manifest:
+  ```powershell
+  cd BatchScripts
+  ./generate-manifest.ps1
+  ```
+- The script scans all `.json` files (except `manifest.json` itself) in `src/assets/data` and writes the updated list to `manifest.json`.
+- The app will then load all companies listed in the manifest.
+
+### Technical Details
+- The manifest is required because Angular apps cannot enumerate files in the assets directory at runtime.
+- The script can be ported to other scripting languages if needed for different environments.
+- If the manifest is missing or out of date, the company picker will not show all available companies.
+
+### Troubleshooting
+- If a company does not appear in the picker:
+  1. Ensure its `.json` file is present in `src/assets/data`.
+  2. Regenerate the manifest using the script above.
+  3. Refresh/restart the Angular app if needed. 

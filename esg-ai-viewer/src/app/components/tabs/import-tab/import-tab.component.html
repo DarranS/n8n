@@ -7,7 +7,11 @@
     <div *ngIf="noData" class="no-data-message">No companies found.</div>
   </div>
   <div *ngIf="companies && companies.length">
-    <input type="text" [(ngModel)]="isinInput" (input)="onIsinInput()" placeholder="Enter ISINs (comma separated)" />
+    <div style="margin-bottom: 8px;">
+      <button (click)="selectAll()">Select All</button>
+      <button (click)="clearSelection()">Clear Selection</button>
+    </div>
+    <input type="text" [(ngModel)]="isinInput" (input)="onIsinInput()" placeholder="Enter ISINs or IDs (comma separated)" />
     <ag-grid-angular
       style="width: 100%; height: 400px;"
       class="ag-theme-alpine"
@@ -22,5 +26,8 @@
       Selected: {{ selectedCount }}
     </div>
     <button (click)="onImport()" [disabled]="selectedCount === 0">Import</button>
+  </div>
+  <div class="import-manifest-instruction" style="margin-bottom: 1.5rem; padding: 1rem; background: #fffbe6; border: 1px solid #ffe58f; border-radius: 6px; color: #ad8b00; font-size: 1.1rem;">
+    <strong>Note:</strong> If you add or remove company data files, please run <code>BatchScripts/generate-manifest.ps1</code> to update <code>assets/data/manifest.json</code>.
   </div>
 </div> 
