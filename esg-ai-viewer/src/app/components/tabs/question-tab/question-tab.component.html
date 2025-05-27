@@ -1,20 +1,148 @@
 <div class="question-tab-container">
   <h2>Ask a Question</h2>
-  <form (ngSubmit)="askQuestion()" class="question-form">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Prompt</mat-label>
-      <textarea matInput [value]="prefix + userPrompt" (input)="onInput($event)" [readonly]="loading" rows="3"></textarea>
-    </mat-form-field>
-    <button mat-raised-button color="primary" type="submit" [disabled]="loading || !userPrompt.trim()">Ask</button>
-  </form>
+  <div class="form-header">
+    <span class="company-display"><b>{{ companyName }} <span *ngIf="companyIsin">(ISIN: {{ companyIsin }})</span></b></span>
+  </div>
+  <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+    <mat-tab label="Simple">
+      <form class="simple-form" (ngSubmit)="askSimpleQuestion()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Prompt</mat-label>
+          <textarea matInput [(ngModel)]="simplePrompt" name="simplePrompt" rows="4" required [readonly]="loading"></textarea>
+        </mat-form-field>
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="button" (click)="generateSimplePrompt()" [disabled]="loading || !simplePrompt.trim()">Generate Prompt</button>
+          <button mat-raised-button color="accent" type="submit" [disabled]="loading || !simplePrompt.trim()">Ask</button>
+        </div>
+      </form>
+      <div *ngIf="simpleGeneratedPrompt" class="generated-prompt">
+        <b>Generated Prompt:</b> {{ simpleGeneratedPrompt }}
+      </div>
+    </mat-tab>
+    <mat-tab label="Guided">
+      <form class="question-form" (ngSubmit)="askGuidedQuestion()">
+        <div class="form-content">
+          <div class="form-row">
+            <label class="form-label">
+              Audience
+              <button mat-icon-button matTooltip="Select the audience for the response." tabindex="-1">
+                <mat-icon>info</mat-icon>
+              </button>
+            </label>
+            <div class="form-field">
+              <mat-form-field appearance="outline">
+                <mat-label>Select Audience</mat-label>
+                <mat-select [(ngModel)]="audience" name="audience" required>
+                  <mat-option *ngFor="let option of audienceOptions" [value]="option.value" [matTooltip]="option.tooltip">
+                    {{ option.value }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">
+              Tone
+              <button mat-icon-button matTooltip="Select the tone for the response." tabindex="-1">
+                <mat-icon>info</mat-icon>
+              </button>
+            </label>
+            <div class="form-field">
+              <mat-radio-group [(ngModel)]="tone" name="tone" class="radio-group" required>
+                <mat-radio-button *ngFor="let option of toneOptions" [value]="option.value" matTooltip="{{ option.tooltip }}">
+                  {{ option.value }}
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">
+              Depth
+              <button mat-icon-button matTooltip="Select the depth for the response." tabindex="-1">
+                <mat-icon>info</mat-icon>
+              </button>
+            </label>
+            <div class="form-field">
+              <mat-radio-group [(ngModel)]="depth" name="depth" class="radio-group" required>
+                <mat-radio-button *ngFor="let option of depthOptions" [value]="option.value" matTooltip="{{ option.tooltip }}">
+                  {{ option.value }}
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">
+              Include Numeric Data
+              <button mat-icon-button matTooltip="Choose Yes to include numeric data (e.g., KPI values) in the response, or No for text-only." tabindex="-1">
+                <mat-icon>info</mat-icon>
+              </button>
+            </label>
+            <div class="form-field">
+              <mat-slide-toggle [(ngModel)]="includeNumericData" name="includeNumericData" color="primary" [disabled]="loading">
+                Yes
+              </mat-slide-toggle>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">
+              Perspective/Focus
+              <button mat-icon-button matTooltip="Guide the direction of the response (e.g., environmental impact, governance policies). This field is optional." tabindex="-1">
+                <mat-icon>info</mat-icon>
+              </button>
+            </label>
+            <div class="form-field">
+              <mat-form-field appearance="outline" class="perspective-field">
+                <mat-label><span class="optional-label">(Optional)</span></mat-label>
+                <input matInput [(ngModel)]="perspective" name="perspective" [readonly]="loading" />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">
+              Question
+              <button mat-icon-button matTooltip="The specific question you want to ask about the company's ESG data." tabindex="-1">
+                <mat-icon>info</mat-icon>
+              </button>
+            </label>
+            <div class="form-field">
+              <mat-form-field appearance="outline" class="question-field">
+                <input matInput [(ngModel)]="question" name="question" required [readonly]="loading" placeholder="Enter your question" />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="button" (click)="generatePrompt()" 
+                    [disabled]="loading || !question || !audience || !tone || !depth">
+              Generate Prompt
+            </button>
+            <button mat-raised-button color="accent" type="submit" [disabled]="loading || !generatedPrompt">
+              Ask
+            </button>
+          </div>
+        </div>
+      </form>
+      <div *ngIf="generatedPrompt" class="generated-prompt">
+        <b>Generated Prompt:</b> {{ generatedPrompt }}
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
   <div *ngIf="loading" class="loading-container">
     <mat-spinner diameter="32"></mat-spinner>
     <span>Getting answer...</span>
   </div>
+
   <div *ngIf="error" class="error-container">
     <mat-icon color="warn">error</mat-icon>
     <span>{{ error }}</span>
   </div>
+
   <div *ngIf="formattedAnswer" class="answer-container">
     <mat-label>Answer</mat-label>
     <div [innerHTML]="formattedAnswer"></div>

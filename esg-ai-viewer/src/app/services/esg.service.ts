@@ -282,6 +282,8 @@ export class EsgService {
     const url = 'https://n8n.sheltononline.com/webhook/Question';
     const body = { Prompt: prompt };
     const headers = { 'Content-Type': 'application/json' };
-    return this.http.post(url, body, { headers, responseType: 'text' });
+    return this.http.post(url, body, { headers, responseType: 'text' }).pipe(
+      timeout(180000)
+    );
   }
 } 
