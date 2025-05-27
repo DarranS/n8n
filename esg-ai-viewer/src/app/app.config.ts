@@ -8,7 +8,6 @@ import { MSAL_INSTANCE, MSAL_GUARD_CONFIG, MSAL_INTERCEPTOR_CONFIG, MsalGuard, M
 import { IPublicClientApplication, PublicClientApplication, InteractionType, BrowserCacheLocation, ProtocolMode } from '@azure/msal-browser';
 import { initializeMsalConfig } from './auth/auth-config';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { environment } from '../environments/environment';
 import { inject } from '@angular/core';
 
 const tenantAuthority = 'https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e';

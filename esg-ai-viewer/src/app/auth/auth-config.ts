@@ -1,7 +1,6 @@
 // This file is now redundant as config is loaded via ConfigService and used in MSALInstanceFactory and AuthService.
 
 import { Configuration, BrowserCacheLocation, LogLevel } from '@azure/msal-browser';
-import { environment } from '../../environments/environment';
 
 interface AuthConfig {
   auth: {
@@ -53,31 +52,8 @@ export async function initializeMsalConfig(): Promise<Configuration> {
     };
   } catch (error) {
     console.error('Failed to load auth config:', error);
-    // Fallback to environment config
-    msalConfig = {
-      auth: {
-        clientId: environment.auth.clientId,
-        authority: tenantAuthority,
-        redirectUri: environment.auth.redirectUri,
-        postLogoutRedirectUri: environment.auth.postLogoutRedirectUri,
-        navigateToLoginRequestUrl: true,
-        knownAuthorities: ['login.microsoftonline.com']
-      },
-      cache: {
-        cacheLocation: BrowserCacheLocation.LocalStorage,
-        storeAuthStateInCookie: false,
-        claimsBasedCachingEnabled: true
-      },
-      system: {
-        loggerOptions: {
-          loggerCallback: (level: LogLevel, message: string) => {
-            console.log(message);
-          },
-          logLevel: LogLevel.Verbose,
-          piiLoggingEnabled: false
-        }
-      }
-    };
+    // No fallback to environment config; throw error or handle as needed
+    throw error;
   }
 
   return msalConfig;
