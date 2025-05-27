@@ -14,7 +14,6 @@ import { takeUntil } from 'rxjs/operators';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpErrorResponse } from '@angular/common/http';
 import { QuestionTabComponent } from '../../components/tabs/question-tab/question-tab.component';
-import { TestComponent } from '../../components/tabs/question-tab/test.component';
 
 @Component({
   selector: 'app-public-home',

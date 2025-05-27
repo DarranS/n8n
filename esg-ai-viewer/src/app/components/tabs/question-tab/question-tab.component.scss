@@ -176,7 +176,9 @@
   margin-top: 1.5rem;
 }
 
-.mat-tab-group .mat-tab-body-content > .simple-form,
-.mat-tab-group .mat-tab-body-content > .question-form {
+::ng-deep .mat-mdc-tab-body-content > .simple-form {
+  margin-top: 1.5rem;
+}
+::ng-deep .mat-mdc-tab-body-content > .question-form {
   margin-top: 1.5rem;
 } 

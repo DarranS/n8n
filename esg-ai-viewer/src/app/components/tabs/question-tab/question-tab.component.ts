@@ -47,9 +47,9 @@ export class QuestionTabComponent {
 
   // Guided tab state
   question: string = '';
-  audience: string = '';
-  tone: string = '';
-  depth: string = '';
+  audience: string = 'Customer';
+  tone: string = 'Professional';
+  depth: string = 'Brief';
   perspective: string = '';
   includeNumericData: boolean = false;
   generatedPrompt: string = '';
