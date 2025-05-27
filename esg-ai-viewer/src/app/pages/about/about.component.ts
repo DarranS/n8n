@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { MarkdownModule, MarkdownService, SECURITY_CONTEXT } from 'ngx-markdown';
 import { CommonModule } from '@angular/common';
 import { BuildInfoService } from '../../services/build-info.service';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
   selector: 'app-about',
@@ -26,12 +27,15 @@ export class AboutComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private markdownService: MarkdownService,
-    private buildInfoService: BuildInfoService
+    private buildInfoService: BuildInfoService,
+    private configService: ConfigService
   ) {
     console.log('About component constructor');
   }
 
   ngOnInit() {
+    const config = this.configService.getConfig();
+    console.log('AboutComponent Env name:', config?.['envName'] || config?.['environment']);
     console.log('About component initializing...');
     this.buildTag = this.buildInfoService.getBuildTag();
     this.environment = this.buildInfoService.getEnvironment();

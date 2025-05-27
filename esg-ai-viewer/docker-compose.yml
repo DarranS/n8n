@@ -10,4 +10,6 @@ services:
       - AUTH_CLIENT_ID=${AUTH_CLIENT_ID}
       - AUTH_AUTHORITY=${AUTH_AUTHORITY}
       - AUTH_REDIRECT_URI=${AUTH_REDIRECT_URI}
-    restart: unless-stopped 
+    restart: unless-stopped
+    volumes:
+      - ./src/assets/config/config.json:/usr/share/nginx/html/assets/config/config.json 

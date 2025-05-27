@@ -9,7 +9,13 @@ data:
         listen 8080;
         server_name localhost;
 
-        # Serve static files
+        # Serve static assets and return 404 if not found
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|map)$ {
+            root /usr/share/nginx/html;
+            try_files $uri =404;
+        }
+
+        # Main app route fallback for client-side routing
         location / {
             root   /usr/share/nginx/html;
             index  index.html index.htm;

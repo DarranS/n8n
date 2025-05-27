@@ -1,5 +1,7 @@
 {
   "environment": "Staging",
+  "envName": "stage",
+  "allowImportTab": false,
   "auth": {
     "clientId": "7425393c-f84e-435c-83e5-c76aec2230c4",
     "authority": "https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e",

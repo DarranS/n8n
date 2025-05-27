@@ -104,7 +104,8 @@ call kubectl apply -f "%BASE_DIR%\n8n-ingress.yaml"
 :: Apply ESG AI Viewer configurations
 echo [INFO] Applying ESG AI Viewer configurations...
 call kubectl apply -f "%BASE_DIR%\esg-ai-viewer-service-account.yaml"
-call kubectl apply -f "%BASE_DIR%\esg-ai-viewer-deployment.yaml"
+REM call kubectl apply -f "%BASE_DIR%\esg-ai-viewer-deployment.yaml"
+call kubectl apply -f "C:\DIF\AI\n8n\esg-ai-viewer\k8s\deployment.yaml"
 call kubectl apply -f "%BASE_DIR%\esg-ai-viewer-service.yaml"
 call kubectl apply -f "%BASE_DIR%\esg-ai-viewer-ingress.yaml"
 

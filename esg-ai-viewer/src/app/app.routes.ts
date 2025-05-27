@@ -1,5 +1,9 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './auth/auth.guard';
+import { ConfigService } from './services/config.service';
+
+const configService = new ConfigService(null as any); // HttpClient will be injected by Angular
+const config = configService.getConfig();
 
 export const routes: Routes = [
   {
@@ -19,5 +23,5 @@ export const routes: Routes = [
   { path: 'about', loadComponent: () => import('./pages/about/about.component').then(m => m.AboutComponent) },
   { path: 'chat', loadComponent: () => import('./pages/chat/chat.component').then(m => m.ChatPageComponent) },
   { path: 'links', loadComponent: () => import('./pages/links/links.component').then(m => m.LinksComponent) },
-  { path: 'import', loadComponent: () => import('./components/tabs/import-tab/import-tab.component').then(m => m.ImportTabComponent) }
+  ...(config?.['allowImportTab'] !== false ? [{ path: 'import', loadComponent: () => import('./components/tabs/import-tab/import-tab.component').then(m => m.ImportTabComponent) }] : [])
 ];

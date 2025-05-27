@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { AgGridModule } from 'ag-grid-angular';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ImportStatusDialogComponent, ImportStatusItem } from './import-status-dialog.component';
+import { ConfigService } from '../../../services/config.service';
 
 // Register AG Grid Community Module
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -44,9 +45,22 @@ export class ImportTabComponent {
   private companiesLoaded = false;
   fetchError: string | null = null;
   noData: boolean = false;
+  showImportTab = false;
+  envName = '';
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef, private dialog: MatDialog) {
+  constructor(
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+    private dialog: MatDialog,
+    private configService: ConfigService
+  ) {
+    const config = this.configService.getConfig();
+    this.showImportTab = config?.['allowImportTab'] !== false;
+    this.envName = config?.['envName'] || '';
     console.log('ImportTabComponent constructed');
+    console.log('Config:', config);
+    console.log('allowImportTab:', this.showImportTab);
+    console.log('envName:', this.envName);
   }
 
   onPopulate() {

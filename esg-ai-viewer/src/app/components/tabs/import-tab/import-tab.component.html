@@ -1,36 +1,41 @@
-<div class="import-tab-container">
-  <div *ngIf="showTokenInput">
-    <label for="bearerToken">Bearer Token:</label>
-    <input id="bearerToken" type="text" [(ngModel)]="bearerToken" placeholder="Paste Bearer Token here" (keyup.enter)="fetchCompanies()" />
-    <button (click)="fetchCompanies()">Fetch Companies</button>
-    <div *ngIf="fetchError" class="error-message">{{ fetchError }}</div>
-    <div *ngIf="noData" class="no-data-message">No companies found.</div>
-  </div>
-  <div *ngIf="companies && companies.length">
-    <div style="margin-bottom: 8px;">
-      <button (click)="selectAll()">Select All</button>
-      <button (click)="clearSelection()">Clear Selection</button>
+<div *ngIf="!showImportTab" class="import-disabled-message" style="margin: 2rem; padding: 2rem; background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; color: #856404; font-size: 1.2rem; text-align: center;">
+  <strong>Import is only available in the local Developer Environment.</strong>
+</div>
+<div *ngIf="showImportTab">
+  <div class="import-tab-container">
+    <div *ngIf="showTokenInput">
+      <label for="bearerToken">Bearer Token:</label>
+      <input id="bearerToken" type="text" [(ngModel)]="bearerToken" placeholder="Paste Bearer Token here" (keyup.enter)="fetchCompanies()" />
+      <button (click)="fetchCompanies()">Fetch Companies</button>
+      <div *ngIf="fetchError" class="error-message">{{ fetchError }}</div>
+      <div *ngIf="noData" class="no-data-message">No companies found.</div>
     </div>
-    <input type="text" [(ngModel)]="isinInput" (input)="onIsinInput()" placeholder="Enter ISINs or IDs (comma separated)" />
-    <ag-grid-angular
-      style="width: 100%; height: 400px;"
-      class="ag-theme-alpine"
-      [rowData]="companies"
-      [columnDefs]="columnDefs"
-      rowSelection="multiple"
-      [rowMultiSelectWithClick]="true"
-      (gridReady)="onGridReady($event)">
-    </ag-grid-angular>
-    <div *ngIf="isLoading" class="loading-overlay">
-      <div class="spinner"></div>
+    <div *ngIf="companies && companies.length">
+      <div style="margin-bottom: 8px;">
+        <button (click)="selectAll()">Select All</button>
+        <button (click)="clearSelection()">Clear Selection</button>
+      </div>
+      <input type="text" [(ngModel)]="isinInput" (input)="onIsinInput()" placeholder="Enter ISINs or IDs (comma separated)" />
+      <ag-grid-angular
+        style="width: 100%; height: 400px;"
+        class="ag-theme-alpine"
+        [rowData]="companies"
+        [columnDefs]="columnDefs"
+        rowSelection="multiple"
+        [rowMultiSelectWithClick]="true"
+        (gridReady)="onGridReady($event)">
+      </ag-grid-angular>
+      <div *ngIf="isLoading" class="loading-overlay">
+        <div class="spinner"></div>
+      </div>
+      <div class="row-count">
+        Row count: {{ companies.length }}<br>
+        Selected: {{ selectedCount }}
+      </div>
+      <button (click)="onImport()" [disabled]="selectedCount === 0">Import</button>
     </div>
-    <div class="row-count">
-      Row count: {{ companies.length }}<br>
-      Selected: {{ selectedCount }}
+    <div class="import-manifest-instruction" style="margin-bottom: 1.5rem; padding: 1rem; background: #fffbe6; border: 1px solid #ffe58f; border-radius: 6px; color: #ad8b00; font-size: 1.1rem;">
+      <strong>Note:</strong> If you add or remove company data files, please run <code>BatchScripts/generate-manifest.ps1</code> to update <code>assets/data/manifest.json</code>.
     </div>
-    <button (click)="onImport()" [disabled]="selectedCount === 0">Import</button>
-  </div>
-  <div class="import-manifest-instruction" style="margin-bottom: 1.5rem; padding: 1rem; background: #fffbe6; border: 1px solid #ffe58f; border-radius: 6px; color: #ad8b00; font-size: 1.1rem;">
-    <strong>Note:</strong> If you add or remove company data files, please run <code>BatchScripts/generate-manifest.ps1</code> to update <code>assets/data/manifest.json</code>.
   </div>
 </div> 

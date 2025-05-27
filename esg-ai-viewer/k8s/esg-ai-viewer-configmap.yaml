@@ -1,0 +1,14 @@
+apiVersion: v1
+data:
+  config.json: "{\r\n  \"environment\": \"Production\",\r\n  \"envName\": \"prod\",\r\n
+    \ \"allowImportTab\": false,\r\n  \"auth\": {\r\n    \"clientId\": \"200b5caf-1971-4d5c-9d82-2a2b1dadc626\",\r\n
+    \   \"authority\": \"https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e\",\r\n
+    \   \"redirectUri\": \"https://esgaiviewer.sheltononline.com\",\r\n    \"postLogoutRedirectUri\":
+    \"https://esgaiviewer.sheltononline.com\",\r\n    \"navigateToLoginRequestUrl\":
+    true,\r\n    \"cacheLocation\": \"localStorage\",\r\n    \"scopes\": [\"user.read\",
+    \"openid\", \"profile\", \"email\"]\r\n  }\r\n} "
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: esg-ai-viewer-config
+  namespace: n8n

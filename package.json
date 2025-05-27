@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@azure/msal-browser": "^2.39.0",
-    "ag-grid-angular": "^33.3.0",
-    "ag-grid-community": "^33.3.0"
-  }
-}

@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Ensure config directory exists
+mkdir -p /usr/share/nginx/html/assets/config
+
 # Create the env.js file with build information
 mkdir -p /usr/share/nginx/html/assets
 cat > /usr/share/nginx/html/assets/env.js << EOF

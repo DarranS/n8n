@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
+import { ConfigService } from '../services/config.service';
 
 @Component({
   selector: 'app-header',
@@ -57,7 +58,7 @@ import { MatIconModule } from '@angular/material/icon';
             <span class="nav-icon">ℹ️</span>
             <span class="nav-text">About</span>
           </a>
-          <a *ngIf="isLoggedIn" routerLink="/import" routerLinkActive="active" class="nav-link">
+          <a *ngIf="showImportTab" routerLink="/import" routerLinkActive="active" class="nav-link">
             <span class="nav-icon">⬆️</span>
             <span class="nav-text">Import</span>
           </a>
@@ -304,13 +305,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   private readonly destroying$ = new Subject<void>();
   isDarkTheme$: Observable<boolean>;
+  showImportTab = false;
 
   constructor(
     private router: Router,
     private authService: AuthService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private configService: ConfigService
   ) {
     this.isDarkTheme$ = this.themeService.isDarkTheme$;
+    const config = this.configService.getConfig();
+    this.showImportTab = config?.['allowImportTab'] !== false;
   }
 
   ngOnInit() {

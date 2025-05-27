@@ -9,4 +9,6 @@ services:
       - .env.prod
     environment:
       - NODE_ENV=production
-    restart: unless-stopped 
+    restart: unless-stopped
+    volumes:
+      - ./src/assets/config/config.production.json:/usr/share/nginx/html/assets/config/config.json
