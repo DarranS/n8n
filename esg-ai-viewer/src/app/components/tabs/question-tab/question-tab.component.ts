@@ -13,6 +13,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { EsgService } from '../../../services/esg.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { saveAs } from 'file-saver';
+// @ts-ignore
+import { Document, Packer, Paragraph, HeadingLevel, TextRun } from 'docx';
 
 @Component({
   selector: 'app-question-tab',
@@ -130,6 +133,8 @@ export class QuestionTabComponent {
   }
 
   askGuidedQuestion() {
+    // Always generate the prompt before asking
+    this.generatePrompt();
     if (!this.generatedPrompt.trim()) return;
     this.loading = true;
     this.error = null;
@@ -169,5 +174,175 @@ export class QuestionTabComponent {
     }
     const prefix = `For the Company "${this.companyName} ISIN:${this.companyIsin}" I would like to ask the following question: `;
     this.simpleGeneratedPrompt = prefix + this.simplePrompt.trim();
+  }
+
+  /**
+   * Export the Guided Question and its answer to a Word document
+   */
+  exportGuidedQuestionToWord() {
+    if (!this.companyName || !this.companyIsin || !this.generatedPrompt || !this.answer) {
+      return;
+    }
+    // Try to parse the answer if it's JSON
+    let answerText = this.answer;
+    try {
+      const parsed = JSON.parse(this.answer);
+      if (parsed.output) answerText = parsed.output;
+    } catch {}
+
+    const doc = new Document({
+      sections: [
+        {
+          properties: {},
+          children: [
+            new Paragraph({
+              text: `${this.companyName} (ISIN: ${this.companyIsin})`,
+              heading: HeadingLevel.HEADING_1,
+              spacing: { after: 300 },
+            }),
+            new Paragraph({
+              text: 'Prompt:',
+              heading: HeadingLevel.HEADING_2,
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              text: this.generatedPrompt,
+              spacing: { after: 300 },
+            }),
+            new Paragraph({
+              text: 'Response:',
+              heading: HeadingLevel.HEADING_2,
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              text: answerText,
+            }),
+          ],
+        },
+      ],
+    });
+
+    Packer.toBlob(doc).then((blob: Blob) => {
+      const fileName = `${this.companyName.replace(/[^a-zA-Z0-9]/g, '_')}_Guided_Question.docx`;
+      saveAs(blob, fileName);
+    });
+  }
+
+  /**
+   * Ask the guided question and export the result to a Word document
+   */
+  askAndSaveGuidedQuestion() {
+    // Always generate the prompt before asking
+    this.generatePrompt();
+    if (!this.generatedPrompt.trim()) return;
+    this.loading = true;
+    this.error = null;
+    this.answer = '';
+    this.formattedAnswer = '';
+    this.esgService.askQuestion(this.generatedPrompt).subscribe({
+      next: (res: string) => {
+        let output = res;
+        try {
+          const parsed = JSON.parse(res);
+          if (parsed.output) output = parsed.output;
+        } catch {}
+        this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
+          this.esgService['processMarkdown'](output)
+        );
+        this.answer = res;
+        this.loading = false;
+        // After answer is received, export to Word
+        this.exportGuidedQuestionToWord();
+      },
+      error: (err: any) => {
+        this.error = 'Failed to get answer. Please try again.';
+        this.loading = false;
+      }
+    });
+  }
+
+  /**
+   * Ask the simple question and export the result to a Word document
+   */
+  askAndSaveSimpleQuestion() {
+    if (!this.simplePrompt.trim()) return;
+    this.loading = true;
+    this.error = null;
+    this.answer = '';
+    this.formattedAnswer = '';
+    const prefix = `For  ${this.companyName} ISIN:${this.companyIsin}: `;
+    const fullPrompt = prefix + this.simplePrompt.trim();
+    this.esgService.askQuestion(fullPrompt).subscribe({
+      next: (res: string) => {
+        let output = res;
+        try {
+          const parsed = JSON.parse(res);
+          if (parsed.output) output = parsed.output;
+        } catch {}
+        this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
+          this.esgService['processMarkdown'](output)
+        );
+        this.answer = res;
+        this.loading = false;
+        // After answer is received, export to Word
+        this.exportSimpleQuestionToWord(fullPrompt, res);
+      },
+      error: (err: any) => {
+        this.error = 'Failed to get answer. Please try again.';
+        this.loading = false;
+      }
+    });
+  }
+
+  /**
+   * Export the Simple Question and its answer to a Word document
+   */
+  exportSimpleQuestionToWord(prompt: string, answer: string) {
+    if (!this.companyName || !this.companyIsin || !prompt || !answer) {
+      return;
+    }
+    // Try to parse the answer if it's JSON
+    let answerText = answer;
+    try {
+      const parsed = JSON.parse(answer);
+      if (parsed.output) answerText = parsed.output;
+    } catch {}
+
+    const doc = new Document({
+      sections: [
+        {
+          properties: {},
+          children: [
+            new Paragraph({
+              text: `${this.companyName} (ISIN: ${this.companyIsin})`,
+              heading: HeadingLevel.HEADING_1,
+              spacing: { after: 300 },
+            }),
+            new Paragraph({
+              text: 'Prompt:',
+              heading: HeadingLevel.HEADING_2,
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              text: prompt,
+              spacing: { after: 300 },
+            }),
+            new Paragraph({
+              text: 'Response:',
+              heading: HeadingLevel.HEADING_2,
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              text: answerText,
+            }),
+          ],
+        },
+      ],
+    });
+
+    Packer.toBlob(doc).then((blob: Blob) => {
+      const fileName = `${this.companyName.replace(/[^a-zA-Z0-9]/g, '_')}_Simple_Question.docx`;
+      saveAs(blob, fileName);
+    });
   }
 } 

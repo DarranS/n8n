@@ -13,6 +13,10 @@
         <div class="form-actions">
           <button mat-raised-button color="primary" type="button" (click)="generateSimplePrompt()" [disabled]="loading || !simplePrompt.trim()">Generate Prompt</button>
           <button mat-raised-button color="accent" type="submit" [disabled]="loading || !simplePrompt.trim()">Ask</button>
+          <button mat-raised-button color="accent" type="button" (click)="askAndSaveSimpleQuestion()" [disabled]="loading || !simplePrompt.trim()">
+            <mat-icon>description</mat-icon>
+            Ask & Save
+          </button>
         </div>
       </form>
       <div *ngIf="simpleGeneratedPrompt" class="generated-prompt">
@@ -121,8 +125,12 @@
                     [disabled]="loading || !question || !audience || !tone || !depth">
               Generate Prompt
             </button>
-            <button mat-raised-button color="accent" type="submit" [disabled]="loading || !generatedPrompt">
+            <button mat-raised-button color="accent" type="submit" [disabled]="loading || !question || !audience || !tone || !depth">
               Ask
+            </button>
+            <button mat-raised-button color="accent" type="button" (click)="askAndSaveGuidedQuestion()" [disabled]="loading || !question || !audience || !tone || !depth">
+              <mat-icon>description</mat-icon>
+              Ask & Save
             </button>
           </div>
         </div>
