@@ -190,6 +190,10 @@ export class QuestionTabComponent {
       if (parsed.output) answerText = parsed.output;
     } catch {}
 
+    // Split answerText into paragraphs (single newline)
+    const answerParagraphs = answerText.split(/\r?\n/).map(p => p.trim()).filter(Boolean);
+    const answerDocParagraphs = answerParagraphs.map(p => new Paragraph({ text: p }));
+
     const doc = new Document({
       sections: [
         {
@@ -214,9 +218,7 @@ export class QuestionTabComponent {
               heading: HeadingLevel.HEADING_2,
               spacing: { after: 100 },
             }),
-            new Paragraph({
-              text: answerText,
-            }),
+            ...answerDocParagraphs,
           ],
         },
       ],
@@ -308,6 +310,10 @@ export class QuestionTabComponent {
       if (parsed.output) answerText = parsed.output;
     } catch {}
 
+    // Split answerText into paragraphs (single newline)
+    const answerParagraphs = answerText.split(/\r?\n/).map(p => p.trim()).filter(Boolean);
+    const answerDocParagraphs = answerParagraphs.map(p => new Paragraph({ text: p }));
+
     const doc = new Document({
       sections: [
         {
@@ -332,9 +338,7 @@ export class QuestionTabComponent {
               heading: HeadingLevel.HEADING_2,
               spacing: { after: 100 },
             }),
-            new Paragraph({
-              text: answerText,
-            }),
+            ...answerDocParagraphs,
           ],
         },
       ],

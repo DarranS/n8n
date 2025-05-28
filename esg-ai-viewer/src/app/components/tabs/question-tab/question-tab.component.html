@@ -152,7 +152,7 @@
   </div>
 
   <div *ngIf="formattedAnswer" class="answer-container">
-    <mat-label>Answer</mat-label>
+    <span class="answer-label">Answer:</span>
     <div [innerHTML]="formattedAnswer"></div>
     <button mat-icon-button (click)="copyAnswer()" [disabled]="!answer" title="Copy to clipboard">
       <mat-icon>content_copy</mat-icon>

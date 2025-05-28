@@ -181,4 +181,12 @@
 }
 ::ng-deep .mat-mdc-tab-body-content > .question-form {
   margin-top: 1.5rem;
+}
+
+.answer-label {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1976d2; /* Match the blue used for headings */
+  margin-bottom: 0.5rem;
 } 
