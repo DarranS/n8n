@@ -42,6 +42,10 @@ import { ConfigService } from '../services/config.service';
           </div>
         </a>
         <nav class="nav">
+          <a *ngIf="isLoggedIn" routerLink="/company-universe" routerLinkActive="active" class="nav-link">
+            <span class="nav-icon">🏢</span>
+            <span class="nav-text">Company Universe</span>
+          </a>
           <a *ngIf="isLoggedIn" routerLink="/research" routerLinkActive="active" class="nav-link">
             <span class="nav-icon">🔍</span>
             <span class="nav-text">Research</span>

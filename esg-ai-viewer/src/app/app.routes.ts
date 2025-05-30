@@ -16,6 +16,11 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'company-universe',
+    loadComponent: () => import('./pages/company-universe/company-universe.component').then(m => m.CompanyUniverseComponent),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'research',
     loadComponent: () => import('./pages/research-home/research-home.component').then(m => m.ResearchHomeComponent),
     canActivate: [AuthGuard]

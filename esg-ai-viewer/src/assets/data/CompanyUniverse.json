@@ -6,6 +6,7 @@
     "ESGAdjustedScore": 38.1,
     "LGTSustainabilityRating": 2,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Media & Entertainment",
     "GICSector": "Communication Services"
   },
@@ -16,6 +17,7 @@
     "ESGAdjustedScore": 63.4,
     "LGTSustainabilityRating": 4,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Media & Entertainment",
     "GICSector": "Communication Services"
   },
@@ -26,6 +28,7 @@
     "ESGAdjustedScore": 81.3,
     "LGTSustainabilityRating": 5,
     "Country": "Switzerland",
+    "Region": "Europe",
     "IndustryGroup": "Capital Goods",
     "GICSector": "Industrials"
   },
@@ -36,6 +39,7 @@
     "ESGAdjustedScore": 85.4,
     "LGTSustainabilityRating": 5,
     "Country": "Switzerland",
+    "Region": "Europe",
     "IndustryGroup": "Pharmaceuticals, Biotechnology & Life Sciences",
     "GICSector": "Health Care"
   },
@@ -46,6 +50,7 @@
     "ESGAdjustedScore": 52.4,
     "LGTSustainabilityRating": 3,
     "Country": "Switzerland",
+    "Region": "Europe",
     "IndustryGroup": "Materials",
     "GICSector": "Materials"
   },
@@ -56,6 +61,7 @@
     "ESGAdjustedScore": 96.2,
     "LGTSustainabilityRating": 5,
     "Country": "Switzerland",
+    "Region": "Europe",
     "IndustryGroup": "Pharmaceuticals, Biotechnology & Life Sciences",
     "GICSector": "Health Care"
   },
@@ -66,6 +72,7 @@
     "ESGAdjustedScore": 85.9,
     "LGTSustainabilityRating": 5,
     "Country": "Switzerland",
+    "Region": "Europe",
     "IndustryGroup": "Capital Goods",
     "GICSector": "Industrials"
   },
@@ -76,6 +83,7 @@
     "ESGAdjustedScore": 57.8,
     "LGTSustainabilityRating": 3,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Software & Services",
     "GICSector": "Information Technology"
   },
@@ -86,6 +94,7 @@
     "ESGAdjustedScore": 77.1,
     "LGTSustainabilityRating": 4,
     "Country": "Switzerland",
+    "Region": "Europe",
     "IndustryGroup": "Insurance",
     "GICSector": "Financials"
   },
@@ -96,6 +105,7 @@
     "ESGAdjustedScore": 69.6,
     "LGTSustainabilityRating": 4,
     "Country": "Switzerland",
+    "Region": "Europe",
     "IndustryGroup": "Financial Services",
     "GICSector": "Financials"
   },
@@ -106,6 +116,7 @@
     "ESGAdjustedScore": 52.6,
     "LGTSustainabilityRating": 3,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Consumer Staples Distribution & Retail",
     "GICSector": "Consumer Staples"
   },
@@ -116,6 +127,7 @@
     "ESGAdjustedScore": 71.1,
     "LGTSustainabilityRating": 4,
     "Country": "Austria",
+    "Region": "Europe",
     "IndustryGroup": "Capital Goods",
     "GICSector": "Industrials"
   },
@@ -126,6 +138,7 @@
     "ESGAdjustedScore": 75.7,
     "LGTSustainabilityRating": 4,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Pharmaceuticals, Biotechnology & Life Sciences",
     "GICSector": "Health Care"
   },
@@ -136,6 +149,7 @@
     "ESGAdjustedScore": 53.1,
     "LGTSustainabilityRating": 3,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Banks",
     "GICSector": "Financials"
   },
@@ -146,6 +160,7 @@
     "ESGAdjustedScore": 45.2,
     "LGTSustainabilityRating": 3,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Media & Entertainment",
     "GICSector": "Communication Services"
   },
@@ -156,6 +171,7 @@
     "ESGAdjustedScore": 35.6,
     "LGTSustainabilityRating": 2,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Consumer Discretionary Distribution & Retail",
     "GICSector": "Consumer Discretionary"
   },
@@ -166,6 +182,7 @@
     "ESGAdjustedScore": 55.2,
     "LGTSustainabilityRating": 3,
     "Country": "Switzerland",
+    "Region": "Europe",
     "IndustryGroup": "Food, Beverage & Tobacco",
     "GICSector": "Consumer Staples"
   },
@@ -176,6 +193,7 @@
     "ESGAdjustedScore": 58.4,
     "LGTSustainabilityRating": 3,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Technology Hardware & Equipment",
     "GICSector": "Information Technology"
   },
@@ -186,6 +204,7 @@
     "ESGAdjustedScore": 56.1,
     "LGTSustainabilityRating": 3,
     "Country": "Switzerland",
+    "Region": "Europe",
     "IndustryGroup": "Insurance",
     "GICSector": "Financials"
   },
@@ -196,6 +215,7 @@
     "ESGAdjustedScore": 91.4,
     "LGTSustainabilityRating": 5,
     "Country": "Denmark",
+    "Region": "Europe",
     "IndustryGroup": "Health Care Equipment & Services",
     "GICSector": "Health Care"
   },
@@ -206,6 +226,7 @@
     "ESGAdjustedScore": 86.2,
     "LGTSustainabilityRating": 5,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Semiconductors & Semiconductor Equipment",
     "GICSector": "Information Technology"
   },
@@ -216,6 +237,7 @@
     "ESGAdjustedScore": 69.8,
     "LGTSustainabilityRating": 4,
     "Country": "Switzerland",
+    "Region": "Europe",
     "IndustryGroup": "Insurance",
     "GICSector": "Financials"
   },
@@ -226,6 +248,7 @@
     "ESGAdjustedScore": 78.6,
     "LGTSustainabilityRating": 4,
     "Country": "Taiwan",
+    "Region": "Asia x JP",
     "IndustryGroup": "Semiconductors & Semiconductor Equipment",
     "GICSector": "Information Technology"
   },
@@ -236,6 +259,7 @@
     "ESGAdjustedScore": 63.9,
     "LGTSustainabilityRating": 4,
     "Country": "Sweden",
+    "Region": "Europe",
     "IndustryGroup": "Consumer Discretionary Distribution & Retail",
     "GICSector": "Consumer Discretionary"
   },
@@ -246,6 +270,7 @@
     "ESGAdjustedScore": 89.7,
     "LGTSustainabilityRating": 5,
     "Country": "Germany",
+    "Region": "Europe",
     "IndustryGroup": "Insurance",
     "GICSector": "Financials"
   },
@@ -256,6 +281,7 @@
     "ESGAdjustedScore": 63.8,
     "LGTSustainabilityRating": 4,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Automobiles & Components",
     "GICSector": "Consumer Discretionary"
   },
@@ -266,6 +292,7 @@
     "ESGAdjustedScore": 91.4,
     "LGTSustainabilityRating": 5,
     "Country": "Germany",
+    "Region": "Europe",
     "IndustryGroup": "Telecommunication Services",
     "GICSector": "Communication Services"
   },
@@ -276,6 +303,7 @@
     "ESGAdjustedScore": 86.5,
     "LGTSustainabilityRating": 5,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Semiconductors & Semiconductor Equipment",
     "GICSector": "Information Technology"
   },
@@ -286,6 +314,7 @@
     "ESGAdjustedScore": 85.4,
     "LGTSustainabilityRating": 5,
     "Country": "Germany",
+    "Region": "Europe",
     "IndustryGroup": "Insurance",
     "GICSector": "Financials"
   },
@@ -296,6 +325,7 @@
     "ESGAdjustedScore": 93.1,
     "LGTSustainabilityRating": 5,
     "Country": "Germany",
+    "Region": "Europe",
     "IndustryGroup": "Capital Goods",
     "GICSector": "Industrials"
   },
@@ -306,6 +336,7 @@
     "ESGAdjustedScore": 69.2,
     "LGTSustainabilityRating": 4,
     "Country": "Sweden",
+    "Region": "Europe",
     "IndustryGroup": "Financial Services",
     "GICSector": "Financials"
   },
@@ -316,6 +347,7 @@
     "ESGAdjustedScore": 44.4,
     "LGTSustainabilityRating": 3,
     "Country": "Switzerland",
+    "Region": "Europe",
     "IndustryGroup": "Capital Goods",
     "GICSector": "Industrials"
   },
@@ -326,6 +358,7 @@
     "ESGAdjustedScore": 33.6,
     "LGTSustainabilityRating": 2,
     "Country": "United Kingdom",
+    "Region": "Europe",
     "IndustryGroup": "Energy",
     "GICSector": "Energy"
   },
@@ -336,6 +369,7 @@
     "ESGAdjustedScore": 22.5,
     "LGTSustainabilityRating": 2,
     "Country": "United States of America",
+    "Region": "North America",
     "IndustryGroup": "Financial Services",
     "GICSector": "Financials"
   }

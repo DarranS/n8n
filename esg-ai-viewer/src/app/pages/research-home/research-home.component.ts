@@ -14,7 +14,7 @@ import { takeUntil } from 'rxjs/operators';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpErrorResponse } from '@angular/common/http';
 import { QuestionTabComponent } from '../../components/tabs/question-tab/question-tab.component';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 interface EsgData {
   id: string;
@@ -51,7 +51,8 @@ export class ResearchHomeComponent implements OnInit, OnDestroy {
     private companyService: CompanyService,
     private esgService: EsgService,
     private themeService: ThemeService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.isDarkTheme$ = this.themeService.isDarkTheme$;
   }
@@ -65,6 +66,19 @@ export class ResearchHomeComponent implements OnInit, OnDestroy {
 
     this.resetState();
     this.setupCompanySubscription();
+
+    // Check for ISIN in query params and select the company if present
+    this.route.queryParams.subscribe(async params => {
+      const isin = params['isin'];
+      if (isin) {
+        // Ensure companies are loaded
+        await this.companyService.loadCompanies();
+        const company = this.companyService.getCompanies().find(c => c.id === isin);
+        if (company) {
+          this.companyService.setSelectedCompany(company);
+        }
+      }
+    });
   }
 
   ngOnDestroy(): void {

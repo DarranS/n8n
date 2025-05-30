@@ -15,6 +15,8 @@ export class CompanyService {
   private selectedCompanySubject = new BehaviorSubject<Company | null>(null);
   selectedCompany$ = this.selectedCompanySubject.asObservable();
   private companiesLoaded = false;
+  private fullCompanyUniverse: any[] = [];
+  private fullCompanyUniverseLoaded = false;
 
   constructor(private http: HttpClient) {}
 
@@ -53,5 +55,27 @@ export class CompanyService {
 
   clearSelection(): void {
     this.selectedCompanySubject.next(null);
+  }
+
+  // Loads the full CompanyUniverse.json data (all fields)
+  async getFullCompanyUniverse(): Promise<any[]> {
+    if (this.fullCompanyUniverseLoaded) return this.fullCompanyUniverse;
+    try {
+      const data = await this.http.get<any[]>("assets/data/CompanyUniverse.json").toPromise();
+      this.fullCompanyUniverse = Array.isArray(data) ? data : [];
+      this.fullCompanyUniverseLoaded = true;
+      return this.fullCompanyUniverse;
+    } catch (err) {
+      console.error('[CompanyService] Failed to load full CompanyUniverse.json', err);
+      return [];
+    }
+  }
+
+  // Optionally, select a company by ISIN from the full data
+  selectCompanyByISIN(isin: string): void {
+    const found = this.fullCompanyUniverse.find(c => c.ISIN === isin);
+    if (found) {
+      this.setSelectedCompany({ id: found.ISIN, name: found.CompanyName });
+    }
   }
 } 

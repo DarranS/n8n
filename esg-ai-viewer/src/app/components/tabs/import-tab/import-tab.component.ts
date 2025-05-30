@@ -36,6 +36,7 @@ export class ImportTabComponent {
     { headerName: 'ISIN', field: 'isin', filter: true, floatingFilter: true },
     { headerName: 'ESG Adjusted Score', field: 'esgAdjustedScore', filter: true, floatingFilter: true },
     { headerName: 'Country', field: 'country', filter: true, floatingFilter: true },
+    { headerName: 'Region', field: 'region', filter: true, floatingFilter: true },
     { headerName: 'Industry Group', field: 'gicsIndustryGroup', filter: true, floatingFilter: true },
     { headerName: 'GICS Sector', field: 'gicsSector', filter: true, floatingFilter: true },
     { headerName: 'LGT Sustainability Rating', field: 'lgtSustainabilityRating', filter: true, floatingFilter: true }
@@ -334,6 +335,7 @@ export class ImportTabComponent {
           ESGAdjustedScore: node.data.esgAdjustedScore,
           LGTSustainabilityRating: node.data.lgtSustainabilityRating,
           Country: node.data.country || '',
+          Region: node.data.region || '',
           IndustryGroup: node.data.gicsIndustryGroup || '',
           GICSector: node.data.gicsSector || ''
         }));
