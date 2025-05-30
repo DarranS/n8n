@@ -111,15 +111,56 @@ ESG AI Viewer is a web application for interacting with ESG AI through a chat in
   - Tab navigation (Question, Summary, Report, Raw)
   - Each tab has its own component:
     - **Question Tab:**
-      - User can enter a question related to the selected company.
+      - User can enter a question related to the selected company or a batch of companies.
       - **Company Selector to choose the context.**
       - Submit button to send the question.
       - Displays AI-generated answer.
       - **Behavior:**
-        - On submit, calls the API to process the question for the selected company.
+        - On submit, calls the API to process the question for the selected company (single) or for each selected company (batch).
         - Shows a spinner/loading indicator while waiting for the response.
         - Displays error messages if the API call fails.
         - Supports markdown rendering in the answer.
+        - **Guided and Simple Modes:**
+          - Guided: Users fill out a structured form (audience, tone, depth, perspective, numeric data, output format) to generate a prompt.
+          - Simple: Users enter a freeform prompt.
+          - In multi-company mode, only the Guided mode is available (Simple tab is hidden).
+        - **Prompt Generation:**
+          - Guided prompts use placeholders ({{COMPANY_NAME}}, {{COMPANY_ISIN}}) in batch mode, replaced per company during processing.
+          - Users can toggle prompt visibility ("Generate Prompt"/"Hide Prompt").
+        - **Export/Ask & Save:**
+          - Users can export the question and answer to a Word document, with options to include the prompt, answer, and report data.
+          - In batch mode, the process runs for each selected company, appending results to a single Word document with page breaks and per-company headings.
+          - Report data is fetched from the backend for each company and appended at the end of the document if selected.
+        - **UI/UX Details:**
+          - Modal/dialog is user-friendly, with a single scrollbar, compact layout, and clear status feedback.
+          - Action buttons (Ask, Ask & Save, Cancel) are always visible and styled consistently.
+          - Info icons are aligned to the left of labels for clarity.
+          - The dialog auto-scrolls to the bottom when an answer is displayed.
+          - Cancel is always available if launched from the grid.
+        - **Grid Selection & Button State:**
+          - The grid supports multi-select, and a "Question" button opens the dialog for all selected companies.
+          - The button and selected count display are always in sync, using a tracked `selectedRowCount` and AG Grid's `(selectionChanged)` event.
+          - The "Ask a question" button is only enabled when at least one company is selected.
+        - **Error Handling:**
+          - Errors in fetching answers or report data are surfaced to the user, with per-company error messages in batch mode.
+          - The dialog closes automatically on success, or displays errors if any occur.
+        - **Batch/Multi-Company Workflow:**
+          - Users select multiple companies in the grid and open the Question dialog.
+          - The dialog shows the number of companies and disables the Simple tab.
+          - Guided prompt is generated with placeholders, then replaced and sent for each company.
+          - Results are appended to a Word document, with options for prompt, answer, and report data.
+          - Status messages show progress (e.g., "Generating prompt for Company 2 of 5...").
+          - Errors for individual companies are collected and displayed at the end.
+          - The export file name defaults to a timestamped batch name (e.g., ESGAIViewer_12Jun20241430.docx).
+        - **User Cases:**
+          - **Single Company:**
+            - User selects a company, asks a question (guided or simple), views the answer, and can export the result.
+            - All options (Ask, Ask & Save, Export, Cancel) are available.
+          - **Multi-Company (Batch):**
+            - User selects multiple companies, opens the dialog, fills out the guided form, and runs Ask & Save.
+            - The process iterates over all companies, generating and exporting results in a single document.
+            - Only the Guided mode is available; Simple and Ask buttons are hidden.
+            - The dialog provides progress feedback and error reporting.
     - **Summary Tab:**
       - **User selects a company (Company Selector).**
       - User selects summary length (e.g., Short, Medium, Long).

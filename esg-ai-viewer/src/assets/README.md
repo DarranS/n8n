@@ -415,4 +415,68 @@ For support, please contact the development team or create an issue in the repos
 - If a company does not appear in the picker:
   1. Ensure its `.json` file is present in `src/assets/data`.
   2. Regenerate the CompanyUniverse using the script above.
-  3. Refresh/restart the Angular app if needed. 
+  3. Refresh/restart the Angular app if needed.
+
+## Main Features
+
+- **Azure AD Authentication**
+- **Login Button and Process on Public Home**
+- **Company Selector (Authenticated Views Only)**
+- **Chat with ESG AI**
+- **Tabbed Data Views (Question, Summary, Report, Raw) — Research Only**
+- **Batch Question & Export Workflow (Multi-Company Mode)**
+- **Research Home (Logged-in users only)**
+- **Public Home (All users)**
+- **About, Links Pages**
+- **Responsive Header and Navigation**
+- **Theme Support**
+
+---
+
+## Batch Question & Export Workflow
+
+The ESG AI Viewer now supports robust batch (multi-company) workflows for asking questions and exporting results:
+
+- **Multi-Company Selection:**
+  - Users can select multiple companies in the research grid and open a modal dialog to ask a guided question for all selected companies.
+  - The dialog clearly indicates the number of companies and disables the Simple tab in batch mode.
+
+- **Guided Question Form:**
+  - Users fill out a structured form (audience, tone, depth, perspective, numeric data, output format) to generate a prompt.
+  - Prompts use placeholders ({{COMPANY_NAME}}, {{COMPANY_ISIN}}) that are replaced for each company during processing.
+
+- **Batch Processing:**
+  - The "Ask & Save" action runs the process for each selected company, appending results to a single Word document.
+  - Status messages show progress (e.g., "Generating prompt for Company 2 of 5...").
+  - Errors for individual companies are collected and displayed at the end.
+
+- **Export Options:**
+  - After generating answers, users can choose what to include in the export (prompt, answer, report data) and set the file name.
+  - Report data is fetched from the backend for each company and appended at the end of the document if selected.
+  - The export file name defaults to a timestamped batch name (e.g., ESGAIViewer_12Jun20241430.docx).
+
+- **UI/UX Improvements:**
+  - The modal/dialog is user-friendly, with a single scrollbar, compact layout, and clear status feedback.
+  - Action buttons (Ask, Ask & Save, Cancel) are always visible and styled consistently.
+  - Info icons are aligned to the left of labels for clarity.
+  - The dialog auto-scrolls to the bottom when an answer is displayed.
+  - Cancel is always available if launched from the grid.
+
+- **Grid Selection & Button State:**
+  - The grid supports multi-select, and a "Question" button opens the dialog for all selected companies.
+  - The button and selected count display are always in sync, using a tracked `selectedRowCount` and AG Grid's `(selectionChanged)` event.
+  - The "Ask a question" button is only enabled when at least one company is selected.
+
+- **Error Handling:**
+  - Errors in fetching answers or report data are surfaced to the user, with per-company error messages in batch mode.
+  - The dialog closes automatically on success, or displays errors if any occur.
+
+- **User Cases:**
+  - **Single Company:**
+    - User selects a company, asks a question (guided or simple), views the answer, and can export the result.
+    - All options (Ask, Ask & Save, Export, Cancel) are available.
+  - **Multi-Company (Batch):**
+    - User selects multiple companies, opens the dialog, fills out the guided form, and runs Ask & Save.
+    - The process iterates over all companies, generating and exporting results in a single document.
+    - Only the Guided mode is available; Simple and Ask buttons are hidden.
+    - The dialog provides progress feedback and error reporting. 
