@@ -7,6 +7,7 @@ import { AgGridModule } from 'ag-grid-angular';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ImportStatusDialogComponent, ImportStatusItem } from './import-status-dialog.component';
 import { ConfigService } from '../../../services/config.service';
+import { MatButtonModule } from '@angular/material/button';
 
 // Register AG Grid Community Module
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -14,7 +15,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 @Component({
   selector: 'app-import-tab',
   standalone: true,
-  imports: [CommonModule, FormsModule, AgGridModule, MatDialogModule],
+  imports: [CommonModule, FormsModule, AgGridModule, MatDialogModule, MatButtonModule],
   templateUrl: './import-tab.component.html',
   styleUrls: ['./import-tab.component.scss']
 })

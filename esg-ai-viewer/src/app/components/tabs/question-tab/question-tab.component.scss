@@ -198,4 +198,21 @@
   font-weight: bold;
   color: #1976d2; /* Match the blue used for headings */
   margin-bottom: 0.5rem;
+}
+
+.primary-action-btn {
+  background: #3f51b5 !important;
+  color: #fff !important;
+  font-weight: bold !important;
+  font-size: 1.1rem !important;
+  border-radius: 8px !important;
+  padding: 8px 28px !important;
+  min-width: 160px;
+  box-shadow: none !important;
+  text-transform: none !important;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.primary-action-btn:hover, .primary-action-btn:focus {
+  background: #32449b !important;
+  color: #fff !important;
 } 
