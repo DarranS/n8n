@@ -11,7 +11,6 @@
           <textarea matInput [(ngModel)]="simplePrompt" name="simplePrompt" rows="4" required [readonly]="loading"></textarea>
         </mat-form-field>
         <div class="form-actions">
-          <button mat-raised-button color="primary" type="button" (click)="generateSimplePrompt()" [disabled]="loading || !simplePrompt.trim()">Generate Prompt</button>
           <button mat-raised-button color="accent" type="submit" [disabled]="loading || !simplePrompt.trim()">Ask</button>
           <button mat-raised-button color="accent" type="button" (click)="askAndSaveSimpleQuestion()" [disabled]="loading || !simplePrompt.trim()">
             <mat-icon>description</mat-icon>
@@ -19,9 +18,6 @@
           </button>
         </div>
       </form>
-      <div *ngIf="simpleGeneratedPrompt" class="generated-prompt">
-        <b>Generated Prompt:</b> {{ simpleGeneratedPrompt }}
-      </div>
     </mat-tab>
     <mat-tab label="Guided">
       <form class="question-form" (ngSubmit)="askGuidedQuestion()">
@@ -74,6 +70,36 @@
                   {{ option.value }}
                 </mat-radio-button>
               </mat-radio-group>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">
+              Output Format
+              <button mat-icon-button matTooltip="Format the output based on how it will be used.  \n- Email: Structured with a formal salutation, body, and closing, suitable for professional correspondence.  \n- Social Post: Concise, engaging, and formatted for platforms like X, targeting under 280 characters. Summarize content if needed to fit.  \n- Text Block: A narrative paragraph or set of paragraphs suitable for inclusion in reports, presentations, or other documents." tabindex="-1">
+                <mat-icon>info</mat-icon>
+              </button>
+            </label>
+            <div class="form-field">
+              <mat-radio-group [(ngModel)]="outputFormat" name="outputFormat" class="radio-group" required>
+                <mat-radio-button *ngFor="let option of outputFormatOptions" [value]="option.value" matTooltip="{{ option.tooltip }}">
+                  {{ option.value }}
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">
+              Include Prompt Intention
+              <button mat-icon-button matTooltip="If Yes, include a brief summary of the prompt parameters (e.g., audience, focus, tone) in the response. If No, exclude any reference to the prompt structure." tabindex="-1">
+                <mat-icon>info</mat-icon>
+              </button>
+            </label>
+            <div class="form-field">
+              <mat-slide-toggle [(ngModel)]="includePromptIntention" name="includePromptIntention" color="primary" [disabled]="loading" [checked]="includePromptIntention">
+                {{ includePromptIntention ? 'Yes' : 'No' }}
+              </mat-slide-toggle>
             </div>
           </div>
 
@@ -137,6 +163,13 @@
       </form>
       <div *ngIf="generatedPrompt" class="generated-prompt">
         <b>Generated Prompt:</b> {{ generatedPrompt }}
+        <button mat-icon-button (click)="copyGeneratedPrompt()" [disabled]="!generatedPrompt" matTooltip="Copy prompt" style="float:right; margin-top:-4px;">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
+      <div *ngIf="warning" class="error-container">
+        <mat-icon color="warn">warning</mat-icon>
+        <span>{{ warning }}</span>
       </div>
     </mat-tab>
   </mat-tab-group>
@@ -156,6 +189,9 @@
     <div [innerHTML]="formattedAnswer"></div>
     <button mat-icon-button (click)="copyAnswer()" [disabled]="!answer" title="Copy to clipboard">
       <mat-icon>content_copy</mat-icon>
+    </button>
+    <button mat-icon-button (click)="exportCurrentAnswer()" [disabled]="!answer" matTooltip="Export answer to Word">
+      <mat-icon>description</mat-icon>
     </button>
   </div>
 </div> 
