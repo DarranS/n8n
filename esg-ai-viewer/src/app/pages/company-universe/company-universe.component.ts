@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AgGridModule } from 'ag-grid-angular';
 import { ModuleRegistry, AllCommunityModule, MenuItemDef } from 'ag-grid-community';
 import { Router } from '@angular/router';
 import { CompanyService } from '../../services/company.service';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatDialog } from '@angular/material/dialog';
+import { QuestionTabComponent } from '../../components/tabs/question-tab/question-tab.component';
+import { MatIconModule } from '@angular/material/icon';
 
 // Register AG Grid Community Module
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -12,7 +15,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 @Component({
   selector: 'app-company-universe',
   standalone: true,
-  imports: [CommonModule, AgGridModule, MatTabsModule],
+  imports: [CommonModule, AgGridModule, MatTabsModule, MatIconModule],
   templateUrl: './company-universe.component.html',
   styleUrls: ['./company-universe.component.scss']
 })
@@ -20,6 +23,7 @@ export class CompanyUniverseComponent implements OnInit {
   rowData: any[] = [];
   gridApi: any;
   gridColumnApi: any;
+  selectedRowCount = 0;
 
   columnDefs = [
     {
@@ -90,7 +94,7 @@ export class CompanyUniverseComponent implements OnInit {
     // Removed getContextMenuItems and sideBar for AG Grid Community v33+
   };
 
-  constructor(private router: Router, private companyService: CompanyService) {}
+  constructor(private router: Router, private companyService: CompanyService, private dialog: MatDialog, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit() {
     this.rowData = await this.companyService.getFullCompanyUniverse();
@@ -102,6 +106,7 @@ export class CompanyUniverseComponent implements OnInit {
   }
 
   onFirstDataRendered(params: any) {
+    if (!params.columnApi) return;
     const allColumnIds: string[] = [];
     params.columnApi.getAllColumns().forEach((column: any) => {
       allColumnIds.push(column.getId());
@@ -109,8 +114,29 @@ export class CompanyUniverseComponent implements OnInit {
     params.columnApi.autoSizeColumns(allColumnIds, false);
   }
 
+  onSelectionChanged() {
+    this.selectedRowCount = this.gridApi ? this.gridApi.getSelectedRows().length : 0;
+    this.cdr.detectChanges();
+  }
+
   goToResearch(company: any) {
     // Navigate to research tab and pass company ISIN
     this.router.navigate(['/research'], { queryParams: { isin: company.ISIN } });
+  }
+
+  openQuestionDialog() {
+    if (!this.gridApi) return;
+    const selectedNodes = this.gridApi.getSelectedNodes();
+    const companies = selectedNodes.map((node: any) => ({
+      CompanyName: node.data.CompanyName,
+      ISIN: node.data.ISIN
+    }));
+    if (companies.length === 0) return;
+    this.dialog.open(QuestionTabComponent, {
+      data: { companies },
+      width: '1100px',
+      maxHeight: '80vh',
+      disableClose: true
+    });
   }
 } 

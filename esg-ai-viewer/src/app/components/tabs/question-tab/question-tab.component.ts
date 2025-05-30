@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject, OnInit, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -16,7 +16,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { saveAs } from 'file-saver';
 // @ts-ignore
 import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell } from 'docx';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ExportOptionsDialogComponent, ExportOptionsResult } from './export-options-dialog.component';
 import { WordExportService } from '../../../services/word-export.service';
 
@@ -41,9 +41,10 @@ import { WordExportService } from '../../../services/word-export.service';
   templateUrl: './question-tab.component.html',
   styleUrls: ['./question-tab.component.scss']
 })
-export class QuestionTabComponent {
+export class QuestionTabComponent implements OnInit {
   @Input() companyName: string = '';
   @Input() companyIsin: string = '';
+  @Input() companies: { CompanyName: string, ISIN: string }[] = [];
 
   // Tab state
   private _selectedTabIndex: number = 0;
@@ -103,7 +104,29 @@ export class QuestionTabComponent {
     { value: 'Executive Summary', tooltip: 'A high-level overview for decision-makers.' }
   ];
 
-  constructor(private http: HttpClient, private esgService: EsgService, private sanitizer: DomSanitizer, private dialog: MatDialog, private wordExportService: WordExportService) {}
+  statusMessage: string = '';
+
+  constructor(
+    private http: HttpClient,
+    private esgService: EsgService,
+    private sanitizer: DomSanitizer,
+    private dialog: MatDialog,
+    private wordExportService: WordExportService,
+    @Optional() @Inject(MAT_DIALOG_DATA) public data: any = null,
+    @Optional() public dialogRef: MatDialogRef<QuestionTabComponent> | null = null
+  ) {
+    if (data && data.companies) {
+      this.companies = data.companies;
+      if (this.companies.length === 1) {
+        this.companyName = this.companies[0].CompanyName;
+        this.companyIsin = this.companies[0].ISIN;
+      }
+    }
+  }
+
+  get isMultiCompany() {
+    return this.companies && this.companies.length > 1;
+  }
 
   // Simple tab ask
   askSimpleQuestion() {
@@ -118,7 +141,7 @@ export class QuestionTabComponent {
       next: (res: string) => {
         let output = res;
         try {
-          const parsed = JSON.parse(res);
+          const parsed = JSON.parse(res || "");
           if (parsed.output) output = parsed.output;
         } catch {}
         this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
@@ -137,6 +160,41 @@ export class QuestionTabComponent {
   // Guided tab prompt generation and ask
   generatePrompt() {
     this.warning = null;
+    // Toggle off if already displayed
+    if (this.generatedPrompt && this.generatedPrompt.trim()) {
+      this.generatedPrompt = '';
+      return;
+    }
+    if (this.isMultiCompany) {
+      if (!this.question || !this.audience || !this.tone || !this.depth) {
+        this.generatedPrompt = '';
+        return;
+      }
+      // Use placeholders for multi-company
+      const validFormats = ['Email', 'Social Post', 'Text Block'];
+      let format = this.outputFormat;
+      if (!validFormats.includes(format)) {
+        this.warning = 'Invalid format selected; using Text Block.';
+        format = 'Text Block';
+      }
+      let prompt = `For the company \"{{COMPANY_NAME}} (ISIN: {{COMPANY_ISIN}})\", I would like to ask the following question: \"${this.question}\". Please tailor the response for an audience of \"${this.audience}\"`;
+      if (this.perspective && this.perspective.trim()) {
+        prompt += `, with a focus on \"${this.perspective.trim()}\"`;
+      }
+      prompt += `, a tone of \"${this.tone}\", and a depth of \"${this.depth}\"`;
+      if (this.includeNumericData) {
+        prompt += ', and include numeric data (e.g., KPI values)';
+      } else {
+        prompt += ', and do not include numeric data (e.g., KPI values)';
+      }
+      prompt += `. Format the response as ${format}.`;
+      if (!this.includePromptIntention) {
+        prompt += ' Do not describe the prompt in the response.';
+      }
+      this.generatedPrompt = prompt;
+      return;
+    }
+    // Single company mode
     if (!this.companyName || !this.companyIsin || !this.question || !this.audience || !this.tone || !this.depth) {
       this.generatedPrompt = '';
       return;
@@ -177,7 +235,7 @@ export class QuestionTabComponent {
       next: (res: string) => {
         let output = res;
         try {
-          const parsed = JSON.parse(res);
+          const parsed = JSON.parse(res || "");
           if (parsed.output) output = parsed.output;
         } catch {}
         this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
@@ -209,7 +267,7 @@ export class QuestionTabComponent {
     }
     let answerText = this.answer;
     try {
-      const parsed = JSON.parse(this.answer);
+      const parsed = JSON.parse(this.answer || "");
       if (parsed.output) answerText = parsed.output;
     } catch {}
     const children: (Paragraph | Table)[] = [];
@@ -267,17 +325,63 @@ export class QuestionTabComponent {
    * Ask the guided question and export the result to a Word document
    */
   async askAndSaveGuidedQuestion() {
-    // Always generate the prompt before asking
     this.generatePrompt();
     if (!this.generatedPrompt.trim()) return;
-    // Show export options dialog first
+    const defaultFileName = this.isMultiCompany ? getBatchDefaultFileName() : '';
     const dialogRef = this.dialog.open(ExportOptionsDialogComponent, {
-      data: { companyName: this.companyName },
+      data: { companyName: this.isMultiCompany ? '' : this.companyName, fileName: defaultFileName },
       width: '1000px',
       disableClose: true
     });
     const result: ExportOptionsResult = await dialogRef.afterClosed().toPromise();
     if (!result) return;
+    if (this.isMultiCompany) {
+      this.loading = true;
+      this.error = null;
+      this.statusMessage = '';
+      let errors: string[] = [];
+      let allChildren: any[] = [];
+      let idx = 0;
+      for (const company of this.companies) {
+        idx++;
+        this.statusMessage = `Generating prompt for Company ${idx} of ${this.companies.length}...`;
+        try {
+          // Replace placeholders with actual company data
+          const prompt = this.generatedPrompt
+            .replace(/\{\{COMPANY_NAME\}\}/g, company.CompanyName)
+            .replace(/\{\{COMPANY_ISIN\}\}/g, company.ISIN);
+          this.statusMessage = `Answering question for Company ${idx} of ${this.companies.length}...`;
+          const res = await this.esgService.askQuestion(prompt).toPromise();
+          let answerText = res;
+          try {
+            const parsed = JSON.parse(res || "");
+            if (parsed.output) answerText = parsed.output;
+          } catch {}
+          allChildren.push({ company, prompt, answer: answerText || '' });
+        } catch (e: any) {
+          errors.push(`${company.CompanyName} (${company.ISIN}): ${e?.message || 'Error'}`);
+        }
+      }
+      if (allChildren.length) {
+        this.statusMessage = 'Writing data to Word document...';
+        const docChildren = allChildren.flatMap(({ company, prompt, answer }, idx) => [
+          ...(idx > 0 ? [new Paragraph({ pageBreakBefore: true })] : []),
+          new Paragraph({ text: `${company.CompanyName} (ISIN: ${company.ISIN})`, heading: HeadingLevel.HEADING_1, spacing: { after: 300 } }),
+          ...(result.includePrompt ? [new Paragraph({ text: 'Prompt:', heading: HeadingLevel.HEADING_2, spacing: { after: 100 } }), new Paragraph({ text: (prompt || ''), spacing: { after: 300 } })] : []),
+          ...(result.includeAnswer ? [new Paragraph({ text: 'Response:', heading: HeadingLevel.HEADING_2, spacing: { after: 100 } }), ...((answer || '').split(/\r?\n/).map((p: string) => new Paragraph({ text: p.trim() })))] : [])
+        ]);
+        const fileName = result.fileName || 'Batch_Questions.docx';
+        await this.wordExportService.exportWordDocument(docChildren, fileName);
+      }
+      this.loading = false;
+      this.statusMessage = '';
+      if (errors.length) {
+        this.error = errors.join('\n');
+      } else {
+        this.dialogRef?.close();
+      }
+      return;
+    }
     this.loading = true;
     this.error = null;
     this.answer = '';
@@ -286,7 +390,7 @@ export class QuestionTabComponent {
       next: async (res: string) => {
         let output = res;
         try {
-          const parsed = JSON.parse(res);
+          const parsed = JSON.parse(res || "");
           if (parsed.output) output = parsed.output;
         } catch {}
         this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
@@ -327,7 +431,7 @@ export class QuestionTabComponent {
       next: async (res: string) => {
         let output = res;
         try {
-          const parsed = JSON.parse(res);
+          const parsed = JSON.parse(res || "");
           if (parsed.output) output = parsed.output;
         } catch {}
         this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
@@ -354,7 +458,7 @@ export class QuestionTabComponent {
     }
     let answerText = answer;
     try {
-      const parsed = JSON.parse(answer);
+      const parsed = JSON.parse(answer || "");
       if (parsed.output) answerText = parsed.output;
     } catch {}
     const children: (Paragraph | Table)[] = [];
@@ -434,6 +538,8 @@ export class QuestionTabComponent {
       await this.exportGuidedQuestionToWord(result);
     }
   }
+
+  ngOnInit(): void {}
 }
 
 // Helper: Convert basic Markdown to docx Paragraphs
@@ -530,4 +636,16 @@ function markdownToDocxElements(markdown: string): (Paragraph | Table)[] {
     }
   }
   return elements;
+}
+
+function getBatchDefaultFileName() {
+  const now = new Date();
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const dd = pad(now.getDate());
+  const mmm = months[now.getMonth()];
+  const yyyy = now.getFullYear();
+  const hh = pad(now.getHours());
+  const mm = pad(now.getMinutes());
+  return `ESGAIViewer_${dd}${mmm}${yyyy}${hh}${mm}.docx`;
 } 

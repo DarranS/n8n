@@ -8,6 +8,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 export interface ExportOptionsData {
   companyName: string;
+  fileName?: string;
 }
 
 export interface ExportOptionsResult {
@@ -54,7 +55,7 @@ export class ExportOptionsDialogComponent {
     public dialogRef: MatDialogRef<ExportOptionsDialogComponent, ExportOptionsResult>,
     @Inject(MAT_DIALOG_DATA) public data: ExportOptionsData
   ) {
-    this.fileName = this.sanitizeFileName(data.companyName) + '.docx';
+    this.fileName = data.fileName || this.sanitizeFileName(data.companyName) + '.docx';
   }
 
   sanitizeFileName(name: string): string {

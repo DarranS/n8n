@@ -10,4 +10,34 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     background: #fff;
   }
+}
+
+.dialog-style-btn {
+  background: #3f51b5 !important; /* Dialog blue */
+  color: #fff !important;
+  font-weight: bold;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(63,81,181,0.08);
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dialog-style-btn .mat-icon {
+  color: #fff !important;
+  margin-right: 0.5em;
+  display: flex;
+  align-items: center;
+}
+.dialog-style-btn.cdk-disabled,
+.dialog-style-btn[disabled],
+.dialog-style-btn:disabled {
+  background: #e0e0e0 !important;
+  color: #888 !important;
+  font-weight: bold;
+}
+.dialog-style-btn.cdk-disabled .mat-icon,
+.dialog-style-btn[disabled] .mat-icon,
+.dialog-style-btn:disabled .mat-icon {
+  color: #888 !important;
 } 
