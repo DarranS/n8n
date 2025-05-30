@@ -241,7 +241,7 @@ tail -f ./logs/access.log
 
 ## AKS Deployment
 
-### 1. Prepare Kubernetes Manifests
+### 1. Prepare Kubernetes CompanyUniverse Files
 Create the following files in the `k8s` directory:
 
 #### deployment.yaml
@@ -341,7 +341,7 @@ kubectl create secret generic esg-ai-secrets \
   --from-literal=azure-client-id=<your-client-id> \
   --from-literal=azure-tenant-id=<your-tenant-id>
 
-# Apply manifests
+# Apply CompanyUniverse files
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 kubectl apply -f k8s/ingress.yaml
@@ -390,29 +390,29 @@ For support, please contact the development team or create an issue in the repos
 
 ---
 
-## Company Data Manifest Process
+## Company Data CompanyUniverse Process
 
 ### Dynamic Company Picker
-- The company picker and related features dynamically load company data files based on a manifest file: `src/assets/data/manifest.json`.
-- This manifest lists all available company JSON files in the `src/assets/data` directory.
+- The company picker and related features dynamically load company data files based on a CompanyUniverse file: `src/assets/data/CompanyUniverse.json`.
+- This CompanyUniverse lists all available company JSON files in the `src/assets/data` directory.
 
-### Keeping the Manifest Up to Date
-- **Whenever you add or remove company data files, you must update the manifest.**
-- Use the provided PowerShell script to regenerate the manifest:
+### Keeping the CompanyUniverse Up to Date
+- **Whenever you add or remove company data files, you must update the CompanyUniverse.**
+- Use the provided PowerShell script to regenerate the CompanyUniverse:
   ```powershell
   cd BatchScripts
-  ./generate-manifest.ps1
+  ./generate-CompanyUniverse.ps1
   ```
-- The script scans all `.json` files (except `manifest.json` itself) in `src/assets/data` and writes the updated list to `manifest.json`.
-- The app will then load all companies listed in the manifest.
+- The script scans all `.json` files (except `CompanyUniverse.json` itself) in `src/assets/data` and writes the updated list to `CompanyUniverse.json`.
+- The app will then load all companies listed in the CompanyUniverse.
 
 ### Technical Details
-- The manifest is required because Angular apps cannot enumerate files in the assets directory at runtime.
+- The CompanyUniverse is required because Angular apps cannot enumerate files in the assets directory at runtime.
 - The script can be ported to other scripting languages if needed for different environments.
-- If the manifest is missing or out of date, the company picker will not show all available companies.
+- If the CompanyUniverse is missing or out of date, the company picker will not show all available companies.
 
 ### Troubleshooting
 - If a company does not appear in the picker:
   1. Ensure its `.json` file is present in `src/assets/data`.
-  2. Regenerate the manifest using the script above.
+  2. Regenerate the CompanyUniverse using the script above.
   3. Refresh/restart the Angular app if needed. 

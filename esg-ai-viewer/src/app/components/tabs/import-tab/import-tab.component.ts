@@ -41,7 +41,7 @@ export class ImportTabComponent {
     { headerName: 'LGT Sustainability Rating', field: 'lgtSustainabilityRating', filter: true, floatingFilter: true }
   ];
   private gridApi!: GridApi;
-  private manifestIsins: Set<string> = new Set();
+  private companyUniverseIsins: Set<string> = new Set();
   private gridReady = false;
   private companiesLoaded = false;
   fetchError: string | null = null;
@@ -129,8 +129,8 @@ export class ImportTabComponent {
           error: this.fetchError
         });
 
-        // Load manifest.json and select rows if grid is ready
-        this.loadManifestAndSelect();
+        // Load CompanyUniverse.json and select rows if grid is ready
+        this.loadCompanyUniverseAndSelect();
         this.isLoading = false;
         if (this.gridApi) {
           this.gridApi.hideOverlay();
@@ -152,20 +152,20 @@ export class ImportTabComponent {
     });
   }
 
-  private async loadManifestAndSelect() {
+  private async loadCompanyUniverseAndSelect() {
     try {
-      const manifest = await this.http.get<any[]>('assets/data/manifest.json').toPromise();
-      // manifest is now an array of objects with ISIN and ID fields
-      const isinsAndIds: string[] = Array.isArray(manifest)
-        ? manifest.flatMap(item => [
+      const companyUniverse = await this.http.get<any[]>("assets/data/CompanyUniverse.json").toPromise();
+      // CompanyUniverse is now an array of objects with ISIN and ID fields
+      const isinsAndIds: string[] = Array.isArray(companyUniverse)
+        ? companyUniverse.flatMap(item => [
             (item.ISIN || '').toUpperCase(),
             (item.ID || '').toString().toUpperCase()
           ])
         : [];
-      this.manifestIsins = new Set(isinsAndIds.filter(v => v));
-      this.trySelectManifestRows();
+      this.companyUniverseIsins = new Set(isinsAndIds.filter(v => v));
+      this.trySelectCompanyUniverseRows();
     } catch (err) {
-      console.error('Failed to load manifest.json', err);
+      console.error('Failed to load CompanyUniverse.json', err);
     }
   }
 
@@ -176,7 +176,7 @@ export class ImportTabComponent {
     if (this.isLoading && this.gridApi) {
       this.gridApi.showLoadingOverlay();
     }
-    this.trySelectManifestRows();
+    this.trySelectCompanyUniverseRows();
     
     // Log grid API initialization
     if (this.gridApi) {
@@ -210,13 +210,13 @@ export class ImportTabComponent {
     });
   }
 
-  private trySelectManifestRows() {
-    if (!this.gridApi || !this.manifestIsins.size || !this.companies?.length) return;
+  private trySelectCompanyUniverseRows() {
+    if (!this.gridApi || !this.companyUniverseIsins.size || !this.companies?.length) return;
     this.gridApi.deselectAll();
     this.gridApi.forEachNode((node) => {
       const isin = (node.data.isin || '').toUpperCase();
       const id = (node.data.objectId || '').toString().toUpperCase();
-      if (this.manifestIsins.has(isin) || this.manifestIsins.has(id)) {
+      if (this.companyUniverseIsins.has(isin) || this.companyUniverseIsins.has(id)) {
         node.setSelected(true);
       }
     });
@@ -325,9 +325,9 @@ export class ImportTabComponent {
         dialogRef.disableClose = false;
         clearInterval(checkAllDone);
 
-        // --- Manifest generation and download ---
+        // --- CompanyUniverse generation and download ---
         // Gather all selected nodes (companies)
-        const manifest = selectedNodes.map(node => ({
+        const companyUniverse = selectedNodes.map(node => ({
           ID: node.data.objectId,
           CompanyName: node.data.objectName,
           ISIN: node.data.isin,
@@ -337,15 +337,15 @@ export class ImportTabComponent {
           IndustryGroup: node.data.gicsIndustryGroup || '',
           GICSector: node.data.gicsSector || ''
         }));
-        // Download manifest.json
-        const manifestBlob = new Blob([JSON.stringify(manifest, null, 2)], { type: 'application/json' });
-        const manifestUrl = window.URL.createObjectURL(manifestBlob);
-        const manifestLink = document.createElement('a');
-        manifestLink.href = manifestUrl;
-        manifestLink.download = 'manifest.json';
-        manifestLink.click();
-        window.URL.revokeObjectURL(manifestUrl);
-        // --- End manifest generation ---
+        // Download CompanyUniverse.json
+        const companyUniverseBlob = new Blob([JSON.stringify(companyUniverse, null, 2)], { type: 'application/json' });
+        const companyUniverseUrl = window.URL.createObjectURL(companyUniverseBlob);
+        const companyUniverseLink = document.createElement('a');
+        companyUniverseLink.href = companyUniverseUrl;
+        companyUniverseLink.download = 'CompanyUniverse.json';
+        companyUniverseLink.click();
+        window.URL.revokeObjectURL(companyUniverseUrl);
+        // --- End CompanyUniverse generation ---
       }
     }, 500);
   }

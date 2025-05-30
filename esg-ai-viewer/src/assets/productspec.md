@@ -271,32 +271,32 @@ ESG AI Viewer is a web application for interacting with ESG AI through a chat in
 
 ---
 
-## Company Data Management (Manifest-based Loading)
+## Company Data Management (CompanyUniverse-based Loading)
 
 ### Overview
-- The application dynamically loads company data files for the company picker and related features using a manifest file (`assets/data/manifest.json`).
-- This manifest lists all available company JSON files in the `assets/data` directory.
-- The manifest is generated and updated using a PowerShell script: `BatchScripts/generate-manifest.ps1`.
+- The application dynamically loads company data files for the company picker and related features using a CompanyUniverse file (`assets/data/CompanyUniverse.json`).
+- This CompanyUniverse lists all available company JSON files in the `assets/data` directory.
+- The CompanyUniverse is generated and updated using a PowerShell script: `BatchScripts/generate-CompanyUniverse.ps1`.
 
 ### How it Works
-- On startup, the app loads `manifest.json` to get the list of company data files.
+- On startup, the app loads `CompanyUniverse.json` to get the list of company data files.
 - Each file listed is loaded and made available in the company picker and research features.
-- This allows you to add or remove company files without changing the code—just update the manifest.
+- This allows you to add or remove company files without changing the code—just update the CompanyUniverse.
 
-### Maintaining the Manifest
-- **Whenever you add or remove company data files in `assets/data`, you must update the manifest.**
+### Maintaining the CompanyUniverse
+- **Whenever you add or remove company data files in `assets/data`, you must update the CompanyUniverse.**
 - Run the following command from the `BatchScripts` directory:
   ```powershell
-  ./generate-manifest.ps1
+  ./generate-CompanyUniverse.ps1
   ```
-- This script scans all `.json` files (except `manifest.json` itself) and writes the updated list to `manifest.json`.
+- This script scans all `.json` files (except `CompanyUniverse.json` itself) and writes the updated list to `CompanyUniverse.json`.
 - The company picker and related features will now reflect the new set of companies.
 
 ### User Instructions
-- If you do not see a new company in the picker, ensure its file is present in `assets/data` and that you have regenerated the manifest.
+- If you do not see a new company in the picker, ensure its file is present in `assets/data` and that you have regenerated the CompanyUniverse.
 
 ### Developer Notes
-- The manifest approach is required because Angular apps cannot list files in the assets directory at runtime.
+- The CompanyUniverse approach is required because Angular apps cannot list files in the assets directory at runtime.
 - The script can be adapted for other platforms (e.g., Node.js) if needed.
 
 ---
@@ -335,8 +335,8 @@ ESG AI Viewer is a web application for interacting with ESG AI through a chat in
    - Companies without ISINs are excluded from import (with a warning prompt).
    - The process supports concurrent downloads for efficiency.
 
-5. **Manifest Reminder**
-   - A message reminds users to run `BatchScripts/generate-manifest.ps1` if they add/remove company data files, to keep the manifest up to date for the company picker.
+5. **CompanyUniverse Reminder**
+   - A message reminds users to run `BatchScripts/generate-CompanyUniverse.ps1` if they add/remove company data files, to keep the CompanyUniverse up to date for the company picker.
 
 ### Technical Details
 - **AG Grid** is used for the data grid, with Alpine theme and multi-select enabled.
@@ -352,7 +352,7 @@ ESG AI Viewer is a web application for interacting with ESG AI through a chat in
 - Use the grid to filter, search, and select companies.
 - Use the ISIN/ID input for quick selection.
 - Click "Import" to download selected companies' data as JSON files.
-- If you add/remove company files, run the manifest script as instructed.
+- If you add/remove company files, run the CompanyUniverse script as instructed.
 
 ---
 

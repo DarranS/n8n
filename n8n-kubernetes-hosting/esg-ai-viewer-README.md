@@ -103,4 +103,30 @@ kubectl get certificate -n n8n
 4. Check image pull status:
    ```bash
    kubectl describe pod -l app=esg-ai-viewer | grep -A 5 "Events:"
-   ``` 
+   ```
+
+## Company Data CompanyUniverse Process
+
+- The company picker and related features dynamically load company data files based on a CompanyUniverse file: `src/assets/data/CompanyUniverse.json`.
+- This CompanyUniverse lists all available company JSON files in the `src/assets/data` directory.
+
+### Keeping the CompanyUniverse Up to Date
+- **Whenever you add or remove company data files, you must update the CompanyUniverse.**
+- Use the provided PowerShell script to regenerate the CompanyUniverse:
+  ```powershell
+  cd BatchScripts
+  ./generate-CompanyUniverse.ps1
+  ```
+- The script scans all `.json` files (except `CompanyUniverse.json` itself) in `src/assets/data` and writes the updated list to `CompanyUniverse.json`.
+- The app will then load all companies listed in the CompanyUniverse.
+
+### Technical Details
+- The CompanyUniverse is required because Angular apps cannot enumerate files in the assets directory at runtime.
+- The script can be ported to other scripting languages if needed for different environments.
+- If the CompanyUniverse is missing or out of date, the company picker will not show all available companies.
+
+### Troubleshooting
+- If a company does not appear in the picker:
+  1. Ensure its `.json` file is present in `src/assets/data`.
+  2. Regenerate the CompanyUniverse using the script above.
+  3. Refresh/restart the Angular app if needed. 

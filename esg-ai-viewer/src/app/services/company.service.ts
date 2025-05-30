@@ -18,23 +18,23 @@ export class CompanyService {
 
   constructor(private http: HttpClient) {}
 
-  // Loads companies from manifest.json only (no per-company file fetch)
+  // Loads companies from CompanyUniverse.json only (no per-company file fetch)
   async loadCompanies(): Promise<Company[]> {
     if (this.companiesLoaded) return this.companies;
     try {
-      const manifest = await this.http.get<any[]>('assets/data/manifest.json').toPromise();
-      // manifest is an array of objects with ISIN and CompanyName fields
-      this.companies = Array.isArray(manifest)
-        ? manifest.map(item => ({
+      const companyUniverse = await this.http.get<any[]>("assets/data/CompanyUniverse.json").toPromise();
+      // CompanyUniverse is an array of objects with ISIN and CompanyName fields
+      this.companies = Array.isArray(companyUniverse)
+        ? companyUniverse.map(item => ({
             id: item.ISIN || item.ID || '',
             name: item.CompanyName || ''
           })).filter(c => c.id && c.name)
         : [];
       this.companiesLoaded = true;
-      console.log('[CompanyService] Loaded companies from manifest:', this.companies);
+      console.log('[CompanyService] Loaded companies from CompanyUniverse:', this.companies);
       return this.companies;
     } catch (err) {
-      console.error('[CompanyService] Failed to load manifest.json', err);
+      console.error('[CompanyService] Failed to load CompanyUniverse.json', err);
       return [];
     }
   }
