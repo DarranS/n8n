@@ -1,4 +1,4 @@
-<div class="question-tab-container">
+<div class="question-tab-container" #containerRef>
   <h2>
     Ask a Question
     <span *ngIf="isMultiCompany">({{ companies.length }} Companies)</span>
@@ -153,7 +153,7 @@
               Ask & Save
             </button>
             <span style="flex: 1 1 auto;"></span>
-            <button *ngIf="isMultiCompany && dialogRef" mat-raised-button color="warn" type="button" (click)="dialogRef.close()" style="margin-left: 1rem;">
+            <button *ngIf="dialogRef" mat-raised-button color="warn" type="button" (click)="dialogRef.close()" style="margin-left: 1rem;">
               Cancel
             </button>
           </div>

@@ -1,4 +1,4 @@
-import { Component, Input, Inject, OnInit, Optional } from '@angular/core';
+import { Component, Input, Inject, OnInit, Optional, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -105,6 +105,8 @@ export class QuestionTabComponent implements OnInit {
   ];
 
   statusMessage: string = '';
+
+  @ViewChild('containerRef') containerRef!: ElementRef;
 
   constructor(
     private http: HttpClient,
@@ -243,6 +245,11 @@ export class QuestionTabComponent implements OnInit {
         );
         this.answer = res;
         this.loading = false;
+        setTimeout(() => {
+          if (this.containerRef) {
+            this.containerRef.nativeElement.scrollTo({ top: this.containerRef.nativeElement.scrollHeight, behavior: 'smooth' });
+          }
+        }, 100);
       },
       error: (err: any) => {
         this.error = 'Failed to get answer. Please try again.';
@@ -362,17 +369,38 @@ export class QuestionTabComponent implements OnInit {
           errors.push(`${company.CompanyName} (${company.ISIN}): ${e?.message || 'Error'}`);
         }
       }
-      if (allChildren.length) {
-        this.statusMessage = 'Writing data to Word document...';
-        const docChildren = allChildren.flatMap(({ company, prompt, answer }, idx) => [
-          ...(idx > 0 ? [new Paragraph({ pageBreakBefore: true })] : []),
-          new Paragraph({ text: `${company.CompanyName} (ISIN: ${company.ISIN})`, heading: HeadingLevel.HEADING_1, spacing: { after: 300 } }),
-          ...(result.includePrompt ? [new Paragraph({ text: 'Prompt:', heading: HeadingLevel.HEADING_2, spacing: { after: 100 } }), new Paragraph({ text: (prompt || ''), spacing: { after: 300 } })] : []),
-          ...(result.includeAnswer ? [new Paragraph({ text: 'Response:', heading: HeadingLevel.HEADING_2, spacing: { after: 100 } }), ...((answer || '').split(/\r?\n/).map((p: string) => new Paragraph({ text: p.trim() })))] : [])
-        ]);
-        const fileName = result.fileName || 'Batch_Questions.docx';
-        await this.wordExportService.exportWordDocument(docChildren, fileName);
+      let docChildren = allChildren.flatMap(({ company, prompt, answer }, idx) => [
+        ...(idx > 0 ? [new Paragraph({ pageBreakBefore: true })] : []),
+        new Paragraph({ text: `${company.CompanyName} (ISIN: ${company.ISIN})`, heading: HeadingLevel.HEADING_1, spacing: { after: 300 } }),
+        ...(result.includePrompt ? [new Paragraph({ text: 'Prompt:', heading: HeadingLevel.HEADING_2, spacing: { after: 100 } }), new Paragraph({ text: (prompt || ''), spacing: { after: 300 } })] : []),
+        ...(result.includeAnswer ? [new Paragraph({ text: 'Response:', heading: HeadingLevel.HEADING_2, spacing: { after: 100 } }), ...((answer || '').split(/\r?\n/).map((p: string) => new Paragraph({ text: p.trim() })))] : [])
+      ]);
+      // Fetch and append report data for each company if requested
+      if (result.includeReportData) {
+        this.statusMessage = 'Fetching report data for all companies...';
+        const reportSections: any[] = [];
+        for (const company of this.companies) {
+          try {
+            const rawData = await this.esgService.getRawData(company.ISIN).toPromise();
+            const report = await this.esgService.getReport(rawData).toPromise();
+            const safeReport = typeof report === 'string' ? report : '';
+            reportSections.push([
+              new Paragraph({ pageBreakBefore: true }),
+              new Paragraph({ text: `${company.CompanyName} (ISIN: ${company.ISIN}) - Report Data`, heading: HeadingLevel.HEADING_1, spacing: { after: 300 } }),
+              ...this.wordExportService.markdownToDocxElements(safeReport)
+            ]);
+          } catch (e) {
+            reportSections.push([
+              new Paragraph({ pageBreakBefore: true }),
+              new Paragraph({ text: `${company.CompanyName} (ISIN: ${company.ISIN}) - Report Data`, heading: HeadingLevel.HEADING_1, spacing: { after: 300 } }),
+              new Paragraph({ text: 'Failed to load report data.' })
+            ]);
+          }
+        }
+        docChildren = [...docChildren, ...reportSections.flat()];
       }
+      const fileName = result.fileName || 'Batch_Questions.docx';
+      await this.wordExportService.exportWordDocument(docChildren, fileName);
       this.loading = false;
       this.statusMessage = '';
       if (errors.length) {
@@ -398,6 +426,11 @@ export class QuestionTabComponent implements OnInit {
         );
         this.answer = res;
         this.loading = false;
+        setTimeout(() => {
+          if (this.containerRef) {
+            this.containerRef.nativeElement.scrollTo({ top: this.containerRef.nativeElement.scrollHeight, behavior: 'smooth' });
+          }
+        }, 100);
         // After answer is received, export to Word with options
         await this.exportGuidedQuestionToWord(result);
       },
