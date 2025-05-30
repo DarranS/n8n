@@ -1,1 +1,342 @@
-﻿["ATFREQUENT09.json","CH0011075394.json","CH0012005267.json","CH0012032048.json","CH0012214059.json","CH0012221716.json","CH0014852781.json","CH0030170408.json","CH0038863350.json","CH0126881561.json","CH0239229302.json","CH0244767585.json","DE0005557508.json","DE0007236101.json","DE0008404005.json","DE0008430026.json","DK0060448595.json","GB00BP6MXD84.json","SE0000584948.json","SE0012853455.json","TW0002330008.json","US02079K1079.json","US02079K3059.json","US0231351067.json","US0378331005.json","US0846707026.json","US11135F1012.json","US2546871060.json","US30303M1027.json","US46625H1005.json","US5324571083.json","US5949181045.json","US67066G1040.json","US88160R1014.json","US9311421039.json"]
+[
+  {
+    "ID": 8181,
+    "CompanyName": "Meta Platforms Inc",
+    "ISIN": "US30303M1027",
+    "ESGAdjustedScore": 38.1,
+    "LGTSustainabilityRating": 2,
+    "Country": "United States of America",
+    "IndustryGroup": "Media & Entertainment",
+    "GICSector": "Communication Services"
+  },
+  {
+    "ID": 4433,
+    "CompanyName": "Walt Disney Co/The",
+    "ISIN": "US2546871060",
+    "ESGAdjustedScore": 63.4,
+    "LGTSustainabilityRating": 4,
+    "Country": "United States of America",
+    "IndustryGroup": "Media & Entertainment",
+    "GICSector": "Communication Services"
+  },
+  {
+    "ID": 4567,
+    "CompanyName": "Geberit AG",
+    "ISIN": "CH0030170408",
+    "ESGAdjustedScore": 81.3,
+    "LGTSustainabilityRating": 5,
+    "Country": "Switzerland",
+    "IndustryGroup": "Capital Goods",
+    "GICSector": "Industrials"
+  },
+  {
+    "ID": 4394,
+    "CompanyName": "Novartis AG",
+    "ISIN": "CH0012005267",
+    "ESGAdjustedScore": 85.4,
+    "LGTSustainabilityRating": 5,
+    "Country": "Switzerland",
+    "IndustryGroup": "Pharmaceuticals, Biotechnology & Life Sciences",
+    "GICSector": "Health Care"
+  },
+  {
+    "ID": 4383,
+    "CompanyName": "Holcim AG",
+    "ISIN": "CH0012214059",
+    "ESGAdjustedScore": 52.4,
+    "LGTSustainabilityRating": 3,
+    "Country": "Switzerland",
+    "IndustryGroup": "Materials",
+    "GICSector": "Materials"
+  },
+  {
+    "ID": 4404,
+    "CompanyName": "Roche Holding AG",
+    "ISIN": "CH0012032048",
+    "ESGAdjustedScore": 96.2,
+    "LGTSustainabilityRating": 5,
+    "Country": "Switzerland",
+    "IndustryGroup": "Pharmaceuticals, Biotechnology & Life Sciences",
+    "GICSector": "Health Care"
+  },
+  {
+    "ID": 4345,
+    "CompanyName": "ABB Ltd",
+    "ISIN": "CH0012221716",
+    "ESGAdjustedScore": 85.9,
+    "LGTSustainabilityRating": 5,
+    "Country": "Switzerland",
+    "IndustryGroup": "Capital Goods",
+    "GICSector": "Industrials"
+  },
+  {
+    "ID": 4387,
+    "CompanyName": "Microsoft Corp",
+    "ISIN": "US5949181045",
+    "ESGAdjustedScore": 57.8,
+    "LGTSustainabilityRating": 3,
+    "Country": "United States of America",
+    "IndustryGroup": "Software & Services",
+    "GICSector": "Information Technology"
+  },
+  {
+    "ID": 4421,
+    "CompanyName": "Swiss Re AG",
+    "ISIN": "CH0126881561",
+    "ESGAdjustedScore": 77.1,
+    "LGTSustainabilityRating": 4,
+    "Country": "Switzerland",
+    "IndustryGroup": "Insurance",
+    "GICSector": "Financials"
+  },
+  {
+    "ID": 4427,
+    "CompanyName": "UBS Group AG",
+    "ISIN": "CH0244767585",
+    "ESGAdjustedScore": 69.6,
+    "LGTSustainabilityRating": 4,
+    "Country": "Switzerland",
+    "IndustryGroup": "Financial Services",
+    "GICSector": "Financials"
+  },
+  {
+    "ID": 4432,
+    "CompanyName": "Walmart Inc",
+    "ISIN": "US9311421039",
+    "ESGAdjustedScore": 52.6,
+    "LGTSustainabilityRating": 3,
+    "Country": "United States of America",
+    "IndustryGroup": "Consumer Staples Distribution & Retail",
+    "GICSector": "Consumer Staples"
+  },
+  {
+    "ID": 29401,
+    "CompanyName": "Frequentis AG",
+    "ISIN": "ATFREQUENT09",
+    "ESGAdjustedScore": 71.1,
+    "LGTSustainabilityRating": 4,
+    "Country": "Austria",
+    "IndustryGroup": "Capital Goods",
+    "GICSector": "Industrials"
+  },
+  {
+    "ID": 4505,
+    "CompanyName": "Eli Lilly & Co",
+    "ISIN": "US5324571083",
+    "ESGAdjustedScore": 75.7,
+    "LGTSustainabilityRating": 4,
+    "Country": "United States of America",
+    "IndustryGroup": "Pharmaceuticals, Biotechnology & Life Sciences",
+    "GICSector": "Health Care"
+  },
+  {
+    "ID": 4450,
+    "CompanyName": "JPMorgan Chase & Co",
+    "ISIN": "US46625H1005",
+    "ESGAdjustedScore": 53.1,
+    "LGTSustainabilityRating": 3,
+    "Country": "United States of America",
+    "IndustryGroup": "Banks",
+    "GICSector": "Financials"
+  },
+  {
+    "ID": 4531,
+    "CompanyName": "Alphabet Inc",
+    "ISIN": "US02079K3059",
+    "ESGAdjustedScore": 45.2,
+    "LGTSustainabilityRating": 3,
+    "Country": "United States of America",
+    "IndustryGroup": "Media & Entertainment",
+    "GICSector": "Communication Services"
+  },
+  {
+    "ID": 4482,
+    "CompanyName": "Amazon.com Inc",
+    "ISIN": "US0231351067",
+    "ESGAdjustedScore": 35.6,
+    "LGTSustainabilityRating": 2,
+    "Country": "United States of America",
+    "IndustryGroup": "Consumer Discretionary Distribution & Retail",
+    "GICSector": "Consumer Discretionary"
+  },
+  {
+    "ID": 4392,
+    "CompanyName": "Nestle SA",
+    "ISIN": "CH0038863350",
+    "ESGAdjustedScore": 55.2,
+    "LGTSustainabilityRating": 3,
+    "Country": "Switzerland",
+    "IndustryGroup": "Food, Beverage & Tobacco",
+    "GICSector": "Consumer Staples"
+  },
+  {
+    "ID": 4719,
+    "CompanyName": "Apple Inc",
+    "ISIN": "US0378331005",
+    "ESGAdjustedScore": 58.4,
+    "LGTSustainabilityRating": 3,
+    "Country": "United States of America",
+    "IndustryGroup": "Technology Hardware & Equipment",
+    "GICSector": "Information Technology"
+  },
+  {
+    "ID": 4420,
+    "CompanyName": "Swiss Life Holding AG",
+    "ISIN": "CH0014852781",
+    "ESGAdjustedScore": 56.1,
+    "LGTSustainabilityRating": 3,
+    "Country": "Switzerland",
+    "IndustryGroup": "Insurance",
+    "GICSector": "Financials"
+  },
+  {
+    "ID": 4806,
+    "CompanyName": "Coloplast A/S",
+    "ISIN": "DK0060448595",
+    "ESGAdjustedScore": 91.4,
+    "LGTSustainabilityRating": 5,
+    "Country": "Denmark",
+    "IndustryGroup": "Health Care Equipment & Services",
+    "GICSector": "Health Care"
+  },
+  {
+    "ID": 5255,
+    "CompanyName": "NVIDIA Corp",
+    "ISIN": "US67066G1040",
+    "ESGAdjustedScore": 86.2,
+    "LGTSustainabilityRating": 5,
+    "Country": "United States of America",
+    "IndustryGroup": "Semiconductors & Semiconductor Equipment",
+    "GICSector": "Information Technology"
+  },
+  {
+    "ID": 4434,
+    "CompanyName": "Zurich Insurance Group AG",
+    "ISIN": "CH0011075394",
+    "ESGAdjustedScore": 69.8,
+    "LGTSustainabilityRating": 4,
+    "Country": "Switzerland",
+    "IndustryGroup": "Insurance",
+    "GICSector": "Financials"
+  },
+  {
+    "ID": 6442,
+    "CompanyName": "Taiwan Semiconductor Manufacturing Co Ltd",
+    "ISIN": "TW0002330008",
+    "ESGAdjustedScore": 78.6,
+    "LGTSustainabilityRating": 4,
+    "Country": "Taiwan",
+    "IndustryGroup": "Semiconductors & Semiconductor Equipment",
+    "GICSector": "Information Technology"
+  },
+  {
+    "ID": 14881,
+    "CompanyName": "Clas Ohlson AB",
+    "ISIN": "SE0000584948",
+    "ESGAdjustedScore": 63.9,
+    "LGTSustainabilityRating": 4,
+    "Country": "Sweden",
+    "IndustryGroup": "Consumer Discretionary Distribution & Retail",
+    "GICSector": "Consumer Discretionary"
+  },
+  {
+    "ID": 9962,
+    "CompanyName": "Muenchener Rueckversicherungs-Gesellschaft AG in Muenchen",
+    "ISIN": "DE0008430026",
+    "ESGAdjustedScore": 89.7,
+    "LGTSustainabilityRating": 5,
+    "Country": "Germany",
+    "IndustryGroup": "Insurance",
+    "GICSector": "Financials"
+  },
+  {
+    "ID": 7492,
+    "CompanyName": "Tesla Inc",
+    "ISIN": "US88160R1014",
+    "ESGAdjustedScore": 63.8,
+    "LGTSustainabilityRating": 4,
+    "Country": "United States of America",
+    "IndustryGroup": "Automobiles & Components",
+    "GICSector": "Consumer Discretionary"
+  },
+  {
+    "ID": 10016,
+    "CompanyName": "Deutsche Telekom AG",
+    "ISIN": "DE0005557508",
+    "ESGAdjustedScore": 91.4,
+    "LGTSustainabilityRating": 5,
+    "Country": "Germany",
+    "IndustryGroup": "Telecommunication Services",
+    "GICSector": "Communication Services"
+  },
+  {
+    "ID": 7366,
+    "CompanyName": "Broadcom Inc",
+    "ISIN": "US11135F1012",
+    "ESGAdjustedScore": 86.5,
+    "LGTSustainabilityRating": 5,
+    "Country": "United States of America",
+    "IndustryGroup": "Semiconductors & Semiconductor Equipment",
+    "GICSector": "Information Technology"
+  },
+  {
+    "ID": 9921,
+    "CompanyName": "Allianz SE",
+    "ISIN": "DE0008404005",
+    "ESGAdjustedScore": 85.4,
+    "LGTSustainabilityRating": 5,
+    "Country": "Germany",
+    "IndustryGroup": "Insurance",
+    "GICSector": "Financials"
+  },
+  {
+    "ID": 9937,
+    "CompanyName": "Siemens AG",
+    "ISIN": "DE0007236101",
+    "ESGAdjustedScore": 93.1,
+    "LGTSustainabilityRating": 5,
+    "Country": "Germany",
+    "IndustryGroup": "Capital Goods",
+    "GICSector": "Industrials"
+  },
+  {
+    "ID": 21165,
+    "CompanyName": "EQT AB",
+    "ISIN": "SE0012853455",
+    "ESGAdjustedScore": 69.2,
+    "LGTSustainabilityRating": 4,
+    "Country": "Sweden",
+    "IndustryGroup": "Financial Services",
+    "GICSector": "Financials"
+  },
+  {
+    "ID": 18920,
+    "CompanyName": "SFS Group AG",
+    "ISIN": "CH0239229302",
+    "ESGAdjustedScore": 44.4,
+    "LGTSustainabilityRating": 3,
+    "Country": "Switzerland",
+    "IndustryGroup": "Capital Goods",
+    "GICSector": "Industrials"
+  },
+  {
+    "ID": 4407,
+    "CompanyName": "Shell PLC",
+    "ISIN": "GB00BP6MXD84",
+    "ESGAdjustedScore": 33.6,
+    "LGTSustainabilityRating": 2,
+    "Country": "United Kingdom",
+    "IndustryGroup": "Energy",
+    "GICSector": "Energy"
+  },
+  {
+    "ID": 9989,
+    "CompanyName": "Berkshire Hathaway Inc",
+    "ISIN": "US0846707026",
+    "ESGAdjustedScore": 22.5,
+    "LGTSustainabilityRating": 2,
+    "Country": "United States of America",
+    "IndustryGroup": "Financial Services",
+    "GICSector": "Financials"
+  }
+]

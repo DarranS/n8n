@@ -36,6 +36,7 @@ export class ImportTabComponent {
     { headerName: 'ISIN', field: 'isin', filter: true, floatingFilter: true },
     { headerName: 'ESG Adjusted Score', field: 'esgAdjustedScore', filter: true, floatingFilter: true },
     { headerName: 'Country', field: 'country', filter: true, floatingFilter: true },
+    { headerName: 'Industry Group', field: 'gicsIndustryGroup', filter: true, floatingFilter: true },
     { headerName: 'GICS Sector', field: 'gicsSector', filter: true, floatingFilter: true },
     { headerName: 'LGT Sustainability Rating', field: 'lgtSustainabilityRating', filter: true, floatingFilter: true }
   ];
@@ -153,9 +154,15 @@ export class ImportTabComponent {
 
   private async loadManifestAndSelect() {
     try {
-      const manifest = await this.http.get<string[]>('assets/data/manifest.json').toPromise();
-      const files: string[] = Array.isArray(manifest) ? manifest : [];
-      this.manifestIsins = new Set(files.map(f => f.replace('.json', '').toUpperCase()));
+      const manifest = await this.http.get<any[]>('assets/data/manifest.json').toPromise();
+      // manifest is now an array of objects with ISIN and ID fields
+      const isinsAndIds: string[] = Array.isArray(manifest)
+        ? manifest.flatMap(item => [
+            (item.ISIN || '').toUpperCase(),
+            (item.ID || '').toString().toUpperCase()
+          ])
+        : [];
+      this.manifestIsins = new Set(isinsAndIds.filter(v => v));
       this.trySelectManifestRows();
     } catch (err) {
       console.error('Failed to load manifest.json', err);
@@ -317,6 +324,28 @@ export class ImportTabComponent {
       if (filteredItems.every(item => item.status !== 'pending')) {
         dialogRef.disableClose = false;
         clearInterval(checkAllDone);
+
+        // --- Manifest generation and download ---
+        // Gather all selected nodes (companies)
+        const manifest = selectedNodes.map(node => ({
+          ID: node.data.objectId,
+          CompanyName: node.data.objectName,
+          ISIN: node.data.isin,
+          ESGAdjustedScore: node.data.esgAdjustedScore,
+          LGTSustainabilityRating: node.data.lgtSustainabilityRating,
+          Country: node.data.country || '',
+          IndustryGroup: node.data.gicsIndustryGroup || '',
+          GICSector: node.data.gicsSector || ''
+        }));
+        // Download manifest.json
+        const manifestBlob = new Blob([JSON.stringify(manifest, null, 2)], { type: 'application/json' });
+        const manifestUrl = window.URL.createObjectURL(manifestBlob);
+        const manifestLink = document.createElement('a');
+        manifestLink.href = manifestUrl;
+        manifestLink.download = 'manifest.json';
+        manifestLink.click();
+        window.URL.revokeObjectURL(manifestUrl);
+        // --- End manifest generation ---
       }
     }, 500);
   }

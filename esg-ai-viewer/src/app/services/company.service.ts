@@ -18,35 +18,25 @@ export class CompanyService {
 
   constructor(private http: HttpClient) {}
 
-  // Loads companies from JSON files in assets/data using a manifest
+  // Loads companies from manifest.json only (no per-company file fetch)
   async loadCompanies(): Promise<Company[]> {
     if (this.companiesLoaded) return this.companies;
-    // Load manifest.json first
-    let files: string[] = [];
     try {
-      const manifest = await this.http.get<string[]>('assets/data/manifest.json').toPromise();
-      files = Array.isArray(manifest) ? manifest : [];
-      console.log('[CompanyService] Loaded manifest.json:', files);
+      const manifest = await this.http.get<any[]>('assets/data/manifest.json').toPromise();
+      // manifest is an array of objects with ISIN and CompanyName fields
+      this.companies = Array.isArray(manifest)
+        ? manifest.map(item => ({
+            id: item.ISIN || item.ID || '',
+            name: item.CompanyName || ''
+          })).filter(c => c.id && c.name)
+        : [];
+      this.companiesLoaded = true;
+      console.log('[CompanyService] Loaded companies from manifest:', this.companies);
+      return this.companies;
     } catch (err) {
       console.error('[CompanyService] Failed to load manifest.json', err);
       return [];
     }
-    const promises = files.map(file =>
-      this.http.get<any>(`assets/data/${file}`).toPromise()
-        .then(json => {
-          console.log(`[CompanyService] Loaded file: ${file} (Company: ${json.name})`);
-          return { id: file.replace('.json', ''), name: json.name };
-        })
-        .catch((err) => {
-          console.warn(`[CompanyService] Failed to load file: ${file}`, err);
-          return null;
-        })
-    );
-    const results = await Promise.all(promises);
-    this.companies = results.filter(Boolean) as Company[];
-    this.companiesLoaded = true;
-    console.log('[CompanyService] Loaded companies:', this.companies);
-    return this.companies;
   }
 
   getCompanies(): Company[] {
