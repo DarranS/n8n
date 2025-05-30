@@ -4,21 +4,6 @@
     <span class="company-display"><b>{{ companyName }} <span *ngIf="companyIsin">(ISIN: {{ companyIsin }})</span></b></span>
   </div>
   <mat-tab-group [(selectedIndex)]="selectedTabIndex">
-    <mat-tab label="Simple">
-      <form class="simple-form" (ngSubmit)="askSimpleQuestion()">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Prompt</mat-label>
-          <textarea matInput [(ngModel)]="simplePrompt" name="simplePrompt" rows="4" required [readonly]="loading"></textarea>
-        </mat-form-field>
-        <div class="form-actions">
-          <button mat-raised-button color="accent" type="submit" [disabled]="loading || !simplePrompt.trim()">Ask</button>
-          <button mat-raised-button color="accent" type="button" (click)="askAndSaveSimpleQuestion()" [disabled]="loading || !simplePrompt.trim()">
-            <mat-icon>description</mat-icon>
-            Ask & Save
-          </button>
-        </div>
-      </form>
-    </mat-tab>
     <mat-tab label="Guided">
       <form class="question-form" (ngSubmit)="askGuidedQuestion()">
         <div class="form-content">
@@ -171,6 +156,21 @@
         <mat-icon color="warn">warning</mat-icon>
         <span>{{ warning }}</span>
       </div>
+    </mat-tab>
+    <mat-tab label="Simple">
+      <form class="simple-form" (ngSubmit)="askSimpleQuestion()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Prompt</mat-label>
+          <textarea matInput [(ngModel)]="simplePrompt" name="simplePrompt" rows="4" required [readonly]="loading"></textarea>
+        </mat-form-field>
+        <div class="form-actions">
+          <button mat-raised-button color="accent" type="submit" [disabled]="loading || !simplePrompt.trim()">Ask</button>
+          <button mat-raised-button color="accent" type="button" (click)="askAndSaveSimpleQuestion()" [disabled]="loading || !simplePrompt.trim()">
+            <mat-icon>description</mat-icon>
+            Ask & Save
+          </button>
+        </div>
+      </form>
     </mat-tab>
   </mat-tab-group>
 
