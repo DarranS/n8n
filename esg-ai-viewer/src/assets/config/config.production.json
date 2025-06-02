@@ -10,5 +10,11 @@
     "navigateToLoginRequestUrl": true,
     "cacheLocation": "localStorage",
     "scopes": ["user.read", "openid", "profile", "email"]
+  },
+  "api": {
+    "webhookBaseUrl": "/webhook"
+  },
+  "chat": {
+    "webhookUrl": ""
   }
 } 

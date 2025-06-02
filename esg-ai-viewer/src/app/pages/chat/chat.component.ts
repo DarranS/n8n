@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ThemeService } from '../../services/theme.service';
 import { map } from 'rxjs/operators';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
   selector: 'app-chat',
@@ -143,14 +144,18 @@ export class ChatPageComponent implements OnInit {
 
   constructor(
     private sanitizer: DomSanitizer,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private configService: ConfigService
   ) {
     this.isDarkTheme$ = this.themeService.isDarkTheme$;
     
     // Create an observable that combines the theme state with the URL
     this.chatUrl$ = this.isDarkTheme$.pipe(
       map(isDark => {
-        const baseUrl = 'https://n8n.sheltononline.com/webhook/047eecfa-1a30-4d08-a9fa-ab0271c4409a/chat';
+        const config = this.configService.getConfig();
+        const baseUrl = config && config['chat'] && config['chat']['webhookUrl']
+          ? config['chat']['webhookUrl']
+          : 'https://n8n.sheltononline.com/webhook/047eecfa-1a30-4d08-a9fa-ab0271c4409a/chat';
         const url = isDark ? `${baseUrl}?theme=dark` : baseUrl;
         return this.sanitizer.bypassSecurityTrustResourceUrl(url);
       })

@@ -5,18 +5,21 @@ import { map, catchError, tap } from 'rxjs/operators';
 import { timeout } from 'rxjs/operators';
 import { WordExportService } from './word-export.service';
 import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EsgService {
-  private baseUrl = '/webhook'; // Update this to match the proxy path
+  private baseUrl: string;
   private readonly useLocalFiles = true; // Toggle to use local files instead of API
   private currentCompanyData: any = null;
   private rawCompanyData: any = null;
 
-  constructor(private http: HttpClient, private wordExportService: WordExportService) {
+  constructor(private http: HttpClient, private wordExportService: WordExportService, private configService: ConfigService) {
     ModuleRegistry.registerModules([AllCommunityModule]);
+    const config = this.configService.getConfig();
+    this.baseUrl = config && config['api'] && config['api']['webhookBaseUrl'] ? config['api']['webhookBaseUrl'] : '/webhook';
   }
 
   setCurrentCompanyData(data: any) {
@@ -225,7 +228,7 @@ export class EsgService {
    * @param ESGCompanyData The raw ESG data
    */
   upsertRagDocument(companyName: string, esgID: string, ESGCompanyData: any) {
-    const url = '/webhook/ESGRAGUpsert';
+    const url = `${this.baseUrl}/ESGRAGUpsert`;
     const body = { CompanyName: companyName, esgID, ESGCompanyData };
     return this.http.post(url, body);
   }
