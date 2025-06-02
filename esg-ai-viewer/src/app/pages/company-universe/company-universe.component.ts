@@ -4,10 +4,13 @@ import { AgGridModule } from 'ag-grid-angular';
 import { ModuleRegistry, AllCommunityModule, MenuItemDef } from 'ag-grid-community';
 import { Router } from '@angular/router';
 import { CompanyService } from '../../services/company.service';
+import { EsgService } from '../../services/esg.service';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialog } from '@angular/material/dialog';
 import { QuestionTabComponent } from '../../components/tabs/question-tab/question-tab.component';
 import { MatIconModule } from '@angular/material/icon';
+import { ImportStatusDialogComponent, ImportStatusItem } from '../../components/tabs/import-tab/import-status-dialog.component';
+import { UpsertRagStatusDialogComponent, UpsertRagStatusItem } from './upsert-rag-status-dialog.component';
 
 // Register AG Grid Community Module
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -104,7 +107,7 @@ export class CompanyUniverseComponent implements OnInit {
     // Removed getContextMenuItems and sideBar for AG Grid Community v33+
   };
 
-  constructor(private router: Router, private companyService: CompanyService, private dialog: MatDialog, private cdr: ChangeDetectorRef) {}
+  constructor(private router: Router, private companyService: CompanyService, private esgService: EsgService, private dialog: MatDialog, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit() {
     this.rowData = await this.companyService.getFullCompanyUniverse(true);
@@ -148,5 +151,83 @@ export class CompanyUniverseComponent implements OnInit {
       maxHeight: '80vh',
       disableClose: true
     });
+  }
+
+  // Add method to upsert selected companies to RAG
+  async upsertSelectedToRag() {
+    if (!this.gridApi) return;
+    const selectedNodes = this.gridApi.getSelectedNodes();
+    const companies = selectedNodes.map((node: any) => node.data);
+    if (companies.length === 0) return;
+    // Prepare status items
+    const statusItems: UpsertRagStatusItem[] = companies.map((c: any) => ({
+      isin: c.ISIN,
+      name: c.CompanyName,
+      status: 'pending'
+    }));
+    const dialogRef = this.dialog.open(UpsertRagStatusDialogComponent, {
+      data: { items: statusItems },
+      disableClose: true,
+      width: '700px'
+    });
+
+    // Listen for retry event
+    dialogRef.componentInstance.retry.subscribe(() => {
+      // Find failed items
+      const failedIndexes = statusItems
+        .map((item, idx) => item.status === 'error' ? idx : -1)
+        .filter(idx => idx !== -1);
+      // Reset their status to pending
+      for (const idx of failedIndexes) {
+        statusItems[idx].status = 'pending';
+        statusItems[idx].error = undefined;
+      }
+      dialogRef.componentInstance.data.items = [...statusItems];
+      // Retry only failed companies sequentially
+      const processNextFailed = async (failedIndexes: number[], i: number) => {
+        if (i >= failedIndexes.length) return;
+        const idx = failedIndexes[i];
+        const company = companies[idx];
+        try {
+          const rawData = await this.esgService.getRawData(company.ISIN).toPromise();
+          await this.esgService.upsertRagDocument(company.CompanyName, company.ISIN, rawData).toPromise();
+          statusItems[idx].status = 'success';
+        } catch (err: any) {
+          statusItems[idx].status = 'error';
+          statusItems[idx].error = err?.message || 'Failed';
+        }
+        dialogRef.componentInstance.data.items = [...statusItems];
+        await processNextFailed(failedIndexes, i + 1);
+      };
+      processNextFailed(failedIndexes, 0);
+    });
+
+    // Sequential upsert logic
+    const processNext = async (i: number) => {
+      if (i >= companies.length) return;
+      const company = companies[i];
+      try {
+        const rawData = await this.esgService.getRawData(company.ISIN).toPromise();
+        await this.esgService.upsertRagDocument(company.CompanyName, company.ISIN, rawData).toPromise();
+        statusItems[i].status = 'success';
+      } catch (err: any) {
+        statusItems[i].status = 'error';
+        statusItems[i].error = err?.message || 'Failed';
+      }
+      dialogRef.componentInstance.data.items = [...statusItems];
+      await processNext(i + 1);
+    };
+    processNext(0);
+
+    // Allow user to close dialog when all done
+    const checkAllDone = setInterval(async () => {
+      if (statusItems.every(item => item.status !== 'pending')) {
+        dialogRef.disableClose = false;
+        clearInterval(checkAllDone);
+        // Refresh the grid to get the latest RAG data
+        this.rowData = await this.companyService.getFullCompanyUniverse(true);
+        this.cdr.detectChanges();
+      }
+    }, 500);
   }
 } 

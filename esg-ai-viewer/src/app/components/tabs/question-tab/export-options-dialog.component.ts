@@ -41,7 +41,7 @@ export interface ExportOptionsResult {
     </div>
     <div mat-dialog-actions style="display: flex; justify-content: flex-end; gap: 16px; padding: 18px 36px 18px 36px; box-sizing: border-box;">
       <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="onOk()" style="min-width: 90px;">OK</button>
+      <button mat-raised-button color="primary" (click)="onOk()" style="min-width: 90px;" [disabled]="isAnyPending()">OK</button>
     </div>
   `
 })
@@ -73,5 +73,10 @@ export class ExportOptionsDialogComponent {
 
   onCancel() {
     this.dialogRef.close();
+  }
+
+  isAnyPending(): boolean {
+    // Implementation of isAnyPending method
+    return false; // Placeholder return, actual implementation needed
   }
 } 

@@ -214,4 +214,16 @@ export class EsgService {
       return new Set();
     }
   }
+
+  /**
+   * Upserts a document into the RAG database via the n8n endpoint.
+   * @param companyName The company name
+   * @param esgID The ISIN
+   * @param ESGCompanyData The raw ESG data
+   */
+  upsertRagDocument(companyName: string, esgID: string, ESGCompanyData: any) {
+    const url = '/webhook/ESGRAGUpsert';
+    const body = { CompanyName: companyName, esgID, ESGCompanyData };
+    return this.http.post(url, body);
+  }
 } 

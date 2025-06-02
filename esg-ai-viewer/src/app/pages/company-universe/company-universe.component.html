@@ -23,6 +23,10 @@
           <mat-icon>help_outline</mat-icon>
           Ask a question
         </button>
+        <button mat-raised-button color="accent" class="dialog-style-btn" [disabled]="selectedRowCount === 0" (click)="upsertSelectedToRag()">
+          <mat-icon>cloud_upload</mat-icon>
+          Upsert to RAG
+        </button>
       </div>
     </div>
   </mat-tab>
