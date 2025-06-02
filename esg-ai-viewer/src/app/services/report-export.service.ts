@@ -107,20 +107,21 @@ export class ReportExportService {
     companies: { CompanyName: string; ISIN: string }[];
     generatedPrompt: string;
     result: ExportOptionsResult;
-    askQuestion: (prompt: string) => Promise<string>;
+    askQuestion: (prompt: string, idx: number, total: number) => Promise<string>;
+    onStatus?: (msg: string) => void;
   }): Promise<void> {
-    const { companies, generatedPrompt, result, askQuestion } = params;
+    const { companies, generatedPrompt, result, askQuestion, onStatus } = params;
     let errors: string[] = [];
     let allChildren: any[] = [];
     let idx = 0;
     for (const company of companies) {
-      idx++;
+      if (onStatus) onStatus(`Processing Company ${idx + 1} of ${companies.length}...`);
       try {
         // Replace placeholders with actual company data
         const prompt = generatedPrompt
           .replace(/\{\{COMPANY_NAME\}\}/g, company.CompanyName)
           .replace(/\{\{COMPANY_ISIN\}\}/g, company.ISIN);
-        const res = await askQuestion(prompt);
+        const res = await askQuestion(prompt, idx, companies.length);
         let answerText = res;
         try {
           const parsed = JSON.parse(res || "");
@@ -130,6 +131,7 @@ export class ReportExportService {
       } catch (e: any) {
         errors.push(`${company.CompanyName} (${company.ISIN}): ${e?.message || 'Error'}`);
       }
+      idx++;
     }
     let docChildren = allChildren.flatMap(({ company, prompt, answer }, idx) => [
       ...(idx > 0 ? [new Paragraph({ pageBreakBefore: true })] : []),
@@ -140,7 +142,9 @@ export class ReportExportService {
     // Fetch and append report data for each company if requested
     if (result.includeReportData) {
       const reportSections: any[] = [];
-      for (const company of companies) {
+      for (let rIdx = 0; rIdx < companies.length; rIdx++) {
+        const company = companies[rIdx];
+        if (onStatus) onStatus(`Fetching report data for Company ${rIdx + 1} of ${companies.length}...`);
         try {
           const rawData = await this.esgService.getRawData(company.ISIN).toPromise();
           const report = await this.retryGetReport(rawData);

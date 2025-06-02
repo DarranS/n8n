@@ -294,8 +294,12 @@ export class QuestionTabComponent implements OnInit {
           companies: this.companies,
           generatedPrompt: this.generatedPrompt,
           result,
-          askQuestion: async (prompt: string) => {
+          askQuestion: async (prompt: string, idx: number, total: number) => {
+            this.statusMessage = `Processing Company ${idx + 1} of ${total}...`;
             return await this.esgService.askQuestion(prompt).toPromise() ?? "";
+          },
+          onStatus: (msg: string) => {
+            this.statusMessage = msg;
           }
         });
         this.loading = false;
