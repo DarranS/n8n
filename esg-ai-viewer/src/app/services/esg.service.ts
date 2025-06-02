@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { timeout } from 'rxjs/operators';
 import { WordExportService } from './word-export.service';
+import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,9 @@ export class EsgService {
   private currentCompanyData: any = null;
   private rawCompanyData: any = null;
 
-  constructor(private http: HttpClient, private wordExportService: WordExportService) {}
+  constructor(private http: HttpClient, private wordExportService: WordExportService) {
+    ModuleRegistry.registerModules([AllCommunityModule]);
+  }
 
   setCurrentCompanyData(data: any) {
     if (!data) {

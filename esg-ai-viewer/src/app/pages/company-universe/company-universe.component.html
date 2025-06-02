@@ -19,14 +19,16 @@
         <div class="grid-stats" style="font-size: 1rem;">
           Total rows: {{ rowData.length || 0 }} | Selected: {{ selectedRowCount }}
         </div>
-        <button mat-raised-button color="primary" class="dialog-style-btn" [disabled]="selectedRowCount === 0" (click)="openQuestionDialog()">
-          <mat-icon>help_outline</mat-icon>
-          Ask a question
-        </button>
-        <button mat-raised-button color="accent" class="dialog-style-btn" [disabled]="selectedRowCount === 0" (click)="upsertSelectedToRag()">
-          <mat-icon>cloud_upload</mat-icon>
-          Upsert to RAG
-        </button>
+        <div style="display: flex; gap: 0.5rem;">
+          <button mat-raised-button color="primary" class="dialog-style-btn" [disabled]="selectedRowCount === 0" (click)="openQuestionDialog()">
+            <mat-icon>help_outline</mat-icon>
+            Ask a question
+          </button>
+          <button mat-raised-button color="accent" class="dialog-style-btn" [disabled]="selectedRowCount === 0" (click)="upsertSelectedToRag()">
+            <mat-icon>cloud_upload</mat-icon>
+            Upsert to RAG
+          </button>
+        </div>
       </div>
     </div>
   </mat-tab>

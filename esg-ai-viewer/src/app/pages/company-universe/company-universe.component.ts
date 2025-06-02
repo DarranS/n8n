@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AgGridModule } from 'ag-grid-angular';
-import { ModuleRegistry, AllCommunityModule, MenuItemDef } from 'ag-grid-community';
+import { ModuleRegistry, AllCommunityModule, MenuItemDef, GridOptions, DefaultMenuItem } from 'ag-grid-community';
 import { Router } from '@angular/router';
 import { CompanyService } from '../../services/company.service';
 import { EsgService } from '../../services/esg.service';
@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ImportStatusDialogComponent, ImportStatusItem } from '../../components/tabs/import-tab/import-status-dialog.component';
 import { UpsertRagStatusDialogComponent, UpsertRagStatusItem } from './upsert-rag-status-dialog.component';
 
-// Register AG Grid Community Module
+// Register AG Grid Community Module (includes context menu)
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 @Component({
@@ -103,9 +103,7 @@ export class CompanyUniverseComponent implements OnInit {
     filter: true
   };
 
-  gridOptions = {
-    // Removed getContextMenuItems and sideBar for AG Grid Community v33+
-  };
+  gridOptions: GridOptions = {};
 
   constructor(private router: Router, private companyService: CompanyService, private esgService: EsgService, private dialog: MatDialog, private cdr: ChangeDetectorRef) {}
 

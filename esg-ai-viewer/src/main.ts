@@ -10,6 +10,7 @@ import { IPublicClientApplication, PublicClientApplication, InteractionType, Bro
 import { initializeMsalConfig } from './app/auth/auth-config';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { appConfig } from './app/app.config';
+import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 
 const tenantAuthority = 'https://login.microsoftonline.com/fcc16827-3d82-4edf-9dc2-5d034f97127e';
 
@@ -60,6 +61,7 @@ export function MSALInterceptorConfigFactory() {
 
 async function bootstrap() {
   try {
+    ModuleRegistry.registerModules([AllCommunityModule]);
     await bootstrapApplication(AppComponent, appConfig);
   } catch (error) {
     console.error('Error bootstrapping application:', error);
