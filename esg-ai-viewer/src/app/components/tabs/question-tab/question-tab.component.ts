@@ -19,6 +19,7 @@ import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, Ta
 import { MatDialog, MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ExportOptionsDialogComponent, ExportOptionsResult } from './export-options-dialog.component';
 import { WordExportService } from '../../../services/word-export.service';
+import { ReportExportService } from '../../../services/report-export.service';
 
 @Component({
   selector: 'app-question-tab',
@@ -114,6 +115,7 @@ export class QuestionTabComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private dialog: MatDialog,
     private wordExportService: WordExportService,
+    private reportExportService: ReportExportService,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: any = null,
     @Optional() public dialogRef: MatDialogRef<QuestionTabComponent> | null = null
   ) {
@@ -265,72 +267,13 @@ export class QuestionTabComponent implements OnInit {
       .catch(() => {});
   }
 
-  /**
-   * Export the Guided Question and its answer to a Word document
-   */
-  async exportGuidedQuestionToWord(options?: ExportOptionsResult) {
-    if (!this.companyName || !this.companyIsin || !this.generatedPrompt || !this.answer) {
-      return;
-    }
-    let answerText = this.answer;
-    try {
-      const parsed = JSON.parse(this.answer || "");
-      if (parsed.output) answerText = parsed.output;
-    } catch {}
-    const children: (Paragraph | Table)[] = [];
-    children.push(new Paragraph({
-      text: `${this.companyName} (ISIN: ${this.companyIsin})`,
-      heading: HeadingLevel.HEADING_1,
-      spacing: { after: 300 },
-    }));
-    if (!options || options.includePrompt) {
-      children.push(new Paragraph({
-        text: 'Prompt:',
-        heading: HeadingLevel.HEADING_2,
-        spacing: { after: 100 },
-      }));
-      children.push(new Paragraph({
-        text: this.generatedPrompt,
-        spacing: { after: 300 },
-      }));
-    }
-    if (!options || options.includeAnswer) {
-      children.push(new Paragraph({
-        text: 'Response:',
-        heading: HeadingLevel.HEADING_2,
-        spacing: { after: 100 },
-      }));
-      const answerParagraphs = answerText.split(/\r?\n/).map(p => p.trim()).filter(Boolean);
-      const answerDocParagraphs = answerParagraphs.map(p => new Paragraph({ text: p }));
-      children.push(...answerDocParagraphs);
-    }
-    if (options && options.includeReportData) {
-      children.push(new Paragraph({ pageBreakBefore: true }));
-      children.push(new Paragraph({
-        text: 'Report Data:',
-        heading: HeadingLevel.HEADING_2,
-        spacing: { after: 100 },
-      }));
-      try {
-        console.log('Fetching report data for export...');
-        const rawCompanyData = this.esgService.getRawCompanyData();
-        const reportData = await this.esgService.getReport(rawCompanyData).toPromise();
-        console.log('Report data fetched, including in Word document.');
-        const safeReportData = typeof reportData === 'string' ? reportData : '';
-        const reportDocElements = this.wordExportService.markdownToDocxElements(safeReportData);
-        children.push(...reportDocElements);
-      } catch (e) {
-        console.error('Failed to fetch report data for export:', e);
-        children.push(new Paragraph({ text: 'Failed to load report data.' }));
-      }
-    }
-    const fileName = options?.fileName || `${this.companyName.replace(/[^a-zA-Z0-9]/g, '_')}_Guided_Question.docx`;
-    await this.wordExportService.exportWordDocument(children, fileName);
+  copyGeneratedPrompt() {
+    if (!this.generatedPrompt) return;
+    navigator.clipboard.writeText(this.generatedPrompt)
+      .then(() => {})
+      .catch(() => {});
   }
 
-  /**
-   * Ask the guided question and export the result to a Word document
-   */
   async askAndSaveGuidedQuestion() {
     this.generatePrompt();
     if (!this.generatedPrompt.trim()) return;
@@ -346,67 +289,22 @@ export class QuestionTabComponent implements OnInit {
       this.loading = true;
       this.error = null;
       this.statusMessage = '';
-      let errors: string[] = [];
-      let allChildren: any[] = [];
-      let idx = 0;
-      for (const company of this.companies) {
-        idx++;
-        this.statusMessage = `Generating prompt for Company ${idx} of ${this.companies.length}...`;
-        try {
-          // Replace placeholders with actual company data
-          const prompt = this.generatedPrompt
-            .replace(/\{\{COMPANY_NAME\}\}/g, company.CompanyName)
-            .replace(/\{\{COMPANY_ISIN\}\}/g, company.ISIN);
-          this.statusMessage = `Answering question for Company ${idx} of ${this.companies.length}...`;
-          const res = await this.esgService.askQuestion(prompt).toPromise();
-          let answerText = res;
-          try {
-            const parsed = JSON.parse(res || "");
-            if (parsed.output) answerText = parsed.output;
-          } catch {}
-          allChildren.push({ company, prompt, answer: answerText || '' });
-        } catch (e: any) {
-          errors.push(`${company.CompanyName} (${company.ISIN}): ${e?.message || 'Error'}`);
-        }
-      }
-      let docChildren = allChildren.flatMap(({ company, prompt, answer }, idx) => [
-        ...(idx > 0 ? [new Paragraph({ pageBreakBefore: true })] : []),
-        new Paragraph({ text: `${company.CompanyName} (ISIN: ${company.ISIN})`, heading: HeadingLevel.HEADING_1, spacing: { after: 300 } }),
-        ...(result.includePrompt ? [new Paragraph({ text: 'Prompt:', heading: HeadingLevel.HEADING_2, spacing: { after: 100 } }), new Paragraph({ text: (prompt || ''), spacing: { after: 300 } })] : []),
-        ...(result.includeAnswer ? [new Paragraph({ text: 'Response:', heading: HeadingLevel.HEADING_2, spacing: { after: 100 } }), ...((answer || '').split(/\r?\n/).map((p: string) => new Paragraph({ text: p.trim() })))] : [])
-      ]);
-      // Fetch and append report data for each company if requested
-      if (result.includeReportData) {
-        this.statusMessage = 'Fetching report data for all companies...';
-        const reportSections: any[] = [];
-        for (const company of this.companies) {
-          try {
-            const rawData = await this.esgService.getRawData(company.ISIN).toPromise();
-            const report = await this.esgService.getReport(rawData).toPromise();
-            const safeReport = typeof report === 'string' ? report : '';
-            reportSections.push([
-              new Paragraph({ pageBreakBefore: true }),
-              new Paragraph({ text: `${company.CompanyName} (ISIN: ${company.ISIN}) - Report Data`, heading: HeadingLevel.HEADING_1, spacing: { after: 300 } }),
-              ...this.wordExportService.markdownToDocxElements(safeReport)
-            ]);
-          } catch (e) {
-            reportSections.push([
-              new Paragraph({ pageBreakBefore: true }),
-              new Paragraph({ text: `${company.CompanyName} (ISIN: ${company.ISIN}) - Report Data`, heading: HeadingLevel.HEADING_1, spacing: { after: 300 } }),
-              new Paragraph({ text: 'Failed to load report data.' })
-            ]);
+      try {
+        await this.reportExportService.exportBatchGuidedQuestionsToWord({
+          companies: this.companies,
+          generatedPrompt: this.generatedPrompt,
+          result,
+          askQuestion: async (prompt: string) => {
+            return await this.esgService.askQuestion(prompt).toPromise() ?? "";
           }
-        }
-        docChildren = [...docChildren, ...reportSections.flat()];
-      }
-      const fileName = result.fileName || 'Batch_Questions.docx';
-      await this.wordExportService.exportWordDocument(docChildren, fileName);
-      this.loading = false;
-      this.statusMessage = '';
-      if (errors.length) {
-        this.error = errors.join('\n');
-      } else {
+        });
+        this.loading = false;
+        this.statusMessage = '';
         this.dialogRef?.close();
+      } catch (e: any) {
+        this.loading = false;
+        this.statusMessage = '';
+        this.error = e?.message || 'Error during batch export.';
       }
       return;
     }
@@ -431,8 +329,19 @@ export class QuestionTabComponent implements OnInit {
             this.containerRef.nativeElement.scrollTo({ top: this.containerRef.nativeElement.scrollHeight, behavior: 'smooth' });
           }
         }, 100);
-        // After answer is received, export to Word with options
-        await this.exportGuidedQuestionToWord(result);
+        // After answer is received, export to Word with options using the new service
+        try {
+          await this.reportExportService.exportGuidedQuestionToWord({
+            companyName: this.companyName,
+            companyIsin: this.companyIsin,
+            generatedPrompt: this.generatedPrompt,
+            answer: res,
+            options: result,
+            rawCompanyData: this.esgService.getRawCompanyData(),
+          });
+        } catch (e: any) {
+          this.error = e?.message || 'Error during report export.';
+        }
       },
       error: (err: any) => {
         this.error = 'Failed to get answer. Please try again.';
@@ -441,9 +350,6 @@ export class QuestionTabComponent implements OnInit {
     });
   }
 
-  /**
-   * Ask the simple question and export the result to a Word document
-   */
   async askAndSaveSimpleQuestion() {
     if (!this.simplePrompt.trim()) return;
     // Show export options dialog first
@@ -472,84 +378,25 @@ export class QuestionTabComponent implements OnInit {
         );
         this.answer = res;
         this.loading = false;
-        // After answer is received, export to Word with options
-        await this.exportSimpleQuestionToWord(fullPrompt, res, result);
+        // After answer is received, export to Word with options using the new service
+        try {
+          await this.reportExportService.exportSimpleQuestionToWord({
+            companyName: this.companyName,
+            companyIsin: this.companyIsin,
+            prompt: fullPrompt,
+            answer: res,
+            options: result,
+            rawCompanyData: this.esgService.getRawCompanyData(),
+          });
+        } catch (e: any) {
+          this.error = e?.message || 'Error during report export.';
+        }
       },
       error: (err: any) => {
         this.error = 'Failed to get answer. Please try again.';
         this.loading = false;
       }
     });
-  }
-
-  /**
-   * Export the Simple Question and its answer to a Word document
-   */
-  async exportSimpleQuestionToWord(prompt: string, answer: string, options?: ExportOptionsResult) {
-    if (!this.companyName || !this.companyIsin || !prompt || !answer) {
-      return;
-    }
-    let answerText = answer;
-    try {
-      const parsed = JSON.parse(answer || "");
-      if (parsed.output) answerText = parsed.output;
-    } catch {}
-    const children: (Paragraph | Table)[] = [];
-    children.push(new Paragraph({
-      text: `${this.companyName} (ISIN: ${this.companyIsin})`,
-      heading: HeadingLevel.HEADING_1,
-      spacing: { after: 300 },
-    }));
-    if (!options || options.includePrompt) {
-      children.push(new Paragraph({
-        text: 'Prompt:',
-        heading: HeadingLevel.HEADING_2,
-        spacing: { after: 100 },
-      }));
-      children.push(new Paragraph({
-        text: prompt,
-        spacing: { after: 300 },
-      }));
-    }
-    if (!options || options.includeAnswer) {
-      children.push(new Paragraph({
-        text: 'Response:',
-        heading: HeadingLevel.HEADING_2,
-        spacing: { after: 100 },
-      }));
-      const answerParagraphs = answerText.split(/\r?\n/).map(p => p.trim()).filter(Boolean);
-      const answerDocParagraphs = answerParagraphs.map(p => new Paragraph({ text: p }));
-      children.push(...answerDocParagraphs);
-    }
-    if (options && options.includeReportData) {
-      children.push(new Paragraph({ pageBreakBefore: true }));
-      children.push(new Paragraph({
-        text: 'Report Data:',
-        heading: HeadingLevel.HEADING_2,
-        spacing: { after: 100 },
-      }));
-      try {
-        console.log('Fetching report data for export...');
-        const rawCompanyData = this.esgService.getRawCompanyData();
-        const reportData = await this.esgService.getReport(rawCompanyData).toPromise();
-        console.log('Report data fetched, including in Word document.');
-        const safeReportData = typeof reportData === 'string' ? reportData : '';
-        const reportDocElements = this.wordExportService.markdownToDocxElements(safeReportData);
-        children.push(...reportDocElements);
-      } catch (e) {
-        console.error('Failed to fetch report data for export:', e);
-        children.push(new Paragraph({ text: 'Failed to load report data.' }));
-      }
-    }
-    const fileName = options?.fileName || `${this.companyName.replace(/[^a-zA-Z0-9]/g, '_')}_Simple_Question.docx`;
-    await this.wordExportService.exportWordDocument(children, fileName);
-  }
-
-  copyGeneratedPrompt() {
-    if (!this.generatedPrompt) return;
-    navigator.clipboard.writeText(this.generatedPrompt)
-      .then(() => {})
-      .catch(() => {});
   }
 
   async exportCurrentAnswer() {
@@ -565,10 +412,32 @@ export class QuestionTabComponent implements OnInit {
       // Simple tab
       const prefix = `For  ${this.companyName} ISIN:${this.companyIsin}: `;
       const fullPrompt = prefix + this.simplePrompt.trim();
-      await this.exportSimpleQuestionToWord(fullPrompt, this.answer, result);
+      try {
+        await this.reportExportService.exportSimpleQuestionToWord({
+          companyName: this.companyName,
+          companyIsin: this.companyIsin,
+          prompt: fullPrompt,
+          answer: this.answer,
+          options: result,
+          rawCompanyData: this.esgService.getRawCompanyData(),
+        });
+      } catch (e: any) {
+        this.error = e?.message || 'Error during report export.';
+      }
     } else if (this.selectedTabIndex === 1) {
       // Guided tab
-      await this.exportGuidedQuestionToWord(result);
+      try {
+        await this.reportExportService.exportGuidedQuestionToWord({
+          companyName: this.companyName,
+          companyIsin: this.companyIsin,
+          generatedPrompt: this.generatedPrompt,
+          answer: this.answer,
+          options: result,
+          rawCompanyData: this.esgService.getRawCompanyData(),
+        });
+      } catch (e: any) {
+        this.error = e?.message || 'Error during report export.';
+      }
     }
   }
 
