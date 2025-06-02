@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { EsgService } from './esg.service';
 
 export interface Company {
   id: string; // ISIN
@@ -18,7 +19,7 @@ export class CompanyService {
   private fullCompanyUniverse: any[] = [];
   private fullCompanyUniverseLoaded = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private esgService: EsgService) {}
 
   // Loads companies from CompanyUniverse.json only (no per-company file fetch)
   async loadCompanies(): Promise<Company[]> {
@@ -57,14 +58,24 @@ export class CompanyService {
     this.selectedCompanySubject.next(null);
   }
 
-  // Loads the full CompanyUniverse.json data (all fields)
-  async getFullCompanyUniverse(): Promise<any[]> {
-    if (this.fullCompanyUniverseLoaded) return this.fullCompanyUniverse;
+  // Loads the full CompanyUniverse.json data (all fields), optionally merging RAG details
+  async getFullCompanyUniverse(IncludeRAGDetails: boolean = false): Promise<any[]> {
+    if (this.fullCompanyUniverseLoaded && !IncludeRAGDetails) return this.fullCompanyUniverse;
     try {
       const data = await this.http.get<any[]>("assets/data/CompanyUniverse.json").toPromise();
-      this.fullCompanyUniverse = Array.isArray(data) ? data : [];
-      this.fullCompanyUniverseLoaded = true;
-      return this.fullCompanyUniverse;
+      let universe = Array.isArray(data) ? data : [];
+      if (IncludeRAGDetails) {
+        const ragIsins = await this.esgService.fetchRagIsins();
+        universe = universe.map(company => ({
+          ...company,
+          InRAG: ragIsins.has((company.ISIN || '').toUpperCase())
+        }));
+      }
+      if (!IncludeRAGDetails) {
+        this.fullCompanyUniverse = universe;
+        this.fullCompanyUniverseLoaded = true;
+      }
+      return universe;
     } catch (err) {
       console.error('[CompanyService] Failed to load full CompanyUniverse.json', err);
       return [];

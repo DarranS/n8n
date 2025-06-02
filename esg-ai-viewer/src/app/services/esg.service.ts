@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { timeout } from 'rxjs/operators';
+import { WordExportService } from './word-export.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class EsgService {
   private currentCompanyData: any = null;
   private rawCompanyData: any = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private wordExportService: WordExportService) {}
 
   setCurrentCompanyData(data: any) {
     if (!data) {
@@ -97,18 +98,17 @@ export class EsgService {
       map(response => {
         // Extract the relevant data from the response
         const reportData = response?.CompanyESGReport || response;
-        
         // If the response is a string, try to parse it as JSON first
         if (typeof reportData === 'string') {
           try {
             const parsedData = JSON.parse(reportData);
-            return this.formatReportData(parsedData);
+            return this.wordExportService.formatReportData(parsedData);
           } catch (e) {
             // If parsing fails, return the string with newlines handled
-            return reportData.replace(/\\n/g, '\n');
+            return reportData.replace(/\n/g, '\n');
           }
         } else if (reportData && typeof reportData === 'object') {
-          return this.formatReportData(reportData);
+          return this.wordExportService.formatReportData(reportData);
         }
         return '';
       }),
@@ -129,47 +129,15 @@ export class EsgService {
     );
   }
 
-  private formatReportData(data: any): string {
-    // If the data has a specific structure, format it accordingly
-    if (data.CompanyESGReport) {
-      return this.formatCompanyESGReport(data.CompanyESGReport);
-    } else if (data.Report) {
-      return this.formatCompanyESGReport(data.Report);
-    } else if (typeof data === 'string') {
-      return data.replace(/\\n/g, '\n');
-    } else {
-      // For any other object structure, convert to string with proper formatting
-      return JSON.stringify(data, null, 2).replace(/\\n/g, '\n');
-    }
-  }
-
-  private formatCompanyESGReport(report: any): string {
-    if (typeof report === 'string') {
-      return report.replace(/\\n/g, '\n');
-    }
-    
-    // If it's an object, try to extract the most relevant content
-    const content = report.content || report.text || report.data || report;
-    
-    if (typeof content === 'string') {
-      return content.replace(/\\n/g, '\n');
-    }
-    
-    // If we still have an object, convert it to a formatted string
-    return JSON.stringify(content, null, 2).replace(/\\n/g, '\n');
-  }
-
   getSummary(data: any, refreshRagData: boolean = false): Observable<string> {
     // Get the ISIN/ID from either the input data or current company data
     const esgID = data?.id || this.currentCompanyData?.id;
-    
     if (!esgID) {
       console.error('No company ID available', {
         inputData: data,
         currentCompanyData: this.currentCompanyData
       });
     }
-    
     const requestBody = {
       ESGCompanyData: data,
       useRAG: data?.useRAG ?? true,
@@ -177,28 +145,25 @@ export class EsgService {
       esgID: esgID,
       refreshRAGData: refreshRagData
     };
-
     console.log('Current company data:', this.currentCompanyData);
     console.log('ESG Data:', data);
     console.log('Summary request body:', requestBody);
-
     return this.http.post<any>(`${this.baseUrl}/ESG/Company/Summary/Description`, requestBody).pipe(
       timeout(600000), // 10 minutes
       map(response => {
         // Extract the relevant data from the response
         const summaryData = response?.CompanyESGSummary || response;
-        
         // If the response is a string, try to parse it as JSON first
         if (typeof summaryData === 'string') {
           try {
             const parsedData = JSON.parse(summaryData);
-            return this.formatSummaryData(parsedData);
+            return this.wordExportService.formatSummaryData(parsedData);
           } catch (e) {
             // If parsing fails, return the string with newlines handled
-            return summaryData.replace(/\\n/g, '\n');
+            return summaryData.replace(/\n/g, '\n');
           }
         } else if (summaryData && typeof summaryData === 'object') {
-          return this.formatSummaryData(summaryData);
+          return this.wordExportService.formatSummaryData(summaryData);
         }
         return '';
       }),
@@ -209,81 +174,44 @@ export class EsgService {
     );
   }
 
-  private formatSummaryData(data: any): string {
-    // If the data has a specific structure, format it accordingly
-    if (data.CompanyESGSummary) {
-      return this.formatCompanyESGSummary(data.CompanyESGSummary);
-    } else if (data.output) {
-      return this.formatCompanyESGSummary(data.output);
-    } else if (typeof data === 'string') {
-      return data.replace(/\\n/g, '\n');
-    } else {
-      // For any other object structure, convert to string with proper formatting
-      return JSON.stringify(data, null, 2).replace(/\\n/g, '\n');
-    }
-  }
-
-  private formatCompanyESGSummary(summary: any): string {
-    if (typeof summary === 'string') {
-      // Process markdown in the string
-      return this.processMarkdown(summary.replace(/\\n/g, '\n'));
-    }
-    
-    // If it's an object, try to extract the most relevant content
-    const content = summary.content || summary.text || summary.data || summary.description || summary.output || summary;
-    
-    if (typeof content === 'string') {
-      // Process markdown in the extracted content
-      return this.processMarkdown(content.replace(/\\n/g, '\n'));
-    }
-    
-    // If we still have an object, convert it to a formatted string and process markdown
-    const stringContent = JSON.stringify(content, null, 2).replace(/\\n/g, '\n');
-    return this.processMarkdown(stringContent);
-  }
-
-  private processMarkdown(response: string): string {
-    // Ensure proper markdown formatting
-    let processed = response;
-    
-    // Handle common markdown patterns
-    processed = processed
-      // Handle headers
-      .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-      // Handle bold and italic
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      // Handle lists
-      .replace(/^\s*\*\s(.*$)/gm, '<li>$1</li>')
-      .replace(/^\s*-\s(.*$)/gm, '<li>$1</li>')
-      // Handle links
-      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
-      // Handle paragraphs (ensure proper spacing)
-      .replace(/\n\n/g, '</p><p>')
-      // Wrap the entire content in a paragraph if needed
-      .replace(/^(?!<[a-z])(.*)$/gm, '<p>$1</p>');
-    
-    console.log('Processed markdown:', processed);
-    return processed;
-  }
-
-  private generateSummaryFromData(data: any): string {
-    return "TBD";
-  }
-
-  private generateReportFromData(data: any): string {
-    return "TBD";
-  }
 
   askQuestion(prompt: string): Observable<string> {
     // Always use the remote endpoint
-    const url = 'https://n8n.sheltononline.com/webhook/Question';
+    const url = `${this.baseUrl}/Question`;
     const body = { Prompt: prompt };
     const headers = { 'Content-Type': 'application/json' };
     return this.http.post(url, body, { headers, responseType: 'text' }).pipe(
       timeout(180000)
     );
+  }
+
+  // Fetches the list of ISINs in the RAG database from the n8n endpoint
+  public async fetchRagIsins(): Promise<Set<string>> {
+    try {
+      const ragData = await this.http.get<any[]>(
+        `${this.baseUrl}/ESGRagIDs`
+      ).toPromise();
+
+      if (!Array.isArray(ragData)) {
+        console.error('[EsgService] Unexpected response for RAG ISINs:', ragData);
+        return new Set();
+      }
+
+      // ragData is an array of objects with an 'esgid' field
+      return new Set(ragData.map(item => (item.esgid || '').toUpperCase()).filter(Boolean));
+    } catch (err: any) {
+      if (err && err.error) {
+        // Try to parse and log the full error message from n8n
+        try {
+          const errorObj = typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
+          console.error('[EsgService] Failed to fetch RAG ISINs:', errorObj);
+        } catch (parseErr) {
+          console.error('[EsgService] Failed to fetch RAG ISINs (unparsable error):', err.error);
+        }
+      } else {
+        console.error('[EsgService] Failed to fetch RAG ISINs', err);
+      }
+      return new Set();
+    }
   }
 } 

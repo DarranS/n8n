@@ -147,7 +147,7 @@ export class QuestionTabComponent implements OnInit {
           if (parsed.output) output = parsed.output;
         } catch {}
         this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
-          this.esgService['processMarkdown'](output)
+          this.wordExportService.processMarkdown(output)
         );
         this.answer = res;
         this.loading = false;
@@ -241,7 +241,7 @@ export class QuestionTabComponent implements OnInit {
           if (parsed.output) output = parsed.output;
         } catch {}
         this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
-          this.esgService['processMarkdown'](output)
+          this.wordExportService.processMarkdown(output)
         );
         this.answer = res;
         this.loading = false;
@@ -422,7 +422,7 @@ export class QuestionTabComponent implements OnInit {
           if (parsed.output) output = parsed.output;
         } catch {}
         this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
-          this.esgService['processMarkdown'](output)
+          this.wordExportService.processMarkdown(output)
         );
         this.answer = res;
         this.loading = false;
@@ -468,7 +468,7 @@ export class QuestionTabComponent implements OnInit {
           if (parsed.output) output = parsed.output;
         } catch {}
         this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
-          this.esgService['processMarkdown'](output)
+          this.wordExportService.processMarkdown(output)
         );
         this.answer = res;
         this.loading = false;

@@ -64,6 +64,16 @@ export class CompanyUniverseComponent implements OnInit {
       sortable: false,
       filter: false
     },
+    {
+      field: 'InRAG',
+      headerName: 'In RAG',
+      sortable: true,
+      filter: true,
+      width: 100,
+      cellRenderer: (params: any) => {
+        return params.value ? '✅' : '';
+      }
+    },
     { field: 'ID', headerName: 'ID', sortable: true, filter: true, maxWidth: 120 },
     { field: 'CompanyName', headerName: 'Company Name', sortable: true, filter: true },
     { field: 'ISIN', headerName: 'ISIN', sortable: true, filter: true },
@@ -81,7 +91,7 @@ export class CompanyUniverseComponent implements OnInit {
     { field: 'Region', headerName: 'Region', sortable: true, filter: true },
     { field: 'Country', headerName: 'Country', sortable: true, filter: true },
     { field: 'GICSector', headerName: 'GIC Sector', sortable: true, filter: true },
-    { field: 'IndustryGroup', headerName: 'Industry Group', sortable: true, filter: true }
+    { field: 'IndustryGroup', headerName: 'Industry Group', sortable: true, filter: true },
   ];
 
   defaultColDef = {
@@ -97,7 +107,7 @@ export class CompanyUniverseComponent implements OnInit {
   constructor(private router: Router, private companyService: CompanyService, private dialog: MatDialog, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit() {
-    this.rowData = await this.companyService.getFullCompanyUniverse();
+    this.rowData = await this.companyService.getFullCompanyUniverse(true);
   }
 
   onGridReady(params: any) {

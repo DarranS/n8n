@@ -112,4 +112,82 @@ export class WordExportService {
     const blob = await Packer.toBlob(doc);
     saveAs(blob, fileName);
   }
+
+  /**
+   * Converts markdown to HTML for display (used in ESG summary/report rendering)
+   */
+  public processMarkdown(response: string): string {
+    let processed = response;
+    processed = processed
+      .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/^\s*\*\s(.*$)/gm, '<li>$1</li>')
+      .replace(/^\s*-\s(.*$)/gm, '<li>$1</li>')
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/^(?!<[a-z])(.*)$/gm, '<p>$1</p>');
+    return processed;
+  }
+
+  /**
+   * Formats summary data (object or string) to HTML using markdown processing
+   */
+  public formatSummaryData(data: any): string {
+    if (data.CompanyESGSummary) {
+      return this.formatCompanyESGSummary(data.CompanyESGSummary);
+    } else if (data.output) {
+      return this.formatCompanyESGSummary(data.output);
+    } else if (typeof data === 'string') {
+      return data.replace(/\\n/g, '\n');
+    } else {
+      return JSON.stringify(data, null, 2).replace(/\\n/g, '\n');
+    }
+  }
+
+  /**
+   * Formats a company ESG summary (object or string) to HTML using markdown processing
+   */
+  public formatCompanyESGSummary(summary: any): string {
+    if (typeof summary === 'string') {
+      return this.processMarkdown(summary.replace(/\\n/g, '\n'));
+    }
+    const content = summary.content || summary.text || summary.data || summary.description || summary.output || summary;
+    if (typeof content === 'string') {
+      return this.processMarkdown(content.replace(/\\n/g, '\n'));
+    }
+    const stringContent = JSON.stringify(content, null, 2).replace(/\\n/g, '\n');
+    return this.processMarkdown(stringContent);
+  }
+
+  /**
+   * Formats report data (object or string) to HTML using markdown processing
+   */
+  public formatReportData(data: any): string {
+    if (data.CompanyESGReport) {
+      return this.formatCompanyESGReport(data.CompanyESGReport);
+    } else if (data.Report) {
+      return this.formatCompanyESGReport(data.Report);
+    } else if (typeof data === 'string') {
+      return data.replace(/\\n/g, '\n');
+    } else {
+      return JSON.stringify(data, null, 2).replace(/\\n/g, '\n');
+    }
+  }
+
+  /**
+   * Formats a company ESG report (object or string) to HTML using markdown processing
+   */
+  public formatCompanyESGReport(report: any): string {
+    if (typeof report === 'string') {
+      return report.replace(/\\n/g, '\n');
+    }
+    const content = report.content || report.text || report.data || report;
+    if (typeof content === 'string') {
+      return content.replace(/\\n/g, '\n');
+    }
+    return JSON.stringify(content, null, 2).replace(/\\n/g, '\n');
+  }
 } 
