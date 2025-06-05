@@ -57,8 +57,8 @@ spec:
               value: "200"
             - name: WEBHOOK_URL
               value: "https://n8n.sheltononline.com/" # Added for webhook URL fix
-          #image: n8nio/n8n:latest # Changed to latest version
-          image: n8nio/n8n:1.90.0 # Changed to latest version
+          image: n8nio/n8n:latest # Changed to latest version
+          #image: n8nio/n8n:1.90.0 # Changed to latest version
           imagePullPolicy: Always # Added to pull the latest version
           name: n8n
           ports:
