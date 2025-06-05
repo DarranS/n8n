@@ -232,4 +232,29 @@ export class EsgService {
     const body = { CompanyName: companyName, esgID, ESGCompanyData };
     return this.http.post(url, body);
   }
+
+  // Retry askQuestion with exponential backoff (like retryGetReport)
+  async retryAskQuestion(prompt: string, maxRetries = 3, delays = [20000, 40000, 60000]): Promise<string> {
+    let lastError: any = null;
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        console.log(`[retryAskQuestion] Attempt ${attempt + 1} of ${maxRetries} for prompt:`, prompt);
+        const result = await this.askQuestion(prompt).toPromise();
+        if (!result || (typeof result === 'string' && result.trim() === '')) {
+          throw new Error('Empty response received from askQuestion');
+        }
+        return result ?? '';
+      } catch (e) {
+        lastError = e;
+        console.warn(`[retryAskQuestion] Error on attempt ${attempt + 1}:`, e);
+        if (attempt < maxRetries - 1) {
+          const delay = delays[attempt] || delays[delays.length - 1];
+          console.log(`[retryAskQuestion] Retrying after ${delay}ms...`);
+          await new Promise(res => setTimeout(res, delay));
+        }
+      }
+    }
+    console.error('[retryAskQuestion] All attempts failed. Last error:', lastError);
+    throw lastError;
+  }
 } 

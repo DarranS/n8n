@@ -165,7 +165,7 @@
           <mat-icon>content_copy</mat-icon>
         </button>
       </div>
-      <div *ngIf="warning" class="error-container">
+      <div *ngIf="guidedPromptOutOfDate && generatedPrompt" class="error-container">
         <mat-icon color="warn">warning</mat-icon>
         <span>{{ warning }}</span>
       </div>
@@ -177,6 +177,9 @@
           <textarea matInput [(ngModel)]="simplePrompt" name="simplePrompt" rows="4" required [readonly]="loading"></textarea>
         </mat-form-field>
         <div class="form-actions" *ngIf="!isMultiCompany">
+          <button mat-raised-button color="primary" type="button" (click)="generateSimplePrompt()" [disabled]="loading || !simplePrompt.trim()">
+            {{ simpleGeneratedPrompt ? 'Hide Prompt' : 'Prompt' }}
+          </button>
           <button mat-raised-button color="accent" type="submit" [disabled]="loading || !simplePrompt.trim()">Ask</button>
           <button mat-raised-button color="accent" type="button" (click)="askAndSaveSimpleQuestion()" [disabled]="loading || !simplePrompt.trim()">
             <mat-icon>description</mat-icon>
@@ -184,6 +187,12 @@
           </button>
         </div>
       </form>
+      <div *ngIf="simpleGeneratedPrompt" class="generated-prompt">
+        <b>Prompt:</b> {{ simpleGeneratedPrompt }}
+        <button mat-icon-button (click)="copySimpleGeneratedPrompt()" [disabled]="!simpleGeneratedPrompt" matTooltip="Copy prompt" style="float:right; margin-top:-4px;">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
     </mat-tab>
   </mat-tab-group>
   <div *ngIf="isMultiCompany">
@@ -342,7 +351,7 @@
         <mat-icon>content_copy</mat-icon>
       </button>
     </div>
-    <div *ngIf="warning" class="error-container">
+    <div *ngIf="guidedPromptOutOfDate && generatedPrompt" class="error-container">
       <mat-icon color="warn">warning</mat-icon>
       <span>{{ warning }}</span>
     </div>
@@ -371,6 +380,14 @@
     <button mat-icon-button (click)="exportCurrentAnswer()" [disabled]="!answer" matTooltip="Export answer to Word">
       <mat-icon>description</mat-icon>
     </button>
+    <div *ngIf="guidedPromptOutOfDate && answer" class="error-container">
+      <mat-icon color="warn">warning</mat-icon>
+      <span>{{ warning }}</span>
+    </div>
+    <div class="answer-meta" *ngIf="answer">
+      <span>Characters: {{ answer.length }}</span> |
+      <span>Words: {{ answerWordCount }}</span>
+    </div>
   </div>
 </div>
 

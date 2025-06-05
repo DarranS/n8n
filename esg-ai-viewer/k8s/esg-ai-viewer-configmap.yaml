@@ -6,7 +6,8 @@ data:
     \   \"redirectUri\": \"https://esgaiviewer.sheltononline.com\",\r\n    \"postLogoutRedirectUri\":
     \"https://esgaiviewer.sheltononline.com\",\r\n    \"navigateToLoginRequestUrl\":
     true,\r\n    \"cacheLocation\": \"localStorage\",\r\n    \"scopes\": [\"user.read\",
-    \"openid\", \"profile\", \"email\"]\r\n  }\r\n} "
+    \"openid\", \"profile\", \"email\"]\r\n  },\r\n  \"api\": {\r\n    \"webhookBaseUrl\":
+    \"/webhook\"\r\n  },\r\n  \"chat\": {\r\n    \"webhookUrl\": \"\"\r\n  }\r\n} "
 kind: ConfigMap
 metadata:
   creationTimestamp: null

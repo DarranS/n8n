@@ -62,28 +62,14 @@ export class QuestionTabComponent implements OnInit {
 
   // Simple tab state
   simplePrompt: string = '';
+  simpleGeneratedPrompt: string = '';
 
   // Guided tab state
-  question: string = '';
-  audience: string = 'Customer';
-  tone: string = 'Professional';
-  depth: string = 'Brief';
-  perspective: string = '';
-  includeNumericData: boolean = false;
-  generatedPrompt: string = '';
-
   answer: string = '';
   loading = false;
   error: string | null = null;
   public formattedAnswer: SafeHtml = '';
 
-  outputFormat: string = 'Text Block';
-  includePromptIntention: boolean = false;
-  outputFormatOptions = [
-    { value: 'Email', tooltip: "Structured with a formal salutation, body, and closing, suitable for professional correspondence." },
-    { value: 'Social Post', tooltip: "Concise, engaging, and formatted for platforms like X, targeting under 280 characters. Summarize content if needed to fit." },
-    { value: 'Text Block', tooltip: "A narrative paragraph or set of paragraphs suitable for inclusion in reports, presentations, or other documents." }
-  ];
   warning: string | null = null;
 
   audienceOptions = [
@@ -109,6 +95,17 @@ export class QuestionTabComponent implements OnInit {
 
   @ViewChild('containerRef') containerRef!: ElementRef;
 
+  // Add a flag to track if the guided prompt is out of date
+  guidedPromptOutOfDate: boolean = false;
+
+  generatedPrompt: string = '';
+
+  outputFormatOptions = [
+    { value: 'Email', tooltip: "Structured with a formal salutation, body, and closing, suitable for professional correspondence." },
+    { value: 'Social Post', tooltip: "Concise, engaging, and formatted for platforms like X, targeting under 280 characters. Summarize content if needed to fit." },
+    { value: 'Text Block', tooltip: "A narrative paragraph or set of paragraphs suitable for inclusion in reports, presentations, or other documents." }
+  ];
+
   constructor(
     private http: HttpClient,
     private esgService: EsgService,
@@ -133,7 +130,8 @@ export class QuestionTabComponent implements OnInit {
   }
 
   // Simple tab ask
-  askSimpleQuestion() {
+  async askSimpleQuestion() {
+    this.generateSimplePrompt();
     if (!this.simplePrompt.trim()) return;
     this.loading = true;
     this.error = null;
@@ -141,29 +139,46 @@ export class QuestionTabComponent implements OnInit {
     this.formattedAnswer = '';
     const prefix = `For  ${this.companyName} ISIN:${this.companyIsin}: `;
     const fullPrompt = prefix + this.simplePrompt.trim();
-    this.esgService.askQuestion(fullPrompt).subscribe({
-      next: (res: string) => {
-        let output = res;
+    this.statusMessage = '';
+    try {
+      let result = '';
+      const maxRetries = 3;
+      const delays = [20000, 40000, 60000];
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
         try {
-          const parsed = JSON.parse(res || "");
-          if (parsed.output) output = parsed.output;
-        } catch {}
-        this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
-          this.wordExportService.processMarkdown(output)
-        );
-        this.answer = res;
-        this.loading = false;
-      },
-      error: (err: any) => {
-        this.error = 'Failed to get answer. Please try again.';
-        this.loading = false;
+          if (attempt > 0) {
+            this.statusMessage = `Retrying... Attempt ${attempt + 1} of ${maxRetries}`;
+          }
+          result = (await this.esgService.askQuestion(fullPrompt).toPromise()) ?? "";
+          break;
+        } catch (e) {
+          if (attempt === maxRetries - 1) throw e;
+          this.statusMessage = `Retrying... Attempt ${attempt + 2} of ${maxRetries}`;
+          await new Promise(res => setTimeout(res, delays[attempt] || delays[delays.length - 1]));
+        }
       }
-    });
+      let output = result;
+      try {
+        const parsed = JSON.parse(result || "");
+        if (parsed.output) output = parsed.output;
+      } catch {}
+      this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
+        this.wordExportService.processMarkdown(output)
+      );
+      this.answer = result;
+      this.loading = false;
+      this.statusMessage = '';
+    } catch (err) {
+      this.error = 'Failed to get answer. Please try again.';
+      this.loading = false;
+      this.statusMessage = '';
+    }
   }
 
   // Guided tab prompt generation and ask
   generatePrompt() {
     this.warning = null;
+    this.guidedPromptOutOfDate = false;
     // Toggle off if already displayed
     if (this.generatedPrompt && this.generatedPrompt.trim()) {
       this.generatedPrompt = '';
@@ -227,37 +242,54 @@ export class QuestionTabComponent implements OnInit {
     this.generatedPrompt = prompt;
   }
 
-  askGuidedQuestion() {
-    // Always generate the prompt before asking
+  async askGuidedQuestion() {
     this.generatePrompt();
     if (!this.generatedPrompt.trim()) return;
     this.loading = true;
     this.error = null;
     this.answer = '';
     this.formattedAnswer = '';
-    this.esgService.askQuestion(this.generatedPrompt).subscribe({
-      next: (res: string) => {
-        let output = res;
+    this.statusMessage = '';
+    try {
+      let result = '';
+      const maxRetries = 3;
+      const delays = [20000, 40000, 60000];
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
         try {
-          const parsed = JSON.parse(res || "");
-          if (parsed.output) output = parsed.output;
-        } catch {}
-        this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
-          this.wordExportService.processMarkdown(output)
-        );
-        this.answer = res;
-        this.loading = false;
-        setTimeout(() => {
-          if (this.containerRef) {
-            this.containerRef.nativeElement.scrollTo({ top: this.containerRef.nativeElement.scrollHeight, behavior: 'smooth' });
+          if (attempt > 0) {
+            this.statusMessage = `Retrying... Attempt ${attempt + 1} of ${maxRetries}`;
           }
-        }, 100);
-      },
-      error: (err: any) => {
-        this.error = 'Failed to get answer. Please try again.';
-        this.loading = false;
+          result = (await this.esgService.askQuestion(this.generatedPrompt).toPromise()) ?? "";
+          break;
+        } catch (e) {
+          if (attempt === maxRetries - 1) throw e;
+          this.statusMessage = `Retrying... Attempt ${attempt + 2} of ${maxRetries}`;
+          await new Promise(res => setTimeout(res, delays[attempt] || delays[delays.length - 1]));
+        }
       }
-    });
+      let output = result;
+      try {
+        const parsed = JSON.parse(result || "");
+        if (parsed.output) output = parsed.output;
+      } catch {}
+      this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
+        this.wordExportService.processMarkdown(output)
+      );
+      this.answer = result;
+      this.loading = false;
+      this.guidedPromptOutOfDate = false;
+      this.warning = null;
+      this.statusMessage = '';
+      setTimeout(() => {
+        if (this.containerRef) {
+          this.containerRef.nativeElement.scrollTo({ top: this.containerRef.nativeElement.scrollHeight, behavior: 'smooth' });
+        }
+      }, 100);
+    } catch (err) {
+      this.error = 'Failed to get answer. Please try again.';
+      this.loading = false;
+      this.statusMessage = '';
+    }
   }
 
   copyAnswer() {
@@ -296,7 +328,7 @@ export class QuestionTabComponent implements OnInit {
           result,
           askQuestion: async (prompt: string, idx: number, total: number) => {
             this.statusMessage = `Processing Company ${idx + 1} of ${total}...`;
-            return await this.esgService.askQuestion(prompt).toPromise() ?? "";
+            return await this.esgService.retryAskQuestion(prompt) ?? "";
           },
           onStatus: (msg: string) => {
             this.statusMessage = msg;
@@ -444,6 +476,115 @@ export class QuestionTabComponent implements OnInit {
       }
     }
   }
+
+  generateSimplePrompt() {
+    if (this.simpleGeneratedPrompt && this.simpleGeneratedPrompt.trim()) {
+      this.simpleGeneratedPrompt = '';
+      return;
+    }
+    if (!this.simplePrompt.trim()) {
+      this.simpleGeneratedPrompt = '';
+      return;
+    }
+    // For Simple tab, just use the prompt as is (or you can add prefix if needed)
+    const prefix = `For  ${this.companyName} ISIN:${this.companyIsin}: `;
+    this.simpleGeneratedPrompt = prefix + this.simplePrompt.trim();
+  }
+
+  copySimpleGeneratedPrompt() {
+    if (!this.simpleGeneratedPrompt) return;
+    navigator.clipboard.writeText(this.simpleGeneratedPrompt)
+      .then(() => {})
+      .catch(() => {});
+  }
+
+  get answerWordCount(): number {
+    if (!this.answer) return 0;
+    // Remove HTML tags if any, then split by whitespace
+    const text = this.answer.replace(/<[^>]*>/g, ' ');
+    return text.trim().split(/\s+/).filter(Boolean).length;
+  }
+
+  // Helper to mark prompt as out of date if any guided field changes
+  markGuidedPromptOutOfDate() {
+    if (this.generatedPrompt) {
+      this.guidedPromptOutOfDate = true;
+      this.warning = 'Prompt/Answer may be out of date. Please regenerate the prompt.';
+    }
+  }
+
+  // Add setters for guided fields to mark as out of date
+  set question(value: string) {
+    this._question = value;
+    this.markGuidedPromptOutOfDate();
+  }
+  get question(): string {
+    return this._question;
+  }
+  private _question: string = '';
+
+  set audience(value: string) {
+    this._audience = value;
+    this.markGuidedPromptOutOfDate();
+  }
+  get audience(): string {
+    return this._audience;
+  }
+  private _audience: string = 'Customer';
+
+  set tone(value: string) {
+    this._tone = value;
+    this.markGuidedPromptOutOfDate();
+  }
+  get tone(): string {
+    return this._tone;
+  }
+  private _tone: string = 'Professional';
+
+  set depth(value: string) {
+    this._depth = value;
+    this.markGuidedPromptOutOfDate();
+  }
+  get depth(): string {
+    return this._depth;
+  }
+  private _depth: string = 'Brief';
+
+  set perspective(value: string) {
+    this._perspective = value;
+    this.markGuidedPromptOutOfDate();
+  }
+  get perspective(): string {
+    return this._perspective;
+  }
+  private _perspective: string = '';
+
+  set includeNumericData(value: boolean) {
+    this._includeNumericData = value;
+    this.markGuidedPromptOutOfDate();
+  }
+  get includeNumericData(): boolean {
+    return this._includeNumericData;
+  }
+  private _includeNumericData: boolean = false;
+
+  set outputFormat(value: string) {
+    this._outputFormat = value;
+    this.markGuidedPromptOutOfDate();
+  }
+  get outputFormat(): string {
+    return this._outputFormat;
+  }
+  private _outputFormat: string = 'Text Block';
+
+  set includePromptIntention(value: boolean) {
+    this._includePromptIntention = value;
+    this.markGuidedPromptOutOfDate();
+  }
+  get includePromptIntention(): boolean {
+    return this._includePromptIntention;
+  }
+  private _includePromptIntention: boolean = false;
 
   ngOnInit(): void {}
 }
