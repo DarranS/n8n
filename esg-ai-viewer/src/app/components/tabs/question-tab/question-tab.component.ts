@@ -695,4 +695,6 @@ function getBatchDefaultFileName() {
   const hh = pad(now.getHours());
   const mm = pad(now.getMinutes());
   return `ESGAIViewer_${dd}${mmm}${yyyy}${hh}${mm}.docx`;
-} 
+}
+
+export { MultiCompanySimpleQuestionDialogComponent } from './multi-company-simple-question-dialog.component'; 

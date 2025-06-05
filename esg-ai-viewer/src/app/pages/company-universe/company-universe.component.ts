@@ -11,6 +11,7 @@ import { QuestionTabComponent } from '../../components/tabs/question-tab/questio
 import { MatIconModule } from '@angular/material/icon';
 import { ImportStatusDialogComponent, ImportStatusItem } from '../../components/tabs/import-tab/import-status-dialog.component';
 import { UpsertRagStatusDialogComponent, UpsertRagStatusItem } from './upsert-rag-status-dialog.component';
+import { MultiCompanySimpleQuestionDialogComponent } from '../../components/tabs/question-tab/multi-company-simple-question-dialog.component';
 
 // Register AG Grid Community Module (includes context menu)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -227,5 +228,21 @@ export class CompanyUniverseComponent implements OnInit {
         this.cdr.detectChanges();
       }
     }, 500);
+  }
+
+  openSimpleBatchDialog() {
+    if (!this.gridApi) return;
+    const selectedNodes = this.gridApi.getSelectedNodes();
+    const companies = selectedNodes.map((node: any) => ({
+      CompanyName: node.data.CompanyName,
+      ISIN: node.data.ISIN
+    }));
+    if (companies.length < 2) return;
+    this.dialog.open(MultiCompanySimpleQuestionDialogComponent, {
+      data: { companies },
+      width: '900px',
+      maxHeight: '80vh',
+      disableClose: true
+    });
   }
 } 

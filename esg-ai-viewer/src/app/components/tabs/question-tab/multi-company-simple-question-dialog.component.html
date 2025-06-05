@@ -1,0 +1,45 @@
+<div class="dialog-container">
+  <h2>Ask Simple Question and Save (Multiple Companies)</h2>
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <span>{{ error }}</span>
+  </div>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Prompt</mat-label>
+    <textarea matInput [(ngModel)]="prompt" name="prompt" rows="4" [readonly]="loading"></textarea>
+  </mat-form-field>
+  <button mat-raised-button color="primary" style="margin-bottom: 1rem;" (click)="togglePromptPreview()" [disabled]="loading || !prompt.trim()">
+    {{ showPromptPreview ? 'Hide Prompt' : 'Show Prompt' }}
+  </button>
+  <div *ngIf="showPromptPreview" class="generated-prompt" style="margin-bottom: 1rem;">
+    <b>Generated Prompt:</b>
+    <div style="white-space: pre-line;">{{ generatedPrompt }}</div>
+  </div>
+  <div class="form-actions">
+    <button mat-raised-button color="primary" (click)="askAndSave()" [disabled]="loading || !prompt.trim()">
+      <mat-icon>description</mat-icon>
+      Ask & Save
+    </button>
+    <button mat-raised-button color="warn" (click)="close()" [disabled]="loading" style="margin-left: 1rem;">
+      Cancel
+    </button>
+    <button *ngIf="results.length > 0" mat-raised-button color="accent" (click)="exportResults()" [disabled]="loading" style="margin-left: 1rem;">
+      <mat-icon>download</mat-icon>
+      Export Results
+    </button>
+  </div>
+  <div *ngIf="loading" class="loading-container" style="margin-top: 1rem; text-align: center;">
+    <mat-spinner diameter="32"></mat-spinner>
+    <div style="margin-top: 1rem; font-size: 1.1rem;">{{ statusMessage || 'Processing companies...' }}</div>
+  </div>
+  <div *ngIf="results.length > 0" class="results-area" style="margin-top: 2rem;">
+    <div class="generated-prompt" style="margin-bottom: 1rem;">
+      <b>Generated Prompt:</b>
+      <div style="white-space: pre-line;">{{ generatedPrompt }}</div>
+    </div>
+    <div class="answer-area">
+      <b>Answer:</b>
+      <div style="white-space: pre-line;">{{ results[0].answer }}</div>
+    </div>
+  </div>
+</div> 

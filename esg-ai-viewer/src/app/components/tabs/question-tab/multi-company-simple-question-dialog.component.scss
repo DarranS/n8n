@@ -1,0 +1,36 @@
+.dialog-container {
+  padding: 32px;
+  border-radius: 16px;
+  background: #fff;
+  box-sizing: border-box;
+  min-width: 400px;
+  max-width: 900px;
+}
+.full-width {
+  width: 100%;
+}
+.form-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.error-container {
+  color: #b71c1c;
+  background: #ffebee;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.results-table {
+  margin-top: 2rem;
+}
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+} 
