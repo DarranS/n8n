@@ -54,12 +54,10 @@ export class AuthService {
       await this.msalInstance.initialize();
       this.initialized = true;
       const accounts = this.msalInstance.getAllAccounts();
-      console.log('[MSAL] Initialized. Accounts:', accounts);
       if (accounts.length > 0) {
         this.msalInstance.setActiveAccount(accounts[0]);
         this.loggedIn.next(true);
         this.userInfo.next(accounts[0]);
-        console.log('[MSAL] Active account set after init:', accounts[0]);
         // Navigate to research page if on home page
         if (window.location.pathname === '/') {
           this.router.navigate(['/research']);
@@ -82,15 +80,12 @@ export class AuthService {
         scopes: config.auth.scopes,
         prompt: 'select_account',
       });
-      console.log('[MSAL] Login response:', loginResponse);
       this.msalInstance.setActiveAccount(loginResponse.account);
       this.loggedIn.next(true);
       this.userInfo.next(loginResponse.account);
-      console.log('[MSAL] Active account after login:', loginResponse.account);
       // Navigate to research page after successful login
       this.router.navigate(['/research']);
     } catch (error) {
-      console.error('[MSAL] Login error:', error);
       this.loggedIn.next(false);
       this.userInfo.next(null);
       throw error;
@@ -102,7 +97,6 @@ export class AuthService {
     await this.msalInstance.logoutPopup();
     this.loggedIn.next(false);
     this.userInfo.next(null);
-    console.log('[MSAL] Logged out');
     // Navigate to home page after logout
     this.router.navigate(['/']);
   }
@@ -113,13 +107,11 @@ export class AuthService {
 
   getLoggedInStatus() {
     const obs = this.loggedIn.asObservable();
-    obs.subscribe(val => console.log('[MSAL] loggedIn status changed:', val));
     return obs;
   }
 
   getUserInfo() {
     const obs = this.userInfo.asObservable();
-    obs.subscribe(val => console.log('[MSAL] userInfo changed:', val));
     return obs;
   }
 
@@ -134,7 +126,6 @@ export class AuthService {
     if (!config) {
       throw new Error('Config not loaded!');
     }
-    console.log('[MSAL] getToken - active account:', account);
     if (!account) {
       await this.login();
       return this.getToken();
@@ -144,15 +135,12 @@ export class AuthService {
         account,
         scopes: config.auth.scopes,
       });
-      console.log('[MSAL] Token acquired:', tokenResponse);
       return tokenResponse.accessToken;
     } catch (error) {
       if (error instanceof InteractionRequiredAuthError) {
-        console.warn('[MSAL] Interaction required for token, logging in again.');
         await this.login();
         return this.getToken();
       }
-      console.error('[MSAL] Token acquisition error:', error);
       return null;
     }
   }

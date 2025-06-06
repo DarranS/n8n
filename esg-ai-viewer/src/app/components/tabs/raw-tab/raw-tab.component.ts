@@ -21,7 +21,6 @@ export class RawTabComponent {
     navigator.clipboard.writeText(this.formattedData)
       .then(() => {
         // You could add a toast notification here if you want
-        console.log('Content copied to clipboard');
       })
       .catch(err => {
         console.error('Failed to copy content: ', err);

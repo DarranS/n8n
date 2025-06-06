@@ -30,13 +30,10 @@ export class AboutComponent implements OnInit {
     private buildInfoService: BuildInfoService,
     private configService: ConfigService
   ) {
-    console.log('About component constructor');
   }
 
   ngOnInit() {
     const config = this.configService.getConfig();
-    console.log('AboutComponent Env name:', config?.['envName'] || config?.['environment']);
-    console.log('About component initializing...');
     this.buildTag = this.buildInfoService.getBuildTag();
     this.environment = this.buildInfoService.getEnvironment();
     this.loadDoc();

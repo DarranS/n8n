@@ -40,7 +40,6 @@ export class ChatComponent {
   sendMessage() {
     if (this.message.trim()) {
       // TODO: Implement message sending logic
-      console.log('Sending message:', this.message);
       this.message = '';
     }
   }

@@ -63,7 +63,6 @@ export class ReportTabComponent implements OnChanges {
 
     this.esgService.getReport(this.data).subscribe({
       next: (report) => {
-        console.log('Received report:', report);
         this.reportContent = report || '';
         this.loading = false;
       },
@@ -84,7 +83,6 @@ export class ReportTabComponent implements OnChanges {
   copyToClipboard(): void {
     navigator.clipboard.writeText(this.reportContent)
       .then(() => {
-        console.log('Content copied to clipboard');
       })
       .catch(err => {
         console.error('Failed to copy content: ', err);

@@ -13,9 +13,6 @@ import { ImportStatusDialogComponent, ImportStatusItem } from '../../components/
 import { UpsertRagStatusDialogComponent, UpsertRagStatusItem } from './upsert-rag-status-dialog.component';
 import { MultiCompanySimpleQuestionDialogComponent } from '../../components/tabs/question-tab/multi-company-simple-question-dialog.component';
 
-// Register AG Grid Community Module (includes context menu)
-ModuleRegistry.registerModules([AllCommunityModule]);
-
 @Component({
   selector: 'app-company-universe',
   standalone: true,

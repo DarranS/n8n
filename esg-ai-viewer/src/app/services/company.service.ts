@@ -34,7 +34,6 @@ export class CompanyService {
           })).filter(c => c.id && c.name)
         : [];
       this.companiesLoaded = true;
-      console.log('[CompanyService] Loaded companies from CompanyUniverse:', this.companies);
       return this.companies;
     } catch (err) {
       console.error('[CompanyService] Failed to load CompanyUniverse.json', err);

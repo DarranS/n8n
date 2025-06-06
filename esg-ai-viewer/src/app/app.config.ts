@@ -6,7 +6,6 @@ import { BuildInfoService } from './services/build-info.service';
 import { ConfigService } from './services/config.service';
 import { MSAL_INSTANCE, MSAL_GUARD_CONFIG, MSAL_INTERCEPTOR_CONFIG, MsalGuard, MsalInterceptor, MsalService, MsalBroadcastService } from '@azure/msal-angular';
 import { IPublicClientApplication, PublicClientApplication, InteractionType, BrowserCacheLocation, ProtocolMode } from '@azure/msal-browser';
-import { initializeMsalConfig } from './auth/auth-config';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { inject } from '@angular/core';
 
@@ -35,7 +34,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     system: {
       loggerOptions: {
         loggerCallback: (level: any, message: string) => {
-          console.log(message);
+          // Remove: console.log(message);
         },
         logLevel: 2, // LogLevel.Verbose
         piiLoggingEnabled: false

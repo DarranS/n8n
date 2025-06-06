@@ -134,8 +134,6 @@ export class SummaryTabComponent implements OnChanges, OnDestroy, OnInit {
       id: currentCompany?.id // Add the company ID
     };
 
-    console.log('Sending data to summary:', data);
-
     this.esgService.getSummary(data, this.refreshRAGData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({

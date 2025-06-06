@@ -1,6 +1,8 @@
 // esg-utils.ts
 // Utility functions for ESG error handling and formatting
 
+// Delete handleEsgError and parseAndFormatData as they are unused.
+
 export function handleEsgError(context: string, error: any) {
   if (error && error.error) {
     try {

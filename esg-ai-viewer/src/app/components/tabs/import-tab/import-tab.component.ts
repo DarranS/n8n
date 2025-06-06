@@ -9,9 +9,6 @@ import { ImportStatusDialogComponent, ImportStatusItem } from './import-status-d
 import { ConfigService } from '../../../services/config.service';
 import { MatButtonModule } from '@angular/material/button';
 
-// Register AG Grid Community Module
-ModuleRegistry.registerModules([AllCommunityModule]);
-
 @Component({
   selector: 'app-import-tab',
   standalone: true,

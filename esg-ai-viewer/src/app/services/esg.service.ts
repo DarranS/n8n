@@ -4,9 +4,7 @@ import { Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { timeout } from 'rxjs/operators';
 import { WordExportService } from './word-export.service';
-import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 import { ConfigService } from './config.service';
-import { handleEsgError, parseAndFormatData } from './esg-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +16,6 @@ export class EsgService {
   private rawCompanyData: any = null;
 
   constructor(private http: HttpClient, private wordExportService: WordExportService, private configService: ConfigService) {
-    ModuleRegistry.registerModules([AllCommunityModule]);
     const config = this.configService.getConfig();
     this.baseUrl = config && config['api'] && config['api']['webhookBaseUrl'] ? config['api']['webhookBaseUrl'] : '/webhook';
   }
@@ -91,15 +88,6 @@ export class EsgService {
       useRAG: true
     };
 
-    console.log('Full request details:', {
-      url: `${this.baseUrl}/ESG/Company/Summary/Report`,
-      method: 'POST',
-      body: requestBody,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
     return this.http.post<any>(`${this.baseUrl}/ESG/Company/Summary/Report`, requestBody).pipe(
       timeout(600000), // 10 minutes
       map(response => {
@@ -130,7 +118,6 @@ export class EsgService {
         }
       }),
       tap({
-        next: (processedResponse) => console.log('Processed response:', processedResponse),
         error: (error) => console.log('Full error details:', error)
       })
     );
@@ -152,9 +139,6 @@ export class EsgService {
       esgID: esgID,
       refreshRAGData: refreshRagData
     };
-    console.log('Current company data:', this.currentCompanyData);
-    console.log('ESG Data:', data);
-    console.log('Summary request body:', requestBody);
     return this.http.post<any>(`${this.baseUrl}/ESG/Company/Summary/Description`, requestBody).pipe(
       timeout(600000), // 10 minutes
       map(response => {
@@ -175,7 +159,6 @@ export class EsgService {
         return '';
       }),
       tap({
-        next: (processedResponse) => console.log('Processed summary response:', processedResponse),
         error: (error) => console.log('Full error details:', error)
       })
     );
