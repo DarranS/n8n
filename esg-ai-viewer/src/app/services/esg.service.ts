@@ -6,6 +6,7 @@ import { timeout } from 'rxjs/operators';
 import { WordExportService } from './word-export.service';
 import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 import { ConfigService } from './config.service';
+import { handleEsgError, parseAndFormatData } from './esg-utils';
 
 @Injectable({
   providedIn: 'root'

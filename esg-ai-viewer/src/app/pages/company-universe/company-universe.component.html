@@ -20,13 +20,9 @@
           Total rows: {{ rowData.length || 0 }} | Selected: {{ selectedRowCount }}
         </div>
         <div style="display: flex; gap: 0.5rem;">
-          <button mat-raised-button color="primary" class="dialog-style-btn" [disabled]="selectedRowCount === 0" (click)="openQuestionDialog()">
-            <mat-icon>help_outline</mat-icon>
-            Ask a question
-          </button>
           <button mat-raised-button color="primary" class="dialog-style-btn" [disabled]="selectedRowCount < 2" (click)="openSimpleBatchDialog()">
             <mat-icon>description</mat-icon>
-            Ask Simple Question and Save
+            Ask a Question and Save
           </button>
           <button mat-raised-button color="accent" class="dialog-style-btn" [disabled]="selectedRowCount === 0" (click)="upsertSelectedToRag()">
             <mat-icon>cloud_upload</mat-icon>

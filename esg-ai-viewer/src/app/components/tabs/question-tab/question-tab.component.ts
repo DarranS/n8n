@@ -20,6 +20,9 @@ import { MatDialog, MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angu
 import { ExportOptionsDialogComponent, ExportOptionsResult } from './export-options-dialog.component';
 import { WordExportService } from '../../../services/word-export.service';
 import { ReportExportService } from '../../../services/report-export.service';
+import { markdownToDocxParagraphs, markdownToDocxElements, getBatchDefaultFileName } from './question-tab.utils';
+import { SimpleQuestionTabComponent } from './simple-question-tab.component';
+import { GuidedQuestionTabComponent } from './guided-question-tab.component';
 
 @Component({
   selector: 'app-question-tab',
@@ -37,7 +40,9 @@ import { ReportExportService } from '../../../services/report-export.service';
     MatSlideToggleModule,
     MatSelectModule,
     MatTabsModule,
-    MatDialogModule
+    MatDialogModule,
+    SimpleQuestionTabComponent,
+    GuidedQuestionTabComponent
   ],
   templateUrl: './question-tab.component.html',
   styleUrls: ['./question-tab.component.scss']
@@ -47,17 +52,17 @@ export class QuestionTabComponent implements OnInit {
   @Input() companyIsin: string = '';
   @Input() companies: { CompanyName: string, ISIN: string }[] = [];
 
-  // Tab state
   private _selectedTabIndex: number = 0;
   get selectedTabIndex(): number {
     return this._selectedTabIndex;
   }
   set selectedTabIndex(value: number) {
-    // If switching from Guided (1) to Simple (0), copy generatedPrompt to simplePrompt
-    if (this._selectedTabIndex === 1 && value === 0 && this.generatedPrompt) {
-      this.simplePrompt = this.generatedPrompt;
-    }
     this._selectedTabIndex = value;
+    // Reset prompts and answers when switching tabs
+    this.generatedPrompt = '';
+    this.answer = '';
+    this.simpleGeneratedPrompt = '';
+    // Optionally reset other fields if needed
   }
 
   // Simple tab state
@@ -586,115 +591,254 @@ export class QuestionTabComponent implements OnInit {
   }
   private _includePromptIntention: boolean = false;
 
-  ngOnInit(): void {}
-}
-
-// Helper: Convert basic Markdown to docx Paragraphs
-function markdownToDocxParagraphs(markdown: string): Paragraph[] {
-  const lines = markdown.split(/\r?\n/);
-  return lines.map(line => {
-    // Headers
-    if (line.startsWith('### ')) {
-      return new Paragraph({
-        text: line.replace(/^### /, ''),
-        heading: HeadingLevel.HEADING_3,
-      });
-    }
-    if (line.startsWith('## ')) {
-      return new Paragraph({
-        text: line.replace(/^## /, ''),
-        heading: HeadingLevel.HEADING_2,
-      });
-    }
-    if (line.startsWith('# ')) {
-      return new Paragraph({
-        text: line.replace(/^# /, ''),
-        heading: HeadingLevel.HEADING_1,
-      });
-    }
-    // Bold and italics (very basic, no nested support)
-    let runs: TextRun[] = [];
-    let rest = line;
-    // Bold
-    const boldMatch = rest.match(/\*\*(.*?)\*\*/);
-    if (boldMatch) {
-      const [full, boldText] = boldMatch;
-      const [before, after] = rest.split(full);
-      if (before) runs.push(new TextRun(before));
-      runs.push(new TextRun({ text: boldText, bold: true }));
-      if (after) runs.push(new TextRun(after));
-      return new Paragraph({ children: runs });
-    }
-    // Italics
-    const italicMatch = rest.match(/\*(.*?)\*/);
-    if (italicMatch) {
-      const [full, italicText] = italicMatch;
-      const [before, after] = rest.split(full);
-      if (before) runs.push(new TextRun(before));
-      runs.push(new TextRun({ text: italicText, italics: true }));
-      if (after) runs.push(new TextRun(after));
-      return new Paragraph({ children: runs });
-    }
-    return new Paragraph({ text: line });
-  });
-}
-
-// Helper: Convert Markdown to docx Paragraphs and Tables
-function markdownToDocxElements(markdown: string): (Paragraph | Table)[] {
-  const lines = markdown.split(/\r?\n/);
-  const elements: (Paragraph | Table)[] = [];
-  let i = 0;
-  while (i < lines.length) {
-    // Detect table
-    if (
-      lines[i].trim().startsWith('|') &&
-      i + 1 < lines.length &&
-      lines[i + 1].trim().match(/^\|[-| ]+\|$/)
-    ) {
-      // Parse table
-      const tableLines = [];
-      tableLines.push(lines[i++]); // header
-      tableLines.push(lines[i++]); // separator
-      while (i < lines.length && lines[i].trim().startsWith('|')) {
-        tableLines.push(lines[i++]);
+  // Handler methods for subcomponent outputs
+  async handleSimpleAsk(prompt: string) {
+    // Logic from askSimpleQuestion
+    if (!prompt.trim()) return;
+    this.loading = true;
+    this.error = null;
+    this.answer = '';
+    this.formattedAnswer = '';
+    const prefix = `For  ${this.companyName} ISIN:${this.companyIsin}: `;
+    const fullPrompt = prefix + prompt.trim();
+    this.statusMessage = '';
+    try {
+      let result = '';
+      const maxRetries = 3;
+      const delays = [20000, 40000, 60000];
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          if (attempt > 0) {
+            this.statusMessage = `Retrying... Attempt ${attempt + 1} of ${maxRetries}`;
+          }
+          result = (await this.esgService.askQuestion(fullPrompt).toPromise()) ?? "";
+          break;
+        } catch (e) {
+          if (attempt === maxRetries - 1) throw e;
+          this.statusMessage = `Retrying... Attempt ${attempt + 2} of ${maxRetries}`;
+          await new Promise(res => setTimeout(res, delays[attempt] || delays[delays.length - 1]));
+        }
       }
-      // Convert to docx Table (skip separator row, bold header)
-      const rows = tableLines
-        .filter((row, idx) => idx !== 1) // skip the separator row
-        .map((row, idx) => {
-          const cells = row
-            .split('|')
-            .slice(1, -1)
-            .map(cell => {
-              const text = cell.trim();
-              // Bold for header row
-              if (idx === 0) {
-                return new TableCell({ children: [new Paragraph({ children: [new TextRun({ text, bold: true })] })] });
-              }
-              return new TableCell({ children: [new Paragraph(text)] });
-            });
-          return new TableRow({ children: cells });
-        });
-      elements.push(new Table({ rows }));
-    } else {
-      // Fallback to previous markdown-to-docx logic for non-table lines
-      elements.push(...markdownToDocxParagraphs(lines[i]));
-      i++;
+      let output = result;
+      try {
+        const parsed = JSON.parse(result || "");
+        if (parsed.output) output = parsed.output;
+      } catch {}
+      this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
+        this.wordExportService.processMarkdown(output)
+      );
+      this.answer = result;
+      this.loading = false;
+      this.statusMessage = '';
+    } catch (err) {
+      this.error = 'Failed to get answer. Please try again.';
+      this.loading = false;
+      this.statusMessage = '';
     }
   }
-  return elements;
-}
 
-function getBatchDefaultFileName() {
-  const now = new Date();
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const dd = pad(now.getDate());
-  const mmm = months[now.getMonth()];
-  const yyyy = now.getFullYear();
-  const hh = pad(now.getHours());
-  const mm = pad(now.getMinutes());
-  return `ESGAIViewer_${dd}${mmm}${yyyy}${hh}${mm}.docx`;
+  async handleSimpleAskAndSave(prompt: string) {
+    // Logic from askAndSaveSimpleQuestion
+    if (!prompt.trim()) return;
+    const dialogRef = this.dialog.open(ExportOptionsDialogComponent, {
+      data: { companyName: this.companyName },
+      width: '1000px',
+      disableClose: true
+    });
+    const result: ExportOptionsResult = await dialogRef.afterClosed().toPromise();
+    if (!result) return;
+    this.loading = true;
+    this.error = null;
+    this.answer = '';
+    this.formattedAnswer = '';
+    const prefix = `For  ${this.companyName} ISIN:${this.companyIsin}: `;
+    const fullPrompt = prefix + prompt.trim();
+    this.esgService.askQuestion(fullPrompt).subscribe({
+      next: async (res: string) => {
+        let output = res;
+        try {
+          const parsed = JSON.parse(res || "");
+          if (parsed.output) output = parsed.output;
+        } catch {}
+        this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
+          this.wordExportService.processMarkdown(output)
+        );
+        this.answer = res;
+        this.loading = false;
+        // After answer is received, export to Word with options using the new service
+        try {
+          await this.reportExportService.exportSimpleQuestionToWord({
+            companyName: this.companyName,
+            companyIsin: this.companyIsin,
+            prompt: fullPrompt,
+            answer: res,
+            options: result,
+            rawCompanyData: this.esgService.getRawCompanyData(),
+          });
+        } catch (e: any) {
+          this.error = e?.message || 'Error during report export.';
+        }
+      },
+      error: (err: any) => {
+        this.error = 'Failed to get answer. Please try again.';
+        this.loading = false;
+      }
+    });
+  }
+
+  handleSimpleGeneratePrompt(generatedPrompt: string) {
+    this.generatedPrompt = generatedPrompt;
+  }
+
+  async handleGuidedAsk() {
+    // Logic from askGuidedQuestion
+    this.generatePrompt();
+    if (!this.generatedPrompt.trim()) return;
+    this.loading = true;
+    this.error = null;
+    this.answer = '';
+    this.formattedAnswer = '';
+    this.statusMessage = '';
+    try {
+      let result = '';
+      const maxRetries = 3;
+      const delays = [20000, 40000, 60000];
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          if (attempt > 0) {
+            this.statusMessage = `Retrying... Attempt ${attempt + 1} of ${maxRetries}`;
+          }
+          result = (await this.esgService.askQuestion(this.generatedPrompt).toPromise()) ?? "";
+          break;
+        } catch (e) {
+          if (attempt === maxRetries - 1) throw e;
+          this.statusMessage = `Retrying... Attempt ${attempt + 2} of ${maxRetries}`;
+          await new Promise(res => setTimeout(res, delays[attempt] || delays[delays.length - 1]));
+        }
+      }
+      let output = result;
+      try {
+        const parsed = JSON.parse(result || "");
+        if (parsed.output) output = parsed.output;
+      } catch {}
+      this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
+        this.wordExportService.processMarkdown(output)
+      );
+      this.answer = result;
+      this.loading = false;
+      this.guidedPromptOutOfDate = false;
+      this.warning = null;
+      this.statusMessage = '';
+      setTimeout(() => {
+        if (this.containerRef) {
+          this.containerRef.nativeElement.scrollTo({ top: this.containerRef.nativeElement.scrollHeight, behavior: 'smooth' });
+        }
+      }, 100);
+    } catch (err) {
+      this.error = 'Failed to get answer. Please try again.';
+      this.loading = false;
+      this.statusMessage = '';
+    }
+  }
+
+  async handleGuidedAskAndSave() {
+    // Logic from askAndSaveGuidedQuestion
+    this.generatePrompt();
+    if (!this.generatedPrompt.trim()) return;
+    const defaultFileName = this.isMultiCompany ? getBatchDefaultFileName() : '';
+    const dialogRef = this.dialog.open(ExportOptionsDialogComponent, {
+      data: { companyName: this.isMultiCompany ? '' : this.companyName, fileName: defaultFileName },
+      width: '1000px',
+      disableClose: true
+    });
+    const result: ExportOptionsResult = await dialogRef.afterClosed().toPromise();
+    if (!result) return;
+    if (this.isMultiCompany) {
+      this.loading = true;
+      this.error = null;
+      this.statusMessage = '';
+      try {
+        await this.reportExportService.exportBatchGuidedQuestionsToWord({
+          companies: this.companies,
+          generatedPrompt: this.generatedPrompt,
+          result,
+          askQuestion: async (prompt: string, idx: number, total: number) => {
+            this.statusMessage = `Processing Company ${idx + 1} of ${total}...`;
+            return await this.esgService.retryAskQuestion(prompt) ?? "";
+          },
+          onStatus: (msg: string) => {
+            this.statusMessage = msg;
+          }
+        });
+        this.loading = false;
+        this.statusMessage = '';
+        this.dialogRef?.close();
+      } catch (e: any) {
+        this.loading = false;
+        this.statusMessage = '';
+        this.error = e?.message || 'Error during batch export.';
+      }
+      return;
+    }
+    this.loading = true;
+    this.error = null;
+    this.answer = '';
+    this.formattedAnswer = '';
+    this.esgService.askQuestion(this.generatedPrompt).subscribe({
+      next: async (res: string) => {
+        let output = res;
+        try {
+          const parsed = JSON.parse(res || "");
+          if (parsed.output) output = parsed.output;
+        } catch {}
+        this.formattedAnswer = this.sanitizer.bypassSecurityTrustHtml(
+          this.wordExportService.processMarkdown(output)
+        );
+        this.answer = res;
+        this.loading = false;
+        setTimeout(() => {
+          if (this.containerRef) {
+            this.containerRef.nativeElement.scrollTo({ top: this.containerRef.nativeElement.scrollHeight, behavior: 'smooth' });
+          }
+        }, 100);
+        // After answer is received, export to Word with options using the new service
+        try {
+          await this.reportExportService.exportGuidedQuestionToWord({
+            companyName: this.companyName,
+            companyIsin: this.companyIsin,
+            generatedPrompt: this.generatedPrompt,
+            answer: res,
+            options: result,
+            rawCompanyData: this.esgService.getRawCompanyData(),
+          });
+        } catch (e: any) {
+          this.error = e?.message || 'Error during report export.';
+        }
+      },
+      error: (err: any) => {
+        this.error = 'Failed to get answer. Please try again.';
+        this.loading = false;
+      }
+    });
+  }
+
+  handleGuidedGeneratePrompt() {
+    this.generatePrompt();
+  }
+
+  handleGuidedCopyPrompt() {
+    if (this.generatedPrompt) {
+      navigator.clipboard.writeText(this.generatedPrompt)
+        .then(() => {})
+        .catch(() => {});
+    }
+  }
+
+  closeDialog() {
+    this.dialogRef?.close();
+  }
+
+  ngOnInit(): void {}
 }
 
 export { MultiCompanySimpleQuestionDialogComponent } from './multi-company-simple-question-dialog.component'; 

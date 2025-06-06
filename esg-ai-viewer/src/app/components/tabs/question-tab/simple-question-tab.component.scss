@@ -1,0 +1,9 @@
+:host ::ng-deep .form-actions {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 2rem 0 2rem 0;
+  border-top: 1px solid #eee;
+  justify-content: flex-start;
+  background: transparent !important;
+} 
