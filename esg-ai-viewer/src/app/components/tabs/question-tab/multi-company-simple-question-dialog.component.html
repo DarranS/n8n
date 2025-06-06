@@ -47,7 +47,7 @@
       </mat-form-field>
       <div class="form-actions">
         <button mat-raised-button color="primary" (click)="togglePromptPreview()" [disabled]="loading || !prompt.trim()">
-          {{ showPromptPreview ? 'Hide Prompt' : 'Show Prompt' }}
+          {{ showPromptPreview ? 'Hide Prompt' : 'Generate Prompt' }}
         </button>
         <button mat-raised-button color="accent" (click)="askAndSave()" [disabled]="loading || !prompt.trim()">
           <mat-icon>description</mat-icon>
